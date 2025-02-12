@@ -276,7 +276,7 @@
                 {
                     "name": "",
                     "id": "3d6bb401-c47c-412f-9def-29f0768d437a",
-                    "path": "<Gamepad>/buttonWest",
+                    "path": "<Gamepad>/buttonEast",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
@@ -413,34 +413,6 @@
                     "processors": "",
                     "groups": "",
                     "action": "Firearm",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                }
-            ]
-        },
-        {
-            "name": "Testing",
-            "id": "6ee69d26-7841-44db-9308-be90da9d70b8",
-            "actions": [
-                {
-                    "name": "NoirVFX",
-                    "type": "Button",
-                    "id": "3b41821b-c552-4176-b7df-c7d2b3474d64",
-                    "expectedControlType": "Button",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
-                }
-            ],
-            "bindings": [
-                {
-                    "name": "",
-                    "id": "0f4b02ae-38d1-49e3-ac29-11331ccf9ba0",
-                    "path": "<Keyboard>/n",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "NoirVFX",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }
