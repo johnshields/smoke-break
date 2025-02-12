@@ -9,25 +9,29 @@ namespace _Scripts
         private static readonly int Grounded = Animator.StringToHash("Grounded");
         private static readonly int Speed = Animator.StringToHash("Speed");
         private static readonly int Jump = Animator.StringToHash("Jump");
+        private static readonly int Dodge = Animator.StringToHash("Dodge");
 
-        [Header("References")]
-        private Camera _mainCamera;
+        [Header("References")] private Camera _mainCamera;
         private Rigidbody _rigidbody;
         private Animator _animator;
         private InputControls _actions;
         private InputAction _moveKeys;
 
-        [Header("Movement Settings")]
-        public float movementForce = 1f;
+        [Header("Movement Settings")] public float movementForce = 1f;
         private Vector3 _forceDirection = Vector3.zero;
         private const float MaxSpeed = 5f;
 
-        [Header("Jump Settings")]
-        public bool grounded = true;
+        [Header("Jump Settings")] public bool grounded = true;
         public float jumpForce = 5f;
-        
-        [Header("Animation Parameters")]
-        private int _speedHash;
+
+        [Header("Dodge Settings")] public float dodgeDistance = 5f;
+        public float dodgeDuration = 0.35f;
+        public float dodgeCooldown = 0.75f; // Fast dodge spam but still balanced
+        private bool _canDodge = true;
+        private bool _isDodging;
+        private bool _disableMovement;
+
+        [Header("Animation Parameters")] private int _speedHash;
         private int _jumpBlendHash;
         private int _groundedHash;
 
@@ -48,9 +52,9 @@ namespace _Scripts
 
             // Get main camera reference
             _mainCamera = Camera.main;
-            
+
             _animator.SetBool(Grounded, true);
-            
+
             grounded = true;
         }
 
@@ -59,11 +63,13 @@ namespace _Scripts
             _actions.Profiler.Enable();
             _moveKeys = _actions.Profiler.Movement;
             _actions.Profiler.Jump.performed += JumpAction;
+            _actions.Profiler.Dodge.performed += DodgeAction;
         }
 
         private void OnDisable()
         {
             _actions.Profiler.Jump.performed -= JumpAction;
+            _actions.Profiler.Dodge.performed -= DodgeAction;
             _actions.Profiler.Disable();
         }
 
@@ -75,32 +81,25 @@ namespace _Scripts
 
         private void FixedUpdate()
         {
+            if (_isDodging || _disableMovement) return; // Prevent WASD input during dodge
+
             if (grounded)
             {
                 _animator.SetFloat(Speed, _rigidbody.velocity.magnitude / MaxSpeed);
             }
 
             _forceDirection = Vector3.zero;
-            var input = _moveKeys.ReadValue<Vector2>();
+            Vector2 input = _moveKeys.ReadValue<Vector2>();
 
-            // Correctly access camera direction
             var cameraRight = _mainCamera.transform.right;
             var cameraForward = _mainCamera.transform.forward;
 
             // Apply corrected movement direction
             _forceDirection += GetCameraDirection(cameraRight, input.x);
             _forceDirection += GetCameraDirection(cameraForward, input.y);
+            _rigidbody.AddForce(_forceDirection * movementForce, ForceMode.Impulse);
 
-            if (grounded) 
-            {
-                _rigidbody.AddForce(_forceDirection * movementForce, ForceMode.Impulse);
-            }
-            else 
-            {
-                _rigidbody.AddForce(_forceDirection * (movementForce * 0.2f), ForceMode.Impulse);
-            }
-
-            RotateCharacter(input);
+            RotateCharacter(_moveKeys.ReadValue<Vector2>());
         }
 
         private void RotateCharacter(Vector2 input)
@@ -137,5 +136,37 @@ namespace _Scripts
             _rigidbody.velocity = new Vector3(_rigidbody.velocity.x, 0, _rigidbody.velocity.z);
             _rigidbody.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
         }
+
+        private void DodgeAction(InputAction.CallbackContext context)
+        {
+            if (!_canDodge || _isDodging) return;
+
+            _isDodging = true;
+            _canDodge = false;
+            _disableMovement = true;
+            _animator.SetTrigger(Dodge);
+
+            Invoke(nameof(EndDodge), dodgeDuration); // Ends dodge after duration
+        }
+
+        private void EndDodge()
+        {
+            Vector2 input = _moveKeys.ReadValue<Vector2>();
+            var cameraRight = _mainCamera.transform.right;
+            var cameraForward = _mainCamera.transform.forward;
+            
+            Vector3 dodgeDirection = GetCameraDirection(cameraRight, input.x) + GetCameraDirection(cameraForward, input.y);
+    
+            if (dodgeDirection == Vector3.zero) dodgeDirection = -transform.forward; // Default to backward
+
+            _rigidbody.velocity = dodgeDirection.normalized * dodgeDistance; // Move instantly
+            
+            _isDodging = false;
+            _disableMovement = false;
+            _animator.ResetTrigger(Dodge);
+            Invoke(nameof(ResetDodgeCooldown), dodgeCooldown); // Cooldown
+        }
+        
+        private void ResetDodgeCooldown() => _canDodge = true;
     }
 }
