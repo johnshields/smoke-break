@@ -30,7 +30,7 @@ namespace _Scripts
 
         private void UpdateAmmo()
         {
-            bulletCounter.text = $"Ammo: {_pistol.currentAmmo} / {_pistol.maxAmmo}";
+            bulletCounter.text = $"{_pistol.currentAmmo}/{_pistol.maxAmmo}";
         }
 
         private void UpdateHealth()
