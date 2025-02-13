@@ -98,6 +98,15 @@ public partial class @InputControls: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Aim"",
+                    ""type"": ""Button"",
+                    ""id"": ""6ea867c2-7e4b-4e61-864f-255bd8b4d6bf"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -375,6 +384,28 @@ public partial class @InputControls: IInputActionCollection2, IDisposable
                     ""action"": ""Shoot"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""72764a7e-3aa2-41c0-90d9-f323d981b69b"",
+                    ""path"": ""<Gamepad>/leftShoulder"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Aim"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""9c3f73f2-6813-4cf0-ad7a-8473ff0946e5"",
+                    ""path"": ""<Keyboard>/q"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Aim"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -408,6 +439,7 @@ public partial class @InputControls: IInputActionCollection2, IDisposable
         m_Profiler_Attack = m_Profiler.FindAction("Attack", throwIfNotFound: true);
         m_Profiler_Dodge = m_Profiler.FindAction("Dodge", throwIfNotFound: true);
         m_Profiler_Shoot = m_Profiler.FindAction("Shoot", throwIfNotFound: true);
+        m_Profiler_Aim = m_Profiler.FindAction("Aim", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -477,6 +509,7 @@ public partial class @InputControls: IInputActionCollection2, IDisposable
     private readonly InputAction m_Profiler_Attack;
     private readonly InputAction m_Profiler_Dodge;
     private readonly InputAction m_Profiler_Shoot;
+    private readonly InputAction m_Profiler_Aim;
     public struct ProfilerActions
     {
         private @InputControls m_Wrapper;
@@ -489,6 +522,7 @@ public partial class @InputControls: IInputActionCollection2, IDisposable
         public InputAction @Attack => m_Wrapper.m_Profiler_Attack;
         public InputAction @Dodge => m_Wrapper.m_Profiler_Dodge;
         public InputAction @Shoot => m_Wrapper.m_Profiler_Shoot;
+        public InputAction @Aim => m_Wrapper.m_Profiler_Aim;
         public InputActionMap Get() { return m_Wrapper.m_Profiler; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -522,6 +556,9 @@ public partial class @InputControls: IInputActionCollection2, IDisposable
             @Shoot.started += instance.OnShoot;
             @Shoot.performed += instance.OnShoot;
             @Shoot.canceled += instance.OnShoot;
+            @Aim.started += instance.OnAim;
+            @Aim.performed += instance.OnAim;
+            @Aim.canceled += instance.OnAim;
         }
 
         private void UnregisterCallbacks(IProfilerActions instance)
@@ -550,6 +587,9 @@ public partial class @InputControls: IInputActionCollection2, IDisposable
             @Shoot.started -= instance.OnShoot;
             @Shoot.performed -= instance.OnShoot;
             @Shoot.canceled -= instance.OnShoot;
+            @Aim.started -= instance.OnAim;
+            @Aim.performed -= instance.OnAim;
+            @Aim.canceled -= instance.OnAim;
         }
 
         public void RemoveCallbacks(IProfilerActions instance)
@@ -586,5 +626,6 @@ public partial class @InputControls: IInputActionCollection2, IDisposable
         void OnAttack(InputAction.CallbackContext context);
         void OnDodge(InputAction.CallbackContext context);
         void OnShoot(InputAction.CallbackContext context);
+        void OnAim(InputAction.CallbackContext context);
     }
 }
