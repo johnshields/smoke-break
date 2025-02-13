@@ -12,7 +12,8 @@ namespace _Scripts
         [SerializeField] private GameObject bulletPrefab;
         [SerializeField] private Transform firePoint;
         [SerializeField] private float bulletSpeed = 20f;
-        [SerializeField] private int maxAmmo = 10;
+        [SerializeField] public int maxAmmo = 10;
+        [SerializeField] public int currentAmmo;
         [SerializeField] private float fireRate = 0.3f;
 
         [Header("Effects")]
@@ -32,12 +33,16 @@ namespace _Scripts
         [SerializeField] private float aimSnapSpeed = 10f;
         [SerializeField] private float crosshairHeightOffset = 0.2f;
         [SerializeField] private LayerMask aimableLayers;
+        
+        [Header("Audio Settings")]
+        [SerializeField] private AudioSource audioSource;
+        [SerializeField] private AudioClip gunshotSound;
+        [SerializeField] private AudioClip reloadSound;
 
         private GameObject _worldCrosshair;
         private InputControls _actions;
         private PlayerProfiler _player;
         private Animator _animator;
-        private int _currentAmmo;
         private bool _canShoot = true;
         private bool _isReloading = false;
         private bool _isAiming = false;
@@ -48,7 +53,7 @@ namespace _Scripts
             _actions = new InputControls();
             _player = GetComponent<PlayerProfiler>();
             _animator = GetComponent<Animator>();
-            _currentAmmo = maxAmmo;
+            currentAmmo = maxAmmo;
             pistol.SetActive(false);
             
             _worldCrosshair = Instantiate(worldCrosshairPrefab);
@@ -134,12 +139,12 @@ namespace _Scripts
 
         private void ShootAction(InputAction.CallbackContext context)
         {
-            if (!_canShoot || _isReloading || _currentAmmo <= 0) return;
+            if (!_canShoot || _isReloading || currentAmmo <= 0) return;
 
             _player.disableMovement = true;
             _lastActionTime = Time.time;
             pistol.SetActive(true);
-            _currentAmmo--;
+            currentAmmo--;
             _canShoot = false;
 
             _animator.SetTrigger(ShootHash);
@@ -149,7 +154,8 @@ namespace _Scripts
         private IEnumerator ShootWithDelay()
         {
             yield return new WaitForSeconds(0.5f);
-
+            
+            audioSource.PlayOneShot(gunshotSound);
             GameObject muzzleFlash = Instantiate(muzzleFlashPrefab, firePoint.position, firePoint.rotation);
             Destroy(muzzleFlash, 0.1f);
 
@@ -159,7 +165,7 @@ namespace _Scripts
 
             yield return new WaitForSeconds(fireRate);
 
-            if (_currentAmmo <= 0)
+            if (currentAmmo <= 0)
             {
                 StartCoroutine(Reload());
             }
@@ -167,14 +173,17 @@ namespace _Scripts
             {
                 _canShoot = true;
             }
+            
+            _player.disableMovement = false;
         }
 
         private IEnumerator Reload()
         {
             _isReloading = true;
-            yield return new WaitForSeconds(2.0f);
+            audioSource.PlayOneShot(reloadSound);
+            yield return new WaitForSeconds(1.0f);
 
-            _currentAmmo = maxAmmo;
+            currentAmmo = maxAmmo;
             _isReloading = false;
             _canShoot = true;
         }

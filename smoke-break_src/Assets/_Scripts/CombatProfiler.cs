@@ -19,6 +19,10 @@ namespace _Scripts
         private const float AttackCooldown = 0.5f;
         private const float WeaponHideTime = 5f;
         private const float AttackDelay = 0.5f;
+        
+        [Header("Audio Settings")]
+        [SerializeField] private AudioSource audioSource;
+        [SerializeField] private AudioClip axeSwingSound;
 
         private Animator _animator;
         private InputControls _actions;
@@ -67,9 +71,9 @@ namespace _Scripts
             _canAttack = false;
             _player.disableMovement = true;
             _animator.SetTrigger(Attack); 
-
+            audioSource.PlayOneShot(axeSwingSound);
             yield return new WaitForSeconds(AttackDelay);
-
+            
             Collider[] hitEnemies = Physics.OverlapSphere(attackPoint.position, attackRange, enemyLayers);
             foreach (var enemy in hitEnemies)
             {
@@ -80,13 +84,6 @@ namespace _Scripts
             yield return new WaitForSeconds(AttackCooldown);
             _player.disableMovement = false;
             _canAttack = true;
-        }
-
-        private void OnDrawGizmosSelected()
-        {
-            if (attackPoint == null) return;
-            Gizmos.color = Color.red;
-            Gizmos.DrawWireSphere(attackPoint.position, attackRange);
         }
     }
 }

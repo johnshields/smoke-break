@@ -16,7 +16,11 @@ namespace _Scripts
         private Animator _animator;
         private InputControls _actions;
         private InputAction _moveKeys;
-
+        
+        [Header("Health Settings")]
+        [SerializeField] private int maxHealth = 100;
+        private int _currentHealth;
+        
         [Header("Movement Settings")] public float movementForce = 1f;
         private Vector3 _forceDirection = Vector3.zero;
         private const float MaxSpeed = 5f;
@@ -35,6 +39,8 @@ namespace _Scripts
 
         private void Awake()
         {
+            _currentHealth = maxHealth;
+            
             // Cache components
             _animator = GetComponent<Animator>();
             _rigidbody = GetComponent<Rigidbody>();
@@ -163,6 +169,27 @@ namespace _Scripts
             disableMovement = false;
             _canDodge = true;
             _animator.ResetTrigger(Dodge);
+        }
+        
+        public void TakeDamage(int damage)
+        {
+            _currentHealth -= damage;
+            if (_currentHealth <= 0)
+            {
+                _currentHealth = 0;
+                Die();
+            }
+        }
+
+        private void Die()
+        {
+            Debug.Log("Player has died!");
+            // Add respawn or game over logic here
+        }
+
+        public float GetCurrentHealth()
+        {
+            return _currentHealth;
         }
     }
 }
