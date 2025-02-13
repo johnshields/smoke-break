@@ -69,25 +69,7 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "LowProfile",
-                    "type": "Button",
-                    "id": "19cd6377-8830-4d49-a88e-a34d2bfee9bf",
-                    "expectedControlType": "Button",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
-                },
-                {
-                    "name": "HighProfile",
-                    "type": "Button",
-                    "id": "40dfe04b-11a6-4d1f-a760-b1c23c347b38",
-                    "expectedControlType": "Button",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
-                },
-                {
-                    "name": "Firearm",
+                    "name": "Shoot",
                     "type": "Button",
                     "id": "41a7b749-c8d5-4e2a-9144-99d417f53f70",
                     "expectedControlType": "Button",
@@ -285,50 +267,6 @@
                     "isPartOfComposite": false
                 },
                 {
-                    "name": "",
-                    "id": "207ac77f-2f9d-42bb-9cb1-c1df2661c4ec",
-                    "path": "<Keyboard>/2",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "HighProfile",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "06b943cb-aa1e-4d2e-881d-abcb9d3c1be3",
-                    "path": "<Gamepad>/buttonNorth",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "HighProfile",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "5074b020-f7af-4b01-8560-19c8a6ec93c6",
-                    "path": "<Keyboard>/1",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "LowProfile",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "bc754bc1-4975-4647-a1ce-221b54b7f2aa",
-                    "path": "<Gamepad>/buttonEast",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "LowProfile",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
                     "name": "ArrowKeys",
                     "id": "37833fe8-e40d-4620-b32a-549d55f07a27",
                     "path": "2DVector",
@@ -390,7 +328,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "Firearm",
+                    "action": "Shoot",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -401,18 +339,18 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "Firearm",
+                    "action": "Shoot",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
                 {
                     "name": "",
                     "id": "acdb7c19-a96a-40ef-acb6-7fea1188a0bb",
-                    "path": "<Gamepad>/rightTrigger",
+                    "path": "<Gamepad>/leftTrigger",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "Firearm",
+                    "action": "Shoot",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

@@ -11,7 +11,6 @@ namespace _Scripts
         [Header("Combat Settings")]
         [SerializeField] private Transform attackPoint;
         [SerializeField] private GameObject axe;
-        [SerializeField] private GameObject pistol;
         [SerializeField] private float attackRange = 1.5f;
         [SerializeField] private int attackDamage = 25;
         [SerializeField] private LayerMask enemyLayers;
@@ -33,7 +32,6 @@ namespace _Scripts
             _actions = new InputControls();
             _player = GetComponent<PlayerProfiler>();
             axe.SetActive(false);
-            pistol.SetActive(false);
         }
 
         private void OnEnable()

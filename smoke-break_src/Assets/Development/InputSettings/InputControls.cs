@@ -91,25 +91,7 @@ public partial class @InputControls: IInputActionCollection2, IDisposable
                     ""initialStateCheck"": false
                 },
                 {
-                    ""name"": ""LowProfile"",
-                    ""type"": ""Button"",
-                    ""id"": ""19cd6377-8830-4d49-a88e-a34d2bfee9bf"",
-                    ""expectedControlType"": ""Button"",
-                    ""processors"": """",
-                    ""interactions"": """",
-                    ""initialStateCheck"": false
-                },
-                {
-                    ""name"": ""HighProfile"",
-                    ""type"": ""Button"",
-                    ""id"": ""40dfe04b-11a6-4d1f-a760-b1c23c347b38"",
-                    ""expectedControlType"": ""Button"",
-                    ""processors"": """",
-                    ""interactions"": """",
-                    ""initialStateCheck"": false
-                },
-                {
-                    ""name"": ""Firearm"",
+                    ""name"": ""Shoot"",
                     ""type"": ""Button"",
                     ""id"": ""41a7b749-c8d5-4e2a-9144-99d417f53f70"",
                     ""expectedControlType"": ""Button"",
@@ -307,50 +289,6 @@ public partial class @InputControls: IInputActionCollection2, IDisposable
                     ""isPartOfComposite"": false
                 },
                 {
-                    ""name"": """",
-                    ""id"": ""207ac77f-2f9d-42bb-9cb1-c1df2661c4ec"",
-                    ""path"": ""<Keyboard>/2"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""HighProfile"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""06b943cb-aa1e-4d2e-881d-abcb9d3c1be3"",
-                    ""path"": ""<Gamepad>/buttonNorth"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""HighProfile"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""5074b020-f7af-4b01-8560-19c8a6ec93c6"",
-                    ""path"": ""<Keyboard>/1"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""LowProfile"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""bc754bc1-4975-4647-a1ce-221b54b7f2aa"",
-                    ""path"": ""<Gamepad>/buttonEast"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""LowProfile"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
                     ""name"": ""ArrowKeys"",
                     ""id"": ""37833fe8-e40d-4620-b32a-549d55f07a27"",
                     ""path"": ""2DVector"",
@@ -412,7 +350,7 @@ public partial class @InputControls: IInputActionCollection2, IDisposable
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""Firearm"",
+                    ""action"": ""Shoot"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -423,18 +361,18 @@ public partial class @InputControls: IInputActionCollection2, IDisposable
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""Firearm"",
+                    ""action"": ""Shoot"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
                 {
                     ""name"": """",
                     ""id"": ""acdb7c19-a96a-40ef-acb6-7fea1188a0bb"",
-                    ""path"": ""<Gamepad>/rightTrigger"",
+                    ""path"": ""<Gamepad>/leftTrigger"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""Firearm"",
+                    ""action"": ""Shoot"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -469,9 +407,7 @@ public partial class @InputControls: IInputActionCollection2, IDisposable
         m_Profiler_Jump = m_Profiler.FindAction("Jump", throwIfNotFound: true);
         m_Profiler_Attack = m_Profiler.FindAction("Attack", throwIfNotFound: true);
         m_Profiler_Dodge = m_Profiler.FindAction("Dodge", throwIfNotFound: true);
-        m_Profiler_LowProfile = m_Profiler.FindAction("LowProfile", throwIfNotFound: true);
-        m_Profiler_HighProfile = m_Profiler.FindAction("HighProfile", throwIfNotFound: true);
-        m_Profiler_Firearm = m_Profiler.FindAction("Firearm", throwIfNotFound: true);
+        m_Profiler_Shoot = m_Profiler.FindAction("Shoot", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -540,9 +476,7 @@ public partial class @InputControls: IInputActionCollection2, IDisposable
     private readonly InputAction m_Profiler_Jump;
     private readonly InputAction m_Profiler_Attack;
     private readonly InputAction m_Profiler_Dodge;
-    private readonly InputAction m_Profiler_LowProfile;
-    private readonly InputAction m_Profiler_HighProfile;
-    private readonly InputAction m_Profiler_Firearm;
+    private readonly InputAction m_Profiler_Shoot;
     public struct ProfilerActions
     {
         private @InputControls m_Wrapper;
@@ -554,9 +488,7 @@ public partial class @InputControls: IInputActionCollection2, IDisposable
         public InputAction @Jump => m_Wrapper.m_Profiler_Jump;
         public InputAction @Attack => m_Wrapper.m_Profiler_Attack;
         public InputAction @Dodge => m_Wrapper.m_Profiler_Dodge;
-        public InputAction @LowProfile => m_Wrapper.m_Profiler_LowProfile;
-        public InputAction @HighProfile => m_Wrapper.m_Profiler_HighProfile;
-        public InputAction @Firearm => m_Wrapper.m_Profiler_Firearm;
+        public InputAction @Shoot => m_Wrapper.m_Profiler_Shoot;
         public InputActionMap Get() { return m_Wrapper.m_Profiler; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -587,15 +519,9 @@ public partial class @InputControls: IInputActionCollection2, IDisposable
             @Dodge.started += instance.OnDodge;
             @Dodge.performed += instance.OnDodge;
             @Dodge.canceled += instance.OnDodge;
-            @LowProfile.started += instance.OnLowProfile;
-            @LowProfile.performed += instance.OnLowProfile;
-            @LowProfile.canceled += instance.OnLowProfile;
-            @HighProfile.started += instance.OnHighProfile;
-            @HighProfile.performed += instance.OnHighProfile;
-            @HighProfile.canceled += instance.OnHighProfile;
-            @Firearm.started += instance.OnFirearm;
-            @Firearm.performed += instance.OnFirearm;
-            @Firearm.canceled += instance.OnFirearm;
+            @Shoot.started += instance.OnShoot;
+            @Shoot.performed += instance.OnShoot;
+            @Shoot.canceled += instance.OnShoot;
         }
 
         private void UnregisterCallbacks(IProfilerActions instance)
@@ -621,15 +547,9 @@ public partial class @InputControls: IInputActionCollection2, IDisposable
             @Dodge.started -= instance.OnDodge;
             @Dodge.performed -= instance.OnDodge;
             @Dodge.canceled -= instance.OnDodge;
-            @LowProfile.started -= instance.OnLowProfile;
-            @LowProfile.performed -= instance.OnLowProfile;
-            @LowProfile.canceled -= instance.OnLowProfile;
-            @HighProfile.started -= instance.OnHighProfile;
-            @HighProfile.performed -= instance.OnHighProfile;
-            @HighProfile.canceled -= instance.OnHighProfile;
-            @Firearm.started -= instance.OnFirearm;
-            @Firearm.performed -= instance.OnFirearm;
-            @Firearm.canceled -= instance.OnFirearm;
+            @Shoot.started -= instance.OnShoot;
+            @Shoot.performed -= instance.OnShoot;
+            @Shoot.canceled -= instance.OnShoot;
         }
 
         public void RemoveCallbacks(IProfilerActions instance)
@@ -665,8 +585,6 @@ public partial class @InputControls: IInputActionCollection2, IDisposable
         void OnJump(InputAction.CallbackContext context);
         void OnAttack(InputAction.CallbackContext context);
         void OnDodge(InputAction.CallbackContext context);
-        void OnLowProfile(InputAction.CallbackContext context);
-        void OnHighProfile(InputAction.CallbackContext context);
-        void OnFirearm(InputAction.CallbackContext context);
+        void OnShoot(InputAction.CallbackContext context);
     }
 }
