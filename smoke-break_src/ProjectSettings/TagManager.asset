@@ -9,6 +9,7 @@ TagManager:
   - Pistol
   - Axe
   - Enemy
+  - Ground
   layers:
   - Default
   - TransparentFX

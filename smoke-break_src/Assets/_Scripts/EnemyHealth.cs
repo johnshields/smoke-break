@@ -16,18 +16,17 @@ namespace _Scripts
         [SerializeField] private float knockbackForce = 5f;
         [SerializeField] private float knockbackDuration = 0.2f;
 
-        private Renderer _enemyRenderer;
+        public Renderer enemyRenderer;
         private Color _originalColor;
         private Rigidbody _rigidbody;
         private bool _isKnockedBack;
 
         private void Start()
         {
-            _enemyRenderer = GetComponent<Renderer>();
             _rigidbody = GetComponent<Rigidbody>();
-
-            if (_enemyRenderer != null)
-                _originalColor = _enemyRenderer.material.color;
+            
+            if (enemyRenderer != null)
+                _originalColor = enemyRenderer.material.color;
         }
 
         public void TakeDamage(int damage, Vector3 hitDirection)
@@ -38,7 +37,7 @@ namespace _Scripts
             health -= damage;
             Debug.Log($"{gameObject.name} took {damage} damage! Remaining HP: {health}");
 
-            if (_enemyRenderer != null)
+            if (enemyRenderer != null)
                 StartCoroutine(FlashEffect());
 
             if (_rigidbody != null)
@@ -50,11 +49,11 @@ namespace _Scripts
 
         private IEnumerator FlashEffect()
         {
-            if (_enemyRenderer == null) yield break;
+            if (enemyRenderer == null) yield break;
 
-            _enemyRenderer.material.color = hitColor;
+            enemyRenderer.material.color = hitColor;
             yield return new WaitForSeconds(hitEffectDuration);
-            _enemyRenderer.material.color = _originalColor;
+            enemyRenderer.material.color = _originalColor;
         }
 
         private IEnumerator ApplyKnockback(Vector3 direction)
