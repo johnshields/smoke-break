@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.Serialization;
 
 namespace _Scripts
 {
@@ -28,7 +29,7 @@ namespace _Scripts
         public float dodgeDuration = 0.35f;
         private bool _canDodge = true;
         private bool _isDodging;
-        private bool _disableMovement;
+        public bool disableMovement;
 
         [Header("Animation Parameters")] private int _speedHash;
         private int _groundedHash;
@@ -79,7 +80,7 @@ namespace _Scripts
 
         private void FixedUpdate()
         {
-            if (_isDodging || _disableMovement) return;
+            if (_isDodging || disableMovement) return;
 
             if (grounded)
             {
@@ -141,7 +142,7 @@ namespace _Scripts
 
             _isDodging = true;
             _canDodge = false;
-            _disableMovement = true;
+            disableMovement = true;
             _animator.SetTrigger(Dodge);
             
             var input = _moveKeys.ReadValue<Vector2>();
@@ -160,7 +161,7 @@ namespace _Scripts
         private void EndDodge()
         {
             _isDodging = false;
-            _disableMovement = false;
+            disableMovement = false;
             _canDodge = true;
             _animator.ResetTrigger(Dodge);
         }
