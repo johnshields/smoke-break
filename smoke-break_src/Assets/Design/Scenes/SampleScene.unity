@@ -427,6 +427,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   health: 100
+  hitColor: {r: 0.5849056, g: 0.052420773, b: 0.052420773, a: 1}
+  hitEffectDuration: 0.2
+  knockbackForce: 5
+  knockbackDuration: 0.2
 --- !u!1 &705507993
 GameObject:
   m_ObjectHideFlags: 0
@@ -640,7 +644,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 963194225}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.14001818, y: -0.66860646, z: 0.13027671, w: 0.71860164}
+  m_LocalRotation: {x: 0.13943593, y: -0.6718041, z: 0.13089982, w: 0.7156131}
   m_LocalPosition: {x: 14.994077, y: 11.5, z: -0.42149127}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -876,7 +880,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1098351669}
   serializedVersion: 2
-  m_LocalRotation: {x: -0.14218463, y: -0.015262157, z: 0.003770329, w: 0.98971534}
+  m_LocalRotation: {x: -0.1421912, y: -0.012112081, z: 0.0029921317, w: 0.98976064}
   m_LocalPosition: {x: 0.00000074399287, y: 0.0000010834787, z: 0.0000026747587}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -955,7 +959,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1115535073}
   serializedVersion: 2
-  m_LocalRotation: {x: -0.038497914, y: -0.020666435, z: 0.0074586486, w: 0.9990172}
+  m_LocalRotation: {x: -0.038501363, y: -0.016473072, z: 0.00594522, w: 0.9991051}
   m_LocalPosition: {x: 0.00000074399287, y: 0.0000010834787, z: 0.0000026747587}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -1426,7 +1430,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2116469952}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.0000000743383, y: 0.000000040432685, z: -0.0000000047851514, w: 1}
+  m_LocalRotation: {x: -0.000000031049566, y: 0.00000015915974, z: -0.000000064216934, w: 1}
   m_LocalPosition: {x: 0.00000074399287, y: 0.0000010834787, z: 0.0000026747587}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -1638,7 +1642,7 @@ GameObject:
   - component: {fileID: 3469287836600444629}
   - component: {fileID: 1711813856096408095}
   m_Layer: 0
-  m_Name: pistol_001
+  m_Name: Pistol
   m_TagString: Pistol
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3233,6 +3237,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   attackPoint: {fileID: 872805874}
   axe: {fileID: 919132147669462048}
+  pistol: {fileID: 919132148963242954}
   attackRange: 5
   attackDamage: 25
   enemyLayers:

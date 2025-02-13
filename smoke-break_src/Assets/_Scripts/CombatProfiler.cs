@@ -6,20 +6,26 @@ namespace _Scripts
 {
     public class CombatProfiler : MonoBehaviour
     {
+        private static readonly int Attack = Animator.StringToHash("Attack");
+
         [Header("Combat Settings")]
-        private Animator _animator;
-        public Transform attackPoint;
-        public GameObject axe;
-        public float attackRange = 1.5f;
-        public int attackDamage = 25;
-        public LayerMask enemyLayers;
-    
-        private InputControls _actions;
-        private bool _canAttack = true;
+        [SerializeField] private Transform attackPoint;
+        [SerializeField] private GameObject axe;
+        [SerializeField] private GameObject pistol;
+        [SerializeField] private float attackRange = 1.5f;
+        [SerializeField] private int attackDamage = 25;
+        [SerializeField] private LayerMask enemyLayers;
+
+        [Header("Combat Timings")]
         private const float AttackCooldown = 0.5f;
-        private PlayerProfiler _player;
-        private float _lastAttackTime;
         private const float WeaponHideTime = 5f;
+        private const float AttackDelay = 0.5f;
+
+        private Animator _animator;
+        private InputControls _actions;
+        private PlayerProfiler _player;
+        private bool _canAttack = true;
+        private float _lastAttackTime;
 
         private void Awake()
         {
@@ -27,8 +33,9 @@ namespace _Scripts
             _actions = new InputControls();
             _player = GetComponent<PlayerProfiler>();
             axe.SetActive(false);
+            pistol.SetActive(false);
         }
-        
+
         private void OnEnable()
         {
             _actions.Profiler.Enable();
@@ -45,7 +52,7 @@ namespace _Scripts
         {
             if (axe.activeSelf && Time.time - _lastAttackTime > WeaponHideTime)
             {
-                axe.SetActive(false); // Hide weapon after inactivity
+                axe.SetActive(false);
             }
         }
 
@@ -54,33 +61,34 @@ namespace _Scripts
             if (!_canAttack) return;
             _lastAttackTime = Time.time;
             axe.SetActive(true);
-            StartCoroutine(PerformAttack("Attack", attackDamage, AttackCooldown));
+            StartCoroutine(PerformAttack());
         }
-        
-        private IEnumerator PerformAttack(string attackType, int damage, float cooldown)
+
+        private IEnumerator PerformAttack()
         {
             _canAttack = false;
             _player.disableMovement = true;
-            _animator.SetTrigger(attackType); // Triggers attack animation
+            _animator.SetTrigger(Attack); 
 
-            yield return new WaitForSeconds(0.5f); // Delay before dealing damage
+            yield return new WaitForSeconds(AttackDelay);
 
-            var hitEnemies = Physics.OverlapSphere(attackPoint.position, attackRange, enemyLayers);
+            Collider[] hitEnemies = Physics.OverlapSphere(attackPoint.position, attackRange, enemyLayers);
             foreach (var enemy in hitEnemies)
             {
-                enemy.GetComponent<EnemyHealth>()?.TakeDamage(damage);
+                var knockbackDirection = (enemy.transform.position - transform.position).normalized;
+                enemy.GetComponent<EnemyHealth>()?.TakeDamage(attackDamage, knockbackDirection);
             }
 
-            yield return new WaitForSeconds(cooldown); // Attack cooldown
+            yield return new WaitForSeconds(AttackCooldown);
             _player.disableMovement = false;
             _canAttack = true;
         }
-        
+
         private void OnDrawGizmosSelected()
         {
             if (attackPoint == null) return;
             Gizmos.color = Color.red;
-            Gizmos.DrawWireSphere(attackPoint.position, attackRange); // Visualize attack range
+            Gizmos.DrawWireSphere(attackPoint.position, attackRange);
         }
     }
 }
