@@ -4,7 +4,7 @@ using UnityEngine.InputSystem;
 namespace _Scripts
 {
     [RequireComponent(typeof(Rigidbody), typeof(Animator))]
-    public class KantaProfiler : MonoBehaviour
+    public class PlayerProfiler : MonoBehaviour
     {
         private static readonly int Grounded = Animator.StringToHash("Grounded");
         private static readonly int Speed = Animator.StringToHash("Speed");
@@ -26,13 +26,11 @@ namespace _Scripts
 
         [Header("Dodge Settings")] public float dodgeDistance = 5f;
         public float dodgeDuration = 0.35f;
-        public float dodgeCooldown = 0.75f; // Fast dodge spam but still balanced
         private bool _canDodge = true;
         private bool _isDodging;
         private bool _disableMovement;
 
         [Header("Animation Parameters")] private int _speedHash;
-        private int _jumpBlendHash;
         private int _groundedHash;
 
         private void Awake()
@@ -81,7 +79,7 @@ namespace _Scripts
 
         private void FixedUpdate()
         {
-            if (_isDodging || _disableMovement) return; // Prevent WASD input during dodge
+            if (_isDodging || _disableMovement) return;
 
             if (grounded)
             {
@@ -104,7 +102,7 @@ namespace _Scripts
 
         private void RotateCharacter(Vector2 input)
         {
-            Vector3 direction = _rigidbody.velocity;
+            var direction = _rigidbody.velocity;
             direction.y = 0f;
 
             // Rotate only if movement input is significant
@@ -114,7 +112,7 @@ namespace _Scripts
             }
         }
 
-        private Vector3 GetCameraDirection(Vector3 direction, float inputAxis)
+        private static Vector3 GetCameraDirection(Vector3 direction, float inputAxis)
         {
             direction.y = 0;  // Ensure movement is only horizontal
             return direction.normalized * inputAxis;
@@ -145,28 +143,26 @@ namespace _Scripts
             _canDodge = false;
             _disableMovement = true;
             _animator.SetTrigger(Dodge);
+            
+            var input = _moveKeys.ReadValue<Vector2>();
+            var cameraRight = _mainCamera.transform.right;
+            var cameraForward = _mainCamera.transform.forward;
+            
+            var dodgeDirection = GetCameraDirection(cameraRight, input.x) + GetCameraDirection(cameraForward, input.y);
+    
+            if (dodgeDirection == Vector3.zero) dodgeDirection = -transform.forward; // Default to backward
+
+            _rigidbody.velocity = dodgeDirection.normalized * dodgeDistance; // Move instantly
 
             Invoke(nameof(EndDodge), dodgeDuration); // Ends dodge after duration
         }
 
         private void EndDodge()
         {
-            Vector2 input = _moveKeys.ReadValue<Vector2>();
-            var cameraRight = _mainCamera.transform.right;
-            var cameraForward = _mainCamera.transform.forward;
-            
-            Vector3 dodgeDirection = GetCameraDirection(cameraRight, input.x) + GetCameraDirection(cameraForward, input.y);
-    
-            if (dodgeDirection == Vector3.zero) dodgeDirection = -transform.forward; // Default to backward
-
-            _rigidbody.velocity = dodgeDirection.normalized * dodgeDistance; // Move instantly
-            
             _isDodging = false;
             _disableMovement = false;
+            _canDodge = true;
             _animator.ResetTrigger(Dodge);
-            Invoke(nameof(ResetDodgeCooldown), dodgeCooldown); // Cooldown
         }
-        
-        private void ResetDodgeCooldown() => _canDodge = true;
     }
 }
