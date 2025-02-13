@@ -158,8 +158,26 @@ namespace _Scripts
             rb.velocity = firePoint.forward * bulletSpeed;
 
             yield return new WaitForSeconds(fireRate);
-            _canShoot = true;
-            _player.disableMovement = false;
+
+            if (_currentAmmo <= 0)
+            {
+                StartCoroutine(Reload());
+            }
+            else
+            {
+                _canShoot = true;
+            }
         }
+
+        private IEnumerator Reload()
+        {
+            _isReloading = true;
+            yield return new WaitForSeconds(2.0f);
+
+            _currentAmmo = maxAmmo;
+            _isReloading = false;
+            _canShoot = true;
+        }
+
     }
 }
