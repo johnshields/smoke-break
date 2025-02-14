@@ -35,7 +35,7 @@ namespace _Scripts
         public bool disableMovement;
         
         [Header("Sprint Settings")]
-        [SerializeField] private float sprintMultiplier = 2f; // ✅ Sprinting speed multiplier
+        [SerializeField] private float sprintMultiplier = 2f;
         private bool _isSprinting;
         private InputAction _sprintAction;
 
@@ -90,7 +90,7 @@ namespace _Scripts
 
             if (grounded)
             {
-                float speedFactor = _isSprinting ? sprintMultiplier : 1f; // ✅ Apply sprinting multiplier
+                float speedFactor = _isSprinting ? sprintMultiplier : 1f;
                 _animator.SetFloat(Speed, (_rigidbody.velocity.magnitude / MaxSpeed) * speedFactor);
             }
 
@@ -103,8 +103,8 @@ namespace _Scripts
             _forceDirection += GetCameraDirection(cameraRight, input.x);
             _forceDirection += GetCameraDirection(cameraForward, input.y);
     
-            float speedMultiplier = _isSprinting ? sprintMultiplier : 1f; // ✅ Adjust movement force when sprinting
-            _rigidbody.AddForce(_forceDirection * movementForce * speedMultiplier, ForceMode.Impulse);
+            float speedMultiplier = _isSprinting ? sprintMultiplier : 1f; 
+            _rigidbody.AddForce(_forceDirection * (movementForce * speedMultiplier), ForceMode.Impulse);
 
             RotateCharacter(_moveKeys.ReadValue<Vector2>());
         }

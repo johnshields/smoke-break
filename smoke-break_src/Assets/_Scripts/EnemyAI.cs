@@ -54,6 +54,11 @@ namespace _Scripts
                 case AIState.Attacking:
                     break;
             }
+            
+            if (_currentState == AIState.Chasing && !_agent.pathPending && _agent.remainingDistance < 0.5f)
+            {
+                _agent.SetDestination(_player.position);
+            }
 
             _animator.SetFloat(Speed, _agent.velocity.magnitude);
         }
@@ -115,6 +120,12 @@ namespace _Scripts
             {
                 _currentState = AIState.Patrolling;
             }
+        }
+        
+        public void EnterChaseState()
+        {
+            Debug.Log($"{gameObject.name} is now CHASING Kanta after being shot!");
+            _currentState = AIState.Chasing;
         }
 
         private IEnumerator AttackPlayer()

@@ -12,13 +12,22 @@ namespace _Scripts
         [SerializeField] private GameObject bulletPrefab;
         [SerializeField] private Transform firePoint;
         [SerializeField] private float bulletSpeed = 20f;
-        [SerializeField] public int maxAmmo = 10;
-        [SerializeField] public int currentAmmo;
         [SerializeField] private float fireRate = 0.3f;
+        
+        [Header("Ammo Settings")]
+        //[SerializeField] public int maxAmmo = 99;
+        //[SerializeField] public int currentAmmo;
+        [SerializeField] private int maxClipSize = 10; 
+        [SerializeField] private int maxStoredAmmo = 99; 
+        [SerializeField] public int currentClipAmmo;
+        [SerializeField] public int storedAmmo;
+        [SerializeField] private bool unlimitedAmmo;
 
         [Header("Effects")]
         [SerializeField] private GameObject muzzleFlashPrefab;
         [SerializeField] private GameObject worldCrosshairPrefab;
+        private Renderer _crosshairRenderer;
+        [SerializeField] private Color defaultCrosshairColor = Color.white;
 
         [Header("Weapon Visibility")]
         [SerializeField] private GameObject pistol;
@@ -38,6 +47,7 @@ namespace _Scripts
         [SerializeField] private AudioSource audioSource;
         [SerializeField] private AudioClip gunshotSound;
         [SerializeField] private AudioClip reloadSound;
+        [SerializeField] private AudioClip emptyGunSound;
 
         private GameObject _worldCrosshair;
         private InputControls _actions;
@@ -47,17 +57,13 @@ namespace _Scripts
         private bool _isReloading;
         private bool _isAiming;
         private Vector3 _aimTarget;
-        
-        private Renderer _crosshairRenderer; // ✅ Stores the crosshair's renderer
-        [SerializeField] private Color defaultCrosshairColor = Color.white;
-        [SerializeField] private Color enemyTargetColor = Color.red;
 
         private void Awake()
         {
             _actions = new InputControls();
             _player = GetComponent<PlayerProfiler>();
             _animator = GetComponent<Animator>();
-            currentAmmo = maxAmmo;
+            //currentAmmo = maxAmmo;
             pistol.SetActive(false);
             
             _worldCrosshair = Instantiate(worldCrosshairPrefab);
@@ -100,6 +106,11 @@ namespace _Scripts
                 UpdateCrosshairPosition();
                 SnapToTarget();
             }
+            
+            if (currentClipAmmo == 0 && storedAmmo > 0 && !_isReloading)
+            {
+                StartCoroutine(Reload());
+            }
         }
 
         private void StartAiming(InputAction.CallbackContext context)
@@ -116,7 +127,7 @@ namespace _Scripts
 
         private void UpdateCrosshairPosition()
         {
-            Collider[] enemiesInRange = Physics.OverlapSphere(transform.position, 20f, aimableLayers);
+            Collider[] enemiesInRange = Physics.OverlapSphere(transform.position, 35f, aimableLayers);
 
             if (enemiesInRange.Length > 0)
             {
@@ -161,16 +172,16 @@ namespace _Scripts
                 }
             }
 
-            return closest ?? transform; // ✅ Ensures it NEVER returns null
+            return closest ?? transform;
         }
         
         private void SnapToTarget()
         {
-            if (_aimTarget == Vector3.zero) return; // ✅ Don't aim if no valid target
+            if (_aimTarget == Vector3.zero) return;
 
             Vector3 lookDirection = (_aimTarget - transform.position).normalized;
     
-            if (lookDirection.sqrMagnitude < 0.01f) return; // ✅ Prevents invalid rotation
+            if (lookDirection.sqrMagnitude < 0.01f) return;
 
             lookDirection.y = 0; // Prevents tilting
             Quaternion targetRotation = Quaternion.LookRotation(lookDirection);
@@ -179,14 +190,21 @@ namespace _Scripts
 
         private void ShootAction(InputAction.CallbackContext context)
         {
-            if (!_canShoot || _isReloading || currentAmmo <= 0) return;
-
+            if (currentClipAmmo <= 0 && storedAmmo <= 0) 
+            {
+                Debug.Log("Clip Empty! Need to reload!");
+                audioSource.PlayOneShot(emptyGunSound);
+                return;
+            }
+            
+            if (!_canShoot || _isReloading || currentClipAmmo <= 0) return;
+            
             _player.disableMovement = true;
             _lastActionTime = Time.time;
             pistol.SetActive(true);
-            currentAmmo--;
+            currentClipAmmo--;
+            
             _canShoot = false;
-
             _animator.SetTrigger(ShootHash);
             StartCoroutine(ShootWithDelay());
         }
@@ -202,12 +220,12 @@ namespace _Scripts
             GameObject bullet = Instantiate(bulletPrefab, firePoint.position, Quaternion.identity);
             Rigidbody rb = bullet.GetComponent<Rigidbody>();
 
-            Vector3 shotDirection = (_aimTarget - firePoint.position).normalized; // Aim at target
+            Vector3 shotDirection = (_aimTarget - firePoint.position).normalized;
             rb.velocity = shotDirection * bulletSpeed;
 
             yield return new WaitForSeconds(fireRate);
 
-            if (currentAmmo <= 0)
+            if (currentClipAmmo <= 0)
             {
                 StartCoroutine(Reload());
             }
@@ -221,13 +239,30 @@ namespace _Scripts
 
         private IEnumerator Reload()
         {
-            _isReloading = true;
-            audioSource.PlayOneShot(reloadSound);
-            yield return new WaitForSeconds(1.0f);
+            if (_isReloading || storedAmmo <= 0 || currentClipAmmo == maxClipSize)
+                yield break;
 
-            currentAmmo = maxAmmo;
+            _isReloading = true;
+            Debug.Log("🔄 Auto-reloading...");
+
+            yield return new WaitForSeconds(1f);
+            
+            audioSource.PlayOneShot(reloadSound);
+            int ammoNeeded = maxClipSize - currentClipAmmo;
+            int ammoToLoad = Mathf.Min(ammoNeeded, storedAmmo);
+    
+            currentClipAmmo += ammoToLoad;
+            storedAmmo -= ammoToLoad;
+
+            Debug.Log($"🔋 Reload Complete! Ammo: {currentClipAmmo}/{storedAmmo}");
             _isReloading = false;
             _canShoot = true;
+        }
+        
+        public void RefillAmmo(int amount)
+        {
+            storedAmmo = Mathf.Min(storedAmmo  + amount, maxStoredAmmo);
+            Debug.Log($"Ammo refilled! Stored Ammo: {storedAmmo }");
         }
 
     }

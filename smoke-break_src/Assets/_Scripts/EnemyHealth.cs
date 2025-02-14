@@ -32,10 +32,9 @@ namespace _Scripts
         public void TakeDamage(int damage, Vector3 hitDirection)
         {
             if (damage <= 0) return;
-
-            Debug.Log($"TakeDamage() called on: {gameObject.name}");
+            
             health -= damage;
-            Debug.Log($"{gameObject.name} took {damage} damage! Remaining HP: {health}");
+            GetComponent<EnemyAI>()?.EnterChaseState();
 
             if (enemyRenderer != null)
                 StartCoroutine(FlashEffect());
