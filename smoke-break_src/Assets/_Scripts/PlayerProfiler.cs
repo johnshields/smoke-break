@@ -39,26 +39,15 @@ namespace _Scripts
 
         private void Awake()
         {
-            _currentHealth = maxHealth;
-            
-            // Cache components
-            _animator = GetComponent<Animator>();
             _rigidbody = GetComponent<Rigidbody>();
-
-            // Initialize input system
-            _actions = new InputControls();
-
-            // Cache animator parameters
+            _animator = GetComponent<Animator>();
             _speedHash = Animator.StringToHash("Speed");
-
-            // Set initial animation states
             _animator.SetFloat(_speedHash, 0f);
-
-            // Get main camera reference
-            _mainCamera = Camera.main;
-
             _animator.SetBool(Grounded, true);
 
+            _currentHealth = maxHealth;
+            _actions = new InputControls();
+            _mainCamera = Camera.main;
             grounded = true;
         }
 
@@ -80,7 +69,7 @@ namespace _Scripts
         private void OnCollisionEnter()
         {
             grounded = true;
-            _animator.SetBool(Grounded, true); // Smoothly transitions back to movement
+            _animator.SetBool(Grounded, true);
         }
 
         private void FixedUpdate()
@@ -97,8 +86,7 @@ namespace _Scripts
 
             var cameraRight = _mainCamera.transform.right;
             var cameraForward = _mainCamera.transform.forward;
-
-            // Apply corrected movement direction
+            
             _forceDirection += GetCameraDirection(cameraRight, input.x);
             _forceDirection += GetCameraDirection(cameraForward, input.y);
             _rigidbody.AddForce(_forceDirection * movementForce, ForceMode.Impulse);
@@ -110,8 +98,7 @@ namespace _Scripts
         {
             var direction = _rigidbody.velocity;
             direction.y = 0f;
-
-            // Rotate only if movement input is significant
+            
             if (input.sqrMagnitude > 0.5f && direction.sqrMagnitude > 0.5f)
             {
                 _rigidbody.rotation = Quaternion.LookRotation(direction, Vector3.up);
@@ -120,7 +107,7 @@ namespace _Scripts
 
         private static Vector3 GetCameraDirection(Vector3 direction, float inputAxis)
         {
-            direction.y = 0;  // Ensure movement is only horizontal
+            direction.y = 0;
             return direction.normalized * inputAxis;
         }
 
@@ -156,11 +143,11 @@ namespace _Scripts
             
             var dodgeDirection = GetCameraDirection(cameraRight, input.x) + GetCameraDirection(cameraForward, input.y);
     
-            if (dodgeDirection == Vector3.zero) dodgeDirection = -transform.forward; // Default to backward
+            if (dodgeDirection == Vector3.zero) dodgeDirection = -transform.forward;
 
-            _rigidbody.velocity = dodgeDirection.normalized * dodgeDistance; // Move instantly
+            _rigidbody.velocity = dodgeDirection.normalized * dodgeDistance;
 
-            Invoke(nameof(EndDodge), dodgeDuration); // Ends dodge after duration
+            Invoke(nameof(EndDodge), dodgeDuration);
         }
 
         private void EndDodge()
@@ -173,13 +160,16 @@ namespace _Scripts
         
         public void TakeDamage(int damage)
         {
+            Debug.Log($"🔥 Kanta took {damage} damage!");
             _currentHealth -= damage;
+
             if (_currentHealth <= 0)
             {
-                _currentHealth = 0;
+                Debug.Log("💀 Kanta has died!");
                 Die();
             }
         }
+
 
         private void Die()
         {
