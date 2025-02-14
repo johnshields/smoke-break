@@ -11,36 +11,42 @@ namespace _Scripts
         private static readonly int Jump = Animator.StringToHash("Jump");
         private static readonly int Dodge = Animator.StringToHash("Dodge");
 
-        [Header("References")] private Camera _mainCamera;
+        [Header("References")] 
+        private Camera _mainCamera;
         private Rigidbody _rigidbody;
         private Animator _animator;
         private InputControls _actions;
         private InputAction _moveKeys;
-        
-        [Header("Health Settings")]
+
+        [Header("Health Settings")] 
         [SerializeField] private int maxHealth = 100;
+
         private int _currentHealth;
-        
-        [Header("Movement Settings")] public float movementForce = 1f;
+
+        [Header("Movement Settings")] 
+        public float movementForce = 1f;
         private Vector3 _forceDirection = Vector3.zero;
         private const float MaxSpeed = 5f;
 
-        [Header("Jump Settings")] public bool grounded = true;
+        [Header("Jump Settings")] 
+        public bool grounded = true;
         public float jumpForce = 5f;
 
-        [Header("Dodge Settings")] public float dodgeDistance = 5f;
+        [Header("Dodge Settings")] 
+        public float dodgeDistance = 5f;
         public float dodgeDuration = 0.35f;
         private bool _canDodge = true;
         private bool _isDodging;
         public bool disableMovement;
-        
-        [Header("Sprint Settings")]
+
+        [Header("Sprint Settings")] 
         [SerializeField] private float sprintMultiplier = 2f;
         private bool _isSprinting;
         private InputAction _sprintAction;
 
 
-        [Header("Animation Parameters")] private int _speedHash;
+        [Header("Animation Parameters")] 
+        private int _speedHash;
         private int _groundedHash;
 
         private void Awake()
@@ -62,7 +68,7 @@ namespace _Scripts
             _actions.Profiler.Enable();
             _moveKeys = _actions.Profiler.Movement;
             _sprintAction = _actions.Profiler.Sprint;
-    
+
             _actions.Profiler.Jump.performed += JumpAction;
             _actions.Profiler.Dodge.performed += DodgeAction;
             _sprintAction.performed += StartSprinting;
@@ -99,11 +105,11 @@ namespace _Scripts
 
             var cameraRight = _mainCamera.transform.right;
             var cameraForward = _mainCamera.transform.forward;
-    
+
             _forceDirection += GetCameraDirection(cameraRight, input.x);
             _forceDirection += GetCameraDirection(cameraForward, input.y);
-    
-            float speedMultiplier = _isSprinting ? sprintMultiplier : 1f; 
+
+            float speedMultiplier = _isSprinting ? sprintMultiplier : 1f;
             _rigidbody.AddForce(_forceDirection * (movementForce * speedMultiplier), ForceMode.Impulse);
 
             RotateCharacter(_moveKeys.ReadValue<Vector2>());
@@ -114,7 +120,7 @@ namespace _Scripts
         {
             var direction = _rigidbody.velocity;
             direction.y = 0f;
-            
+
             if (input.sqrMagnitude > 0.5f && direction.sqrMagnitude > 0.5f)
             {
                 _rigidbody.rotation = Quaternion.LookRotation(direction, Vector3.up);
@@ -132,12 +138,12 @@ namespace _Scripts
             if (!grounded) return;
 
             grounded = false;
-            
+
             _animator.SetBool(Grounded, false);
             _animator.SetTrigger(Jump);
             Invoke(nameof(DelayedJump), 0.2f);
         }
-        
+
         private void DelayedJump()
         {
             _rigidbody.velocity = new Vector3(_rigidbody.velocity.x, 0, _rigidbody.velocity.z);
@@ -152,13 +158,13 @@ namespace _Scripts
             _canDodge = false;
             disableMovement = true;
             _animator.SetTrigger(Dodge);
-            
+
             var input = _moveKeys.ReadValue<Vector2>();
             var cameraRight = _mainCamera.transform.right;
             var cameraForward = _mainCamera.transform.forward;
-            
+
             var dodgeDirection = GetCameraDirection(cameraRight, input.x) + GetCameraDirection(cameraForward, input.y);
-    
+
             if (dodgeDirection == Vector3.zero) dodgeDirection = -transform.forward;
 
             _rigidbody.velocity = dodgeDirection.normalized * dodgeDistance;
@@ -173,7 +179,7 @@ namespace _Scripts
             _canDodge = true;
             _animator.ResetTrigger(Dodge);
         }
-        
+
         private void StartSprinting(InputAction.CallbackContext context)
         {
             _isSprinting = true;
@@ -183,7 +189,7 @@ namespace _Scripts
         {
             _isSprinting = false;
         }
-        
+
         public void TakeDamage(int damage)
         {
             Debug.Log($"🔥 Kanta took {damage} damage!");

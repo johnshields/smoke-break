@@ -13,28 +13,26 @@ namespace _Scripts
         [SerializeField] private Transform firePoint;
         [SerializeField] private float bulletSpeed = 20f;
         [SerializeField] private float fireRate = 0.3f;
-        
+
         [Header("Ammo Settings")]
-        //[SerializeField] public int maxAmmo = 99;
-        //[SerializeField] public int currentAmmo;
-        [SerializeField] private int maxClipSize = 10; 
-        [SerializeField] private int maxStoredAmmo = 99; 
+        [SerializeField] private int maxClipSize = 10;
+        [SerializeField] public int maxStoredAmmo = 99;
         [SerializeField] public int currentClipAmmo;
         [SerializeField] public int storedAmmo;
         [SerializeField] private bool unlimitedAmmo;
 
-        [Header("Effects")]
+        [Header("Effects")] 
         [SerializeField] private GameObject muzzleFlashPrefab;
         [SerializeField] private GameObject worldCrosshairPrefab;
         private Renderer _crosshairRenderer;
         [SerializeField] private Color defaultCrosshairColor = Color.white;
 
-        [Header("Weapon Visibility")]
-        [SerializeField] private GameObject pistol;
+        [Header("Weapon Visibility")] [SerializeField]
+        private GameObject pistol;
         private const float WeaponHideTime = 5f;
         private float _lastActionTime;
 
-        [Header("Aiming Settings")]
+        [Header("Aiming Settings")] 
         [SerializeField] private Camera playerCamera;
         [SerializeField] private float aimFOV = 40f;
         [SerializeField] private float normalFOV = 60f;
@@ -42,8 +40,8 @@ namespace _Scripts
         [SerializeField] private float aimSnapSpeed = 10f;
         [SerializeField] private float crosshairHeightOffset = 0.2f;
         [SerializeField] private LayerMask aimableLayers;
-        
-        [Header("Audio Settings")]
+
+        [Header("Audio Settings")] 
         [SerializeField] private AudioSource audioSource;
         [SerializeField] private AudioClip gunshotSound;
         [SerializeField] private AudioClip reloadSound;
@@ -63,13 +61,12 @@ namespace _Scripts
             _actions = new InputControls();
             _player = GetComponent<PlayerProfiler>();
             _animator = GetComponent<Animator>();
-            //currentAmmo = maxAmmo;
             pistol.SetActive(false);
-            
+
             _worldCrosshair = Instantiate(worldCrosshairPrefab);
             _worldCrosshair.SetActive(false);
-            
-            _crosshairRenderer = _worldCrosshair.GetComponent<Renderer>(); 
+
+            _crosshairRenderer = _worldCrosshair.GetComponent<Renderer>();
             _crosshairRenderer.material.color = defaultCrosshairColor;
 
             _worldCrosshair.transform.localScale *= 1.5f;
@@ -97,16 +94,16 @@ namespace _Scripts
             {
                 pistol.SetActive(false);
             }
-            
-            playerCamera.fieldOfView = Mathf.Lerp(playerCamera.fieldOfView, 
+
+            playerCamera.fieldOfView = Mathf.Lerp(playerCamera.fieldOfView,
                 _isAiming ? aimFOV : normalFOV, Time.deltaTime * aimSpeed);
-            
+
             if (_isAiming)
             {
                 UpdateCrosshairPosition();
                 SnapToTarget();
             }
-            
+
             if (currentClipAmmo == 0 && storedAmmo > 0 && !_isReloading)
             {
                 StartCoroutine(Reload());
@@ -116,7 +113,7 @@ namespace _Scripts
         private void StartAiming(InputAction.CallbackContext context)
         {
             _isAiming = true;
-            _worldCrosshair.SetActive(true); 
+            _worldCrosshair.SetActive(true);
         }
 
         private void StopAiming(InputAction.CallbackContext context)
@@ -137,7 +134,7 @@ namespace _Scripts
                     Vector3 enemyCenter = closestEnemy.position + Vector3.up * crosshairHeightOffset;
                     Vector3 directionToPlayer = (playerCamera.transform.position - enemyCenter).normalized;
 
-                    _aimTarget = enemyCenter + directionToPlayer * 1.5f; // ✅ Moves crosshair in front of enemy
+                    _aimTarget = enemyCenter + directionToPlayer * 1.5f;
 
                     _worldCrosshair.transform.position = _aimTarget;
                     _worldCrosshair.transform.rotation = Quaternion.LookRotation(-directionToPlayer);
@@ -148,13 +145,11 @@ namespace _Scripts
             }
             else
             {
-                _aimTarget = Vector3.zero; // ✅ Disable aim when no enemies are found
+                _aimTarget = Vector3.zero;
                 _worldCrosshair.SetActive(false);
             }
         }
-
-
-        // ✅ Find the Closest Enemy
+        
         private Transform FindClosestEnemy(Collider[] enemies)
         {
             if (enemies.Length == 0) return null;
@@ -174,36 +169,36 @@ namespace _Scripts
 
             return closest ?? transform;
         }
-        
+
         private void SnapToTarget()
         {
             if (_aimTarget == Vector3.zero) return;
 
             Vector3 lookDirection = (_aimTarget - transform.position).normalized;
-    
+
             if (lookDirection.sqrMagnitude < 0.01f) return;
 
-            lookDirection.y = 0; // Prevents tilting
+            lookDirection.y = 0;
             Quaternion targetRotation = Quaternion.LookRotation(lookDirection);
             transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * aimSnapSpeed);
         }
 
         private void ShootAction(InputAction.CallbackContext context)
         {
-            if (currentClipAmmo <= 0 && storedAmmo <= 0) 
+            if (currentClipAmmo <= 0 && storedAmmo <= 0)
             {
                 Debug.Log("Clip Empty! Need to reload!");
                 audioSource.PlayOneShot(emptyGunSound);
                 return;
             }
-            
+
             if (!_canShoot || _isReloading || currentClipAmmo <= 0) return;
-            
+
             _player.disableMovement = true;
             _lastActionTime = Time.time;
             pistol.SetActive(true);
             currentClipAmmo--;
-            
+
             _canShoot = false;
             _animator.SetTrigger(ShootHash);
             StartCoroutine(ShootWithDelay());
@@ -212,7 +207,7 @@ namespace _Scripts
         private IEnumerator ShootWithDelay()
         {
             yield return new WaitForSeconds(0.5f);
-    
+
             audioSource.PlayOneShot(gunshotSound);
             GameObject muzzleFlash = Instantiate(muzzleFlashPrefab, firePoint.position, firePoint.rotation);
             Destroy(muzzleFlash, 0.1f);
@@ -233,7 +228,7 @@ namespace _Scripts
             {
                 _canShoot = true;
             }
-    
+
             _player.disableMovement = false;
         }
 
@@ -246,11 +241,11 @@ namespace _Scripts
             Debug.Log("🔄 Auto-reloading...");
 
             yield return new WaitForSeconds(1f);
-            
+
             audioSource.PlayOneShot(reloadSound);
             int ammoNeeded = maxClipSize - currentClipAmmo;
             int ammoToLoad = Mathf.Min(ammoNeeded, storedAmmo);
-    
+
             currentClipAmmo += ammoToLoad;
             storedAmmo -= ammoToLoad;
 
@@ -258,12 +253,11 @@ namespace _Scripts
             _isReloading = false;
             _canShoot = true;
         }
-        
+
         public void RefillAmmo(int amount)
         {
-            storedAmmo = Mathf.Min(storedAmmo  + amount, maxStoredAmmo);
-            Debug.Log($"Ammo refilled! Stored Ammo: {storedAmmo }");
+            storedAmmo = Mathf.Min(storedAmmo + amount, maxStoredAmmo);
+            Debug.Log($"Ammo refilled! Stored Ammo: {storedAmmo}");
         }
-
     }
 }

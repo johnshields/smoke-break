@@ -4,22 +4,87 @@ namespace _Scripts
 {
     public class ItemPickup : MonoBehaviour
     {
-        [SerializeField] private int itemAmount = 10;
-        [SerializeField] private AudioClip pickupSound;
+        [Header("Item Settings")] [SerializeField]
+        private ItemType itemType;
+
+        [SerializeField] private int itemValue = 10;
+
+        [Header("Pickup Sounds")] [SerializeField]
+        private AudioClip pickupSound;
+
+        [Header("Effects")] [SerializeField] private float rotationSpeed = 50f;
+        [SerializeField] private float magnetRange = 5f;
+        [SerializeField] private float magnetSpeed = 5f;
+        [SerializeField] private float bounceSpeed = 2f;
+        [SerializeField] private float bounceHeight = 0.2f;
+
+        private Transform _player;
+        private Vector3 _startPosition;
+
+        private void Start()
+        {
+            _player = GameObject.FindGameObjectWithTag("Player")?.transform;
+            _startPosition = transform.position;
+        }
+
+        private void Update()
+        {
+            transform.Rotate(Vector3.up, rotationSpeed * Time.deltaTime);
+            
+            float newY = _startPosition.y + Mathf.Sin(Time.time * bounceSpeed) * bounceHeight;
+            transform.position = new Vector3(transform.position.x, newY, transform.position.z);
+            
+            if (_player != null && Vector3.Distance(transform.position, _player.position) <= magnetRange)
+                transform.position =
+                    Vector3.MoveTowards(transform.position, _player.position, magnetSpeed * Time.deltaTime);
+        }
 
         private void OnTriggerEnter(Collider other)
         {
-            var pistol = other.GetComponent<PistolProfiler>();
-
-            if (pistol != null)
+            switch (itemType)
             {
-                if (pistol.currentClipAmmo < pistol.storedAmmo)
-                {
-                    pistol.RefillAmmo(itemAmount);
-                    AudioSource.PlayClipAtPoint(pickupSound, transform.position);
+                case ItemType.Health:
+                    if (other.TryGetComponent(out PlayerProfiler playerHealth))
+                    {
+                        //playerHealth.RestoreHealth(itemValue);
+                        PlayPickupSound();
+                        Destroy(gameObject);
+                    }
+
+                    break;
+
+                case ItemType.Ammo:
+                    if (other.TryGetComponent(out PistolProfiler pistol) && pistol.storedAmmo < pistol.maxStoredAmmo)
+                    {
+                        pistol.RefillAmmo(itemValue);
+                        PlayPickupSound();
+                        Destroy(gameObject);
+                    }
+
+                    break;
+
+                case ItemType.Coin:
+                    if (other.TryGetComponent(out PlayerProfiler player))
+                    {
+                        //player.AddCoins(itemValue);
+                        PlayPickupSound();
+                        Destroy(gameObject);
+                    }
+
+                    break;
+
+                case ItemType.Other:
+                    Debug.Log($"📦 Collected {gameObject.name}, but no effect implemented yet!");
+                    PlayPickupSound();
                     Destroy(gameObject);
-                }
+                    break;
             }
+        }
+
+        private void PlayPickupSound()
+        {
+            if (pickupSound != null)
+                AudioSource.PlayClipAtPoint(pickupSound, transform.position);
         }
     }
 }
