@@ -33,6 +33,12 @@ namespace _Scripts
         private bool _canDodge = true;
         private bool _isDodging;
         public bool disableMovement;
+        
+        [Header("Sprint Settings")]
+        [SerializeField] private float sprintMultiplier = 2f; // ✅ Sprinting speed multiplier
+        private bool _isSprinting;
+        private InputAction _sprintAction;
+
 
         [Header("Animation Parameters")] private int _speedHash;
         private int _groundedHash;
@@ -55,14 +61,20 @@ namespace _Scripts
         {
             _actions.Profiler.Enable();
             _moveKeys = _actions.Profiler.Movement;
+            _sprintAction = _actions.Profiler.Sprint;
+    
             _actions.Profiler.Jump.performed += JumpAction;
             _actions.Profiler.Dodge.performed += DodgeAction;
+            _sprintAction.performed += StartSprinting;
+            _sprintAction.canceled += StopSprinting;
         }
 
         private void OnDisable()
         {
             _actions.Profiler.Jump.performed -= JumpAction;
             _actions.Profiler.Dodge.performed -= DodgeAction;
+            _sprintAction.performed -= StartSprinting;
+            _sprintAction.canceled -= StopSprinting;
             _actions.Profiler.Disable();
         }
 
@@ -78,7 +90,8 @@ namespace _Scripts
 
             if (grounded)
             {
-                _animator.SetFloat(Speed, _rigidbody.velocity.magnitude / MaxSpeed);
+                float speedFactor = _isSprinting ? sprintMultiplier : 1f; // ✅ Apply sprinting multiplier
+                _animator.SetFloat(Speed, (_rigidbody.velocity.magnitude / MaxSpeed) * speedFactor);
             }
 
             _forceDirection = Vector3.zero;
@@ -86,13 +99,16 @@ namespace _Scripts
 
             var cameraRight = _mainCamera.transform.right;
             var cameraForward = _mainCamera.transform.forward;
-            
+    
             _forceDirection += GetCameraDirection(cameraRight, input.x);
             _forceDirection += GetCameraDirection(cameraForward, input.y);
-            _rigidbody.AddForce(_forceDirection * movementForce, ForceMode.Impulse);
+    
+            float speedMultiplier = _isSprinting ? sprintMultiplier : 1f; // ✅ Adjust movement force when sprinting
+            _rigidbody.AddForce(_forceDirection * movementForce * speedMultiplier, ForceMode.Impulse);
 
             RotateCharacter(_moveKeys.ReadValue<Vector2>());
         }
+
 
         private void RotateCharacter(Vector2 input)
         {
@@ -156,6 +172,16 @@ namespace _Scripts
             disableMovement = false;
             _canDodge = true;
             _animator.ResetTrigger(Dodge);
+        }
+        
+        private void StartSprinting(InputAction.CallbackContext context)
+        {
+            _isSprinting = true;
+        }
+
+        private void StopSprinting(InputAction.CallbackContext context)
+        {
+            _isSprinting = false;
         }
         
         public void TakeDamage(int damage)

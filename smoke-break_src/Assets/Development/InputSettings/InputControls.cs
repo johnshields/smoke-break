@@ -107,6 +107,15 @@ public partial class @InputControls: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Sprint"",
+                    ""type"": ""Button"",
+                    ""id"": ""815349fb-f1dd-4e2c-a7f7-d437dcf126be"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -179,7 +188,7 @@ public partial class @InputControls: IInputActionCollection2, IDisposable
                 {
                     ""name"": """",
                     ""id"": ""460637f6-2000-4eda-8a1c-08d21d55b730"",
-                    ""path"": ""<Gamepad>/buttonSouth"",
+                    ""path"": ""<Gamepad>/buttonNorth"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
@@ -406,6 +415,28 @@ public partial class @InputControls: IInputActionCollection2, IDisposable
                     ""action"": ""Aim"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""62f57267-d170-46bb-87f4-fcf939aaf103"",
+                    ""path"": ""<Gamepad>/buttonSouth"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Sprint"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""15af2e98-e6b3-48cf-8349-d0d42aaf2491"",
+                    ""path"": ""<Keyboard>/shift"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Sprint"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -440,6 +471,7 @@ public partial class @InputControls: IInputActionCollection2, IDisposable
         m_Profiler_Dodge = m_Profiler.FindAction("Dodge", throwIfNotFound: true);
         m_Profiler_Shoot = m_Profiler.FindAction("Shoot", throwIfNotFound: true);
         m_Profiler_Aim = m_Profiler.FindAction("Aim", throwIfNotFound: true);
+        m_Profiler_Sprint = m_Profiler.FindAction("Sprint", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -510,6 +542,7 @@ public partial class @InputControls: IInputActionCollection2, IDisposable
     private readonly InputAction m_Profiler_Dodge;
     private readonly InputAction m_Profiler_Shoot;
     private readonly InputAction m_Profiler_Aim;
+    private readonly InputAction m_Profiler_Sprint;
     public struct ProfilerActions
     {
         private @InputControls m_Wrapper;
@@ -523,6 +556,7 @@ public partial class @InputControls: IInputActionCollection2, IDisposable
         public InputAction @Dodge => m_Wrapper.m_Profiler_Dodge;
         public InputAction @Shoot => m_Wrapper.m_Profiler_Shoot;
         public InputAction @Aim => m_Wrapper.m_Profiler_Aim;
+        public InputAction @Sprint => m_Wrapper.m_Profiler_Sprint;
         public InputActionMap Get() { return m_Wrapper.m_Profiler; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -559,6 +593,9 @@ public partial class @InputControls: IInputActionCollection2, IDisposable
             @Aim.started += instance.OnAim;
             @Aim.performed += instance.OnAim;
             @Aim.canceled += instance.OnAim;
+            @Sprint.started += instance.OnSprint;
+            @Sprint.performed += instance.OnSprint;
+            @Sprint.canceled += instance.OnSprint;
         }
 
         private void UnregisterCallbacks(IProfilerActions instance)
@@ -590,6 +627,9 @@ public partial class @InputControls: IInputActionCollection2, IDisposable
             @Aim.started -= instance.OnAim;
             @Aim.performed -= instance.OnAim;
             @Aim.canceled -= instance.OnAim;
+            @Sprint.started -= instance.OnSprint;
+            @Sprint.performed -= instance.OnSprint;
+            @Sprint.canceled -= instance.OnSprint;
         }
 
         public void RemoveCallbacks(IProfilerActions instance)
@@ -627,5 +667,6 @@ public partial class @InputControls: IInputActionCollection2, IDisposable
         void OnDodge(InputAction.CallbackContext context);
         void OnShoot(InputAction.CallbackContext context);
         void OnAim(InputAction.CallbackContext context);
+        void OnSprint(InputAction.CallbackContext context);
     }
 }
