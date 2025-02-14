@@ -1059,7 +1059,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 963194225}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.02585198, y: -0.68404406, z: 0.024271782, w: 0.72857827}
+  m_LocalRotation: {x: 0.02385938, y: -0.69671494, z: 0.023198085, w: 0.7165758}
   m_LocalPosition: {x: 14.994077, y: 6.5, z: -0.42150378}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -1429,7 +1429,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1098351669}
   serializedVersion: 2
-  m_LocalRotation: {x: -0.14219125, y: -0.012407726, z: -0.00089178706, w: 0.98976105}
+  m_LocalRotation: {x: -0.14003852, y: 0.005009679, z: 0.00037106083, w: 0.9901334}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -1508,7 +1508,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1115535073}
   serializedVersion: 2
-  m_LocalRotation: {x: -0.03850137, y: -0.017453376, z: 0.0005660182, w: 0.999106}
+  m_LocalRotation: {x: -0.036324956, y: -0.0000000052238596, z: -2.9900193e-10, w: 0.9993401}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -1960,8 +1960,8 @@ MonoBehaviour:
   m_LookaheadIgnoreY: 0
   m_HorizontalDamping: 0
   m_VerticalDamping: 0
-  m_ScreenX: 0.473
-  m_ScreenY: 0.494
+  m_ScreenX: 0.5
+  m_ScreenY: 0.5
   m_DeadZoneWidth: 0
   m_DeadZoneHeight: 0
   m_SoftZoneWidth: 0.2
@@ -2806,7 +2806,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2116469952}
   serializedVersion: 2
-  m_LocalRotation: {x: -1.725796e-10, y: -0.000000043378492, z: 0.0000000028979805, w: 1}
+  m_LocalRotation: {x: -0.0000000012953102, y: -0.000000084195484, z: 0.000000004102576, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -4407,7 +4407,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   health: 100
-  hitColor: {r: 1, g: 0, b: 0, a: 1}
+  hitColor: {r: 0.509434, g: 0.012014951, b: 0.012014951, a: 1}
   hitEffectDuration: 0.2
   knockbackForce: 5
   knockbackDuration: 0.2
@@ -5272,10 +5272,12 @@ MonoBehaviour:
   crosshairHeightOffset: 0.1
   aimableLayers:
     serializedVersion: 2
-    m_Bits: 4294967295
+    m_Bits: 64
   audioSource: {fileID: 2098264201}
   gunshotSound: {fileID: 8300000, guid: 42c1e2a45f59cfc41959ff8f3cd51537, type: 3}
   reloadSound: {fileID: 8300000, guid: b5839af999bb9484aaac9ea075c78178, type: 3}
+  defaultCrosshairColor: {r: 1, g: 1, b: 1, a: 1}
+  enemyTargetColor: {r: 1, g: 0, b: 0, a: 1}
 --- !u!4 &8999005226407519937
 Transform:
   m_ObjectHideFlags: 0

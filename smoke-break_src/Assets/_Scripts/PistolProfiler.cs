@@ -44,9 +44,13 @@ namespace _Scripts
         private PlayerProfiler _player;
         private Animator _animator;
         private bool _canShoot = true;
-        private bool _isReloading = false;
-        private bool _isAiming = false;
+        private bool _isReloading;
+        private bool _isAiming;
         private Vector3 _aimTarget;
+        
+        private Renderer _crosshairRenderer; // ✅ Stores the crosshair's renderer
+        [SerializeField] private Color defaultCrosshairColor = Color.white;
+        [SerializeField] private Color enemyTargetColor = Color.red;
 
         private void Awake()
         {
@@ -58,6 +62,11 @@ namespace _Scripts
             
             _worldCrosshair = Instantiate(worldCrosshairPrefab);
             _worldCrosshair.SetActive(false);
+            
+            _crosshairRenderer = _worldCrosshair.GetComponent<Renderer>(); 
+            _crosshairRenderer.material.color = defaultCrosshairColor;
+
+            _worldCrosshair.transform.localScale *= 1.5f;
         }
 
         private void OnEnable()
@@ -107,34 +116,65 @@ namespace _Scripts
 
         private void UpdateCrosshairPosition()
         {
-            Ray ray = playerCamera.ScreenPointToRay(new Vector2(Screen.width / 2, Screen.height / 2));
+            Collider[] enemiesInRange = Physics.OverlapSphere(transform.position, 20f, aimableLayers);
 
-            if (Physics.Raycast(ray, out RaycastHit hit, 100f, aimableLayers)) 
+            if (enemiesInRange.Length > 0)
             {
-                _aimTarget = hit.point + hit.normal * 0.5f; 
-                _aimTarget.y += crosshairHeightOffset; 
-                
-                _worldCrosshair.transform.position = _aimTarget;
-                _worldCrosshair.transform.LookAt(playerCamera.transform);
-                
-                if (!_worldCrosshair.activeSelf)
-                    _worldCrosshair.SetActive(true);
+                Transform closestEnemy = FindClosestEnemy(enemiesInRange);
+                if (closestEnemy != null)
+                {
+                    Vector3 enemyCenter = closestEnemy.position + Vector3.up * crosshairHeightOffset;
+                    Vector3 directionToPlayer = (playerCamera.transform.position - enemyCenter).normalized;
+
+                    _aimTarget = enemyCenter + directionToPlayer * 1.5f; // ✅ Moves crosshair in front of enemy
+
+                    _worldCrosshair.transform.position = _aimTarget;
+                    _worldCrosshair.transform.rotation = Quaternion.LookRotation(-directionToPlayer);
+
+                    if (!_worldCrosshair.activeSelf)
+                        _worldCrosshair.SetActive(true);
+                }
             }
             else
             {
+                _aimTarget = Vector3.zero; // ✅ Disable aim when no enemies are found
                 _worldCrosshair.SetActive(false);
             }
+        }
+
+
+        // ✅ Find the Closest Enemy
+        private Transform FindClosestEnemy(Collider[] enemies)
+        {
+            if (enemies.Length == 0) return null;
+
+            Transform closest = null;
+            float minDistance = Mathf.Infinity;
+
+            foreach (Collider enemy in enemies)
+            {
+                float distance = Vector3.Distance(transform.position, enemy.transform.position);
+                if (distance < minDistance)
+                {
+                    minDistance = distance;
+                    closest = enemy.transform;
+                }
+            }
+
+            return closest ?? transform; // ✅ Ensures it NEVER returns null
         }
         
         private void SnapToTarget()
         {
-            if (_aimTarget == Vector3.zero) return;
+            if (_aimTarget == Vector3.zero) return; // ✅ Don't aim if no valid target
 
             Vector3 lookDirection = (_aimTarget - transform.position).normalized;
-            lookDirection.y = 0;
+    
+            if (lookDirection.sqrMagnitude < 0.01f) return; // ✅ Prevents invalid rotation
 
+            lookDirection.y = 0; // Prevents tilting
             Quaternion targetRotation = Quaternion.LookRotation(lookDirection);
-            transform.rotation = Quaternion.Lerp(transform.rotation, targetRotation, Time.deltaTime * aimSnapSpeed);
+            transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * aimSnapSpeed);
         }
 
         private void ShootAction(InputAction.CallbackContext context)
@@ -154,14 +194,16 @@ namespace _Scripts
         private IEnumerator ShootWithDelay()
         {
             yield return new WaitForSeconds(0.5f);
-            
+    
             audioSource.PlayOneShot(gunshotSound);
             GameObject muzzleFlash = Instantiate(muzzleFlashPrefab, firePoint.position, firePoint.rotation);
             Destroy(muzzleFlash, 0.1f);
 
-            GameObject bullet = Instantiate(bulletPrefab, firePoint.position, firePoint.rotation);
+            GameObject bullet = Instantiate(bulletPrefab, firePoint.position, Quaternion.identity);
             Rigidbody rb = bullet.GetComponent<Rigidbody>();
-            rb.velocity = firePoint.forward * bulletSpeed;
+
+            Vector3 shotDirection = (_aimTarget - firePoint.position).normalized; // Aim at target
+            rb.velocity = shotDirection * bulletSpeed;
 
             yield return new WaitForSeconds(fireRate);
 
@@ -173,7 +215,7 @@ namespace _Scripts
             {
                 _canShoot = true;
             }
-            
+    
             _player.disableMovement = false;
         }
 
