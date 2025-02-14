@@ -815,6 +815,70 @@ Transform:
   - {fileID: 199851617}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &695156574
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 695156576}
+  - component: {fileID: 695156575}
+  m_Layer: 0
+  m_Name: RandoAudio
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &695156575
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 695156574}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e0172414e20d48548b658755915d7a6e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  pistolFireSounds:
+  - {fileID: 8300000, guid: 360d64446c1ac4f41b51b7499985d1a8, type: 3}
+  - {fileID: 8300000, guid: 4af6f3b245b02354a8c5162110213611, type: 3}
+  - {fileID: 8300000, guid: 77cc9501f774c0343afe79efa39273ff, type: 3}
+  - {fileID: 8300000, guid: 9b6491a2c51b9c94bbb00e4613ec17a6, type: 3}
+  - {fileID: 8300000, guid: 40262fe73580cdf4d8fe4313a10cb95d, type: 3}
+  - {fileID: 8300000, guid: 5b809b1b84798614eb72db7b1ba6227b, type: 3}
+  - {fileID: 8300000, guid: 3619ab940117e384094427b7fdf8c53d, type: 3}
+  - {fileID: 8300000, guid: 231c0c41743177746a13655b728deb56, type: 3}
+  - {fileID: 8300000, guid: f8e822e91faf6824288fef77b371fd7f, type: 3}
+  - {fileID: 8300000, guid: 57dd61f7442f9a148b275e08d03d8d4e, type: 3}
+  - {fileID: 8300000, guid: 2e0fb5de4b5841e4292674dd8f652777, type: 3}
+  - {fileID: 8300000, guid: 0cdf41a2c930a654da08bb68ceb8ce8f, type: 3}
+  - {fileID: 8300000, guid: 7976b2b662e25d94196a0b0797041d1c, type: 3}
+  - {fileID: 8300000, guid: 9d336253efb542145b7e24130aaa6300, type: 3}
+  - {fileID: 8300000, guid: d58c3ded8502b574d92b5b25e08d74c8, type: 3}
+  - {fileID: 8300000, guid: db099ba578a1d4948bac8a89824cdf43, type: 3}
+  - {fileID: 8300000, guid: c04ed6fa72d0dd948bfe87572ef2a861, type: 3}
+  - {fileID: 8300000, guid: f291f8ba1e01a0f468c692dd51e9a4de, type: 3}
+  - {fileID: 8300000, guid: e916fc0034fd159408bb1d4529e58c64, type: 3}
+--- !u!4 &695156576
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 695156574}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 889149189}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &705507993
 GameObject:
   m_ObjectHideFlags: 0
@@ -970,6 +1034,38 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 543450651872114330}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &889149188
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 889149189}
+  m_Layer: 0
+  m_Name: SFX
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &889149189
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 889149188}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 695156576}
+  m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &963194225
 GameObject:
@@ -5440,6 +5536,8 @@ MonoBehaviour:
   gunshotSound: {fileID: 8300000, guid: 42c1e2a45f59cfc41959ff8f3cd51537, type: 3}
   reloadSound: {fileID: 8300000, guid: b5839af999bb9484aaac9ea075c78178, type: 3}
   emptyGunSound: {fileID: 8300000, guid: 7d07df1ff48ffa344a07094b2c9cf86d, type: 3}
+  randoAudio: {fileID: 695156575}
+  gunshotVolume: 0.2
 --- !u!4 &8999005226407519937
 Transform:
   m_ObjectHideFlags: 0
@@ -5530,6 +5628,7 @@ MeshFilter:
 SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
+  - {fileID: 889149189}
   - {fileID: 627383478}
   - {fileID: 1474521816}
   - {fileID: 1380644932}
