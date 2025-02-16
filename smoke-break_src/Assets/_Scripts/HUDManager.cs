@@ -1,3 +1,4 @@
+using _Scripts.Player;
 using UnityEngine;
 using TMPro;
 using UnityEngine.UI;

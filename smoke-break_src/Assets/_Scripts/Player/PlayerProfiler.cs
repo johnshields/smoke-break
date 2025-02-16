@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-namespace _Scripts
+namespace _Scripts.Player
 {
     [RequireComponent(typeof(Rigidbody), typeof(Animator))]
     public class PlayerProfiler : MonoBehaviour

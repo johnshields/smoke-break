@@ -1,8 +1,8 @@
+using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using System.Collections;
 
-namespace _Scripts
+namespace _Scripts.Player
 {
     public class CombatProfiler : MonoBehaviour
     {

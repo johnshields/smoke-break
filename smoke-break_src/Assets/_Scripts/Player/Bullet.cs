@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace _Scripts
+namespace _Scripts.Player
 {
     public class Bullet : MonoBehaviour
     {

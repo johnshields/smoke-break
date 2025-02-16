@@ -1,9 +1,8 @@
 using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.Serialization;
 
-namespace _Scripts
+namespace _Scripts.Player
 {
     public class PistolProfiler : MonoBehaviour
     {
