@@ -37,7 +37,7 @@ namespace _Scripts.Player
         private float sprintMultiplier = 2f;
 
         private bool _isSprinting;
-        private InputAction _sprintAction;
+        private PlayerRespawner _respawner;
 
 
         [Header("Animation Parameters")] private int _speedHash;
@@ -50,6 +50,7 @@ namespace _Scripts.Player
             _speedHash = Animator.StringToHash("Speed");
             _animator.SetFloat(_speedHash, 0f);
             _animator.SetBool(Grounded, true);
+            _respawner = GetComponent<PlayerRespawner>();
 
             currentHealth = maxHealth;
             _actions = new InputControls();
@@ -61,20 +62,19 @@ namespace _Scripts.Player
         {
             _actions.Profiler.Enable();
             _moveKeys = _actions.Profiler.Movement;
-            _sprintAction = _actions.Profiler.Sprint;
 
             _actions.Profiler.Jump.performed += JumpAction;
             _actions.Profiler.Dodge.performed += DodgeAction;
-            _sprintAction.performed += StartSprinting;
-            _sprintAction.canceled += StopSprinting;
+            _actions.Profiler.Sprint.performed += StartSprinting;
+            _actions.Profiler.Sprint.canceled += StopSprinting;
         }
 
         private void OnDisable()
         {
             _actions.Profiler.Jump.performed -= JumpAction;
             _actions.Profiler.Dodge.performed -= DodgeAction;
-            _sprintAction.performed -= StartSprinting;
-            _sprintAction.canceled -= StopSprinting;
+            _actions.Profiler.Sprint.performed -= StartSprinting;
+            _actions.Profiler.Sprint.canceled -= StopSprinting;
             _actions.Profiler.Disable();
         }
 
@@ -192,14 +192,8 @@ namespace _Scripts.Player
             if (currentHealth <= 0)
             {
                 Debug.Log("💀 Kanta has died!");
-                Die();
+                _respawner.InitRespawn();
             }
-        }
-
-        private void Die()
-        {
-            Debug.Log("Kanta has died!");
-            // TODO: Add respawn or game over logic here
         }
 
         public float GetCurrentHealth()
@@ -210,6 +204,19 @@ namespace _Scripts.Player
         public void RestoreHealth(int itemValue)
         {
             currentHealth = Mathf.Clamp(currentHealth + itemValue, 0, maxHealth);
+        }
+
+        public void SetActions(bool active)
+        {
+            if (active)
+            {
+                _rigidbody.constraints = RigidbodyConstraints.None;
+                _rigidbody.constraints = RigidbodyConstraints.FreezeRotation;
+            }
+            else
+            {
+                _rigidbody.constraints = RigidbodyConstraints.FreezeAll;
+            }
         }
     }
 }

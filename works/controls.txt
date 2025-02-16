@@ -1,0 +1,32 @@
+LOOK
+mouse
+arrow keys
+right stick
+
+MOVEMENT
+WASD
+left stick
+
+SPRINT
+left shift
+button south - A/X
+
+JUMP
+spacebar
+button north - Y/△
+
+ATTACK
+right click
+right trigger - RT/R2
+
+AIM
+Q
+left shoulder - LB/L1
+
+SHOOT
+left click/F
+left trigger - LT/L2
+
+DODGE
+C
+button east - B/O

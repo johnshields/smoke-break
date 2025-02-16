@@ -38,11 +38,7 @@ namespace _Scripts
         private void UpdateHealth()
         {
             healthBar.value = _player.GetCurrentHealth();
-
-            if (_player.GetCurrentHealth() <= 0)
-            {
-                healthBar.fillRect.gameObject.SetActive(false);
-            }
+            healthBar.fillRect.gameObject.SetActive(!(_player.GetCurrentHealth() <= 0));
         }
     }
 }
