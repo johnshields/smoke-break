@@ -10,17 +10,10 @@ namespace _Scripts.AI
         private static readonly int IsAttacking = Animator.StringToHash("IsAttacking");
         private static readonly int Speed = Animator.StringToHash("Speed");
 
-        private enum AIState
-        {
-            Patrolling,
-            Chasing,
-            Attacking
-        }
-
-        private AIState _currentState = AIState.Patrolling;
-
         [Header("AI Settings")] [SerializeField]
         private float detectionRange = 15f;
+
+        private AIState _currentState = AIState.Patrolling;
 
         [SerializeField] private float attackRange = 2f;
         [SerializeField] private int attackDamage = 10;

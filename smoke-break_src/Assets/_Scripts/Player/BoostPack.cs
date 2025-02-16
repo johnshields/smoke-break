@@ -1,5 +1,7 @@
+using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.UI;
 
 namespace _Scripts.Player
 {
@@ -20,8 +22,6 @@ namespace _Scripts.Player
         [Header("Visual Effects")] [SerializeField]
         private ParticleSystem boostEffect;
 
-        [SerializeField] private TrailRenderer trailRenderer;
-
         [Header("Audio Settings")] [SerializeField]
         private AudioSource audioSource;
 
@@ -35,6 +35,9 @@ namespace _Scripts.Player
         private InputAction _moveInput;
         private Camera _mainCamera;
 
+        [Header("UI Settings")] [SerializeField]
+        private Slider boostBar;
+
         private void Awake()
         {
             _actions = new InputControls();
@@ -43,9 +46,6 @@ namespace _Scripts.Player
             _animator = GetComponent<Animator>();
             _moveInput = _actions.Profiler.Movement;
             _mainCamera = Camera.main;
-
-            if (trailRenderer != null)
-                trailRenderer.emitting = false;
         }
 
         private void OnEnable()
@@ -107,12 +107,11 @@ namespace _Scripts.Player
             if (audioSource != null && boostSound != null)
                 audioSource.PlayOneShot(boostSound, boostVolume);
 
-            if (trailRenderer != null)
-                trailRenderer.emitting = true;
+            if (boostBar != null)
+                StartCoroutine(UpdateBoostBar());
 
             Invoke(nameof(ApplyFastFall), 0.3f);
             Invoke(nameof(DisableEffects), 0.3f);
-            Invoke(nameof(ResetBoost), boostCooldown);
         }
 
         private Vector3 GetBoostDirection(Vector2 input)
@@ -133,18 +132,41 @@ namespace _Scripts.Player
             _rigidbody.velocity = new Vector3(_rigidbody.velocity.x, -fallMultiplier, _rigidbody.velocity.z);
         }
 
-        private void ResetBoost()
-        {
-            _canBoost = true;
-        }
-
         private void DisableEffects()
         {
             if (boostEffect != null)
                 boostEffect.Stop();
+        }
 
-            if (trailRenderer != null)
-                trailRenderer.emitting = false;
+        private IEnumerator UpdateBoostBar()
+        {
+            if (HUDManager.Instance is null) yield break;
+
+            HUDManager.Instance.FadeBoostUI(true);
+
+            for (float elapsedTime = 0; elapsedTime < boostCooldown; elapsedTime += Time.deltaTime)
+            {
+                var fillAmount = Mathf.Clamp01(1f - (elapsedTime / boostCooldown));
+                HUDManager.Instance.UpdateBoostBar(fillAmount);
+
+                if (fillAmount <= 0.15f)
+                {
+                    HUDManager.Instance.StartFlashing();
+                }
+
+                yield return null;
+            }
+
+            yield return new WaitForSeconds(0.5f);
+            _canBoost = true;
+
+            for (float elapsedTime = 0; elapsedTime < boostCooldown; elapsedTime += Time.deltaTime)
+            {
+                HUDManager.Instance.UpdateBoostBar(Mathf.Clamp01(elapsedTime / boostCooldown));
+                yield return null;
+            }
+
+            HUDManager.Instance.FadeBoostUI(false);
         }
     }
 }
