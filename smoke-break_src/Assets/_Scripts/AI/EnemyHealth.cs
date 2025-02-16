@@ -1,19 +1,21 @@
 using System.Collections;
 using UnityEngine;
 
-namespace _Scripts
+namespace _Scripts.AI
 {
     public class EnemyHealth : MonoBehaviour
     {
-        [Header("Health Settings")]
-        [SerializeField] private int health = 100;
+        [Header("Health Settings")] [SerializeField]
+        private int health = 100;
 
-        [Header("Hit Effect Settings")]
-        [SerializeField] private Color hitColor = Color.red;
+        [Header("Hit Effect Settings")] [SerializeField]
+        private Color hitColor = Color.red;
+
         [SerializeField] private float hitEffectDuration = 0.2f;
 
-        [Header("Knockback Settings")]
-        [SerializeField] private float knockbackForce = 5f;
+        [Header("Knockback Settings")] [SerializeField]
+        private float knockbackForce = 5f;
+
         [SerializeField] private float knockbackDuration = 0.2f;
 
         public Renderer enemyRenderer;
@@ -24,7 +26,7 @@ namespace _Scripts
         private void Start()
         {
             _rigidbody = GetComponent<Rigidbody>();
-            
+
             if (enemyRenderer != null)
                 _originalColor = enemyRenderer.material.color;
         }
@@ -32,7 +34,7 @@ namespace _Scripts
         public void TakeDamage(int damage, Vector3 hitDirection)
         {
             if (damage <= 0) return;
-            
+
             health -= damage;
             GetComponent<EnemyAI>()?.EnterChaseState();
 

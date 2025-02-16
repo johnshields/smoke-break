@@ -3,24 +3,31 @@ using _Scripts.Player;
 using UnityEngine;
 using UnityEngine.AI;
 
-namespace _Scripts
+namespace _Scripts.AI
 {
     public class EnemyAI : MonoBehaviour
     {
         private static readonly int IsAttacking = Animator.StringToHash("IsAttacking");
         private static readonly int Speed = Animator.StringToHash("Speed");
 
-        private enum AIState { Patrolling, Chasing, Attacking }
+        private enum AIState
+        {
+            Patrolling,
+            Chasing,
+            Attacking
+        }
+
         private AIState _currentState = AIState.Patrolling;
 
-        [Header("AI Settings")]
-        [SerializeField] private float detectionRange = 15f;
+        [Header("AI Settings")] [SerializeField]
+        private float detectionRange = 15f;
+
         [SerializeField] private float attackRange = 2f;
         [SerializeField] private int attackDamage = 10;
         [SerializeField] private float attackCooldown = 1.5f;
 
-        [Header("Patrolling Settings")]
-        [SerializeField] private float waypointTolerance = 1.5f;
+        [Header("Patrolling Settings")] [SerializeField]
+        private float waypointTolerance = 1.5f;
 
         private NavMeshAgent _agent;
         private Transform _player;
@@ -48,6 +55,7 @@ namespace _Scripts
                     {
                         _currentState = AIState.Chasing;
                     }
+
                     break;
                 case AIState.Chasing:
                     ChasePlayer(distanceToPlayer);
@@ -55,7 +63,7 @@ namespace _Scripts
                 case AIState.Attacking:
                     break;
             }
-            
+
             if (_currentState == AIState.Chasing && !_agent.pathPending && _agent.remainingDistance < 0.5f)
             {
                 _agent.SetDestination(_player.position);
@@ -71,21 +79,22 @@ namespace _Scripts
                 Vector3 randomPoint = GetRandomPoint(transform.position, 10f);
                 _agent.SetDestination(randomPoint);
             }
-            
+
             if (_agent.isStopped) _agent.isStopped = false;
 
             RotateTowards(_agent.steeringTarget);
         }
-        
+
         private Vector3 GetRandomPoint(Vector3 center, float range)
         {
             var randomPos = center + new Vector3(Random.Range(-range, range), 0, Random.Range(-range, range));
             NavMeshHit hit;
-            
+
             if (NavMesh.SamplePosition(randomPos, out hit, range, NavMesh.AllAreas))
             {
                 return hit.position;
             }
+
             return center;
         }
 
@@ -93,8 +102,8 @@ namespace _Scripts
         {
             if (distanceToPlayer <= attackRange && _canAttack)
             {
-                _agent.isStopped = true; 
-                _agent.velocity = Vector3.zero; 
+                _agent.isStopped = true;
+                _agent.velocity = Vector3.zero;
                 _currentState = AIState.Attacking;
                 StartCoroutine(AttackPlayer());
             }
@@ -102,7 +111,7 @@ namespace _Scripts
             {
                 if (_currentState != AIState.Attacking)
                 {
-                    _agent.isStopped = false; 
+                    _agent.isStopped = false;
                     _agent.SetDestination(_player.position);
                     RotateTowards(_player.position);
                 }
@@ -113,7 +122,7 @@ namespace _Scripts
                 }
             }
         }
-        
+
         private IEnumerator LosePlayerAfterDelay()
         {
             yield return new WaitForSeconds(3f);
@@ -122,10 +131,9 @@ namespace _Scripts
                 _currentState = AIState.Patrolling;
             }
         }
-        
+
         public void EnterChaseState()
         {
-            Debug.Log($"{gameObject.name} is now CHASING Kanta after being shot!");
             _currentState = AIState.Chasing;
         }
 
@@ -134,7 +142,7 @@ namespace _Scripts
             _canAttack = false;
             _animator.SetBool(IsAttacking, true);
 
-            yield return new WaitForSeconds(0.5f); 
+            yield return new WaitForSeconds(0.5f);
 
             if (Vector3.Distance(transform.position, _player.position) <= attackRange)
             {
@@ -158,7 +166,7 @@ namespace _Scripts
             }
             else
             {
-                StartCoroutine(AttackPlayer()); 
+                StartCoroutine(AttackPlayer());
             }
         }
 
@@ -166,7 +174,7 @@ namespace _Scripts
         private void RotateTowards(Vector3 targetPosition)
         {
             Vector3 direction = (targetPosition - transform.position).normalized;
-    
+
             if (direction == Vector3.zero) return;
 
             direction.y = 0;

@@ -11,42 +11,36 @@ namespace _Scripts.Player
         private static readonly int Jump = Animator.StringToHash("Jump");
         private static readonly int Dodge = Animator.StringToHash("Dodge");
 
-        [Header("References")] 
-        private Camera _mainCamera;
+        [Header("References")] private Camera _mainCamera;
         private Rigidbody _rigidbody;
         private Animator _animator;
         private InputControls _actions;
         private InputAction _moveKeys;
 
-        [Header("Health Settings")] 
-        [SerializeField] private int maxHealth = 100;
+        [Header("Health Settings")] public int maxHealth = 100;
+        public int currentHealth;
 
-        private int _currentHealth;
-
-        [Header("Movement Settings")] 
-        public float movementForce = 1f;
+        [Header("Movement Settings")] public float movementForce = 1f;
         private Vector3 _forceDirection = Vector3.zero;
         private const float MaxSpeed = 5f;
 
-        [Header("Jump Settings")] 
-        public bool grounded = true;
+        [Header("Jump Settings")] public bool grounded = true;
         public float jumpForce = 5f;
 
-        [Header("Dodge Settings")] 
-        public float dodgeDistance = 5f;
+        [Header("Dodge Settings")] public float dodgeDistance = 5f;
         public float dodgeDuration = 0.35f;
         private bool _canDodge = true;
         private bool _isDodging;
         public bool disableMovement;
 
-        [Header("Sprint Settings")] 
-        [SerializeField] private float sprintMultiplier = 2f;
+        [Header("Sprint Settings")] [SerializeField]
+        private float sprintMultiplier = 2f;
+
         private bool _isSprinting;
         private InputAction _sprintAction;
 
 
-        [Header("Animation Parameters")] 
-        private int _speedHash;
+        [Header("Animation Parameters")] private int _speedHash;
         private int _groundedHash;
 
         private void Awake()
@@ -57,7 +51,7 @@ namespace _Scripts.Player
             _animator.SetFloat(_speedHash, 0f);
             _animator.SetBool(Grounded, true);
 
-            _currentHealth = maxHealth;
+            currentHealth = maxHealth;
             _actions = new InputControls();
             _mainCamera = Camera.main;
             grounded = true;
@@ -193,25 +187,29 @@ namespace _Scripts.Player
         public void TakeDamage(int damage)
         {
             Debug.Log($"🔥 Kanta took {damage} damage!");
-            _currentHealth -= damage;
+            currentHealth -= damage;
 
-            if (_currentHealth <= 0)
+            if (currentHealth <= 0)
             {
                 Debug.Log("💀 Kanta has died!");
                 Die();
             }
         }
 
-
         private void Die()
         {
-            Debug.Log("Player has died!");
-            // Add respawn or game over logic here
+            Debug.Log("Kanta has died!");
+            // TODO: Add respawn or game over logic here
         }
 
         public float GetCurrentHealth()
         {
-            return _currentHealth;
+            return currentHealth;
+        }
+
+        public void RestoreHealth(int itemValue)
+        {
+            currentHealth = Mathf.Clamp(currentHealth + itemValue, 0, maxHealth);
         }
     }
 }

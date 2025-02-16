@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace _Scripts
 {
-    public class RandoAudio : MonoBehaviour
+    public class RandomAudio : MonoBehaviour
     {
         [Header("Gunshot Sounds")] [SerializeField]
         private List<AudioClip> pistolFireSounds; // ✅ Holds all pistol gunshot sounds

@@ -1,3 +1,4 @@
+using _Scripts.AI;
 using UnityEngine;
 
 namespace _Scripts.Player

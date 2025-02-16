@@ -7,8 +7,9 @@ namespace _Scripts
 {
     public class HUDManager : MonoBehaviour
     {
-        [Header("HUD Elements")]
-        [SerializeField] private TextMeshProUGUI bulletCounter;
+        [Header("HUD Elements")] [SerializeField]
+        private TextMeshProUGUI bulletCounter;
+
         [SerializeField] private Slider healthBar;
 
         private PistolProfiler _pistol;
@@ -18,7 +19,7 @@ namespace _Scripts
         {
             _pistol = FindObjectOfType<PistolProfiler>();
             _player = FindObjectOfType<PlayerProfiler>();
-            
+
             UpdateAmmo();
             UpdateHealth();
         }
@@ -37,6 +38,11 @@ namespace _Scripts
         private void UpdateHealth()
         {
             healthBar.value = _player.GetCurrentHealth();
+
+            if (_player.GetCurrentHealth() <= 0)
+            {
+                healthBar.fillRect.gameObject.SetActive(false);
+            }
         }
     }
 }

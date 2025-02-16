@@ -1,4 +1,5 @@
 using System.Collections;
+using _Scripts.AI;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -8,20 +9,21 @@ namespace _Scripts.Player
     {
         private static readonly int Attack = Animator.StringToHash("Attack");
 
-        [Header("Combat Settings")]
-        [SerializeField] private Transform attackPoint;
+        [Header("Combat Settings")] [SerializeField]
+        private Transform attackPoint;
+
         [SerializeField] private GameObject axe;
         [SerializeField] private float attackRange = 1.5f;
         [SerializeField] private int attackDamage = 25;
         [SerializeField] private LayerMask enemyLayers;
 
-        [Header("Combat Timings")]
-        private const float AttackCooldown = 0.5f;
+        [Header("Combat Timings")] private const float AttackCooldown = 0.5f;
         private const float WeaponHideTime = 5f;
         private const float AttackDelay = 0.5f;
-        
-        [Header("Audio Settings")]
-        [SerializeField] private AudioSource audioSource;
+
+        [Header("Audio Settings")] [SerializeField]
+        private AudioSource audioSource;
+
         [SerializeField] private AudioClip axeSwingSound;
 
         private Animator _animator;
@@ -70,10 +72,10 @@ namespace _Scripts.Player
         {
             _canAttack = false;
             _player.disableMovement = true;
-            _animator.SetTrigger(Attack); 
+            _animator.SetTrigger(Attack);
             audioSource.PlayOneShot(axeSwingSound);
             yield return new WaitForSeconds(AttackDelay);
-            
+
             Collider[] hitEnemies = Physics.OverlapSphere(attackPoint.position, attackRange, enemyLayers);
             foreach (var enemy in hitEnemies)
             {

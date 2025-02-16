@@ -21,23 +21,62 @@ namespace _Scripts
 
         private Transform _player;
         private Vector3 _startPosition;
+        private PlayerProfiler _playerHealth;
+        private PistolProfiler _pistol;
 
         private void Start()
         {
             _player = GameObject.FindGameObjectWithTag("Player")?.transform;
+            if (_player is not null)
+            {
+                _pistol = _player.GetComponentInParent<PistolProfiler>();
+                _playerHealth = _player.GetComponentInParent<PlayerProfiler>();
+            }
+
             _startPosition = transform.position;
         }
 
         private void Update()
         {
             transform.Rotate(Vector3.up, rotationSpeed * Time.deltaTime);
-            
+
             float newY = _startPosition.y + Mathf.Sin(Time.time * bounceSpeed) * bounceHeight;
             transform.position = new Vector3(transform.position.x, newY, transform.position.z);
-            
-            if (_player != null && Vector3.Distance(transform.position, _player.position) <= magnetRange)
+
+            if (_player is not null &&
+                Vector3.Distance(transform.position, _player.position) <= magnetRange &&
+                ShouldAttract())
+            {
                 transform.position =
                     Vector3.MoveTowards(transform.position, _player.position, magnetSpeed * Time.deltaTime);
+            }
+        }
+
+        private bool ShouldAttract()
+        {
+            switch (itemType)
+            {
+                case ItemType.Health:
+                    if (_playerHealth is not null)
+                    {
+                        return _playerHealth.currentHealth < _playerHealth.maxHealth;
+                    }
+
+                    break;
+
+                case ItemType.Ammo:
+                    if (_pistol is not null)
+                    {
+                        return _pistol.storedAmmo < _pistol.maxStoredAmmo;
+                    }
+
+                    break;
+
+                default:
+                    return true;
+            }
+
+            return true;
         }
 
         private void OnTriggerEnter(Collider other)
@@ -45,9 +84,10 @@ namespace _Scripts
             switch (itemType)
             {
                 case ItemType.Health:
-                    if (other.TryGetComponent(out PlayerProfiler playerHealth))
+                    if (other.TryGetComponent(out PlayerProfiler playerHealth) &&
+                        playerHealth.currentHealth < playerHealth.maxHealth)
                     {
-                        //playerHealth.RestoreHealth(itemValue);
+                        playerHealth.RestoreHealth(itemValue);
                         PlayPickupSound();
                         Destroy(gameObject);
                     }
@@ -55,7 +95,8 @@ namespace _Scripts
                     break;
 
                 case ItemType.Ammo:
-                    if (other.TryGetComponent(out PistolProfiler pistol) && pistol.storedAmmo < pistol.maxStoredAmmo)
+                    if (other.TryGetComponent(out PistolProfiler pistol) &&
+                        pistol.storedAmmo < pistol.maxStoredAmmo)
                     {
                         pistol.RefillAmmo(itemValue);
                         PlayPickupSound();

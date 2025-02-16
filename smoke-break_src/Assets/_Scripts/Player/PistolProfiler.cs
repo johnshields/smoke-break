@@ -1,6 +1,7 @@
 using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.Serialization;
 
 namespace _Scripts.Player
 {
@@ -8,21 +9,22 @@ namespace _Scripts.Player
     {
         private static readonly int ShootHash = Animator.StringToHash("Shoot");
 
-        [Header("Pistol Settings")] 
-        [SerializeField] private GameObject bulletPrefab;
+        [Header("Pistol Settings")] [SerializeField]
+        private GameObject bulletPrefab;
+
         [SerializeField] private Transform firePoint;
         [SerializeField] private float bulletSpeed = 20f;
         [SerializeField] private float fireRate = 0.3f;
 
-        [Header("Ammo Settings")] 
-        [SerializeField] private int maxClipSize = 10;
+        [Header("Ammo Settings")] [SerializeField]
+        private int maxClipSize = 10;
+
         [SerializeField] public int maxStoredAmmo = 99;
         [SerializeField] public int currentClipAmmo;
         [SerializeField] public int storedAmmo;
         [SerializeField] private bool unlimitedAmmo;
 
-        [Header("Effects")] 
-        [SerializeField] private GameObject muzzleFlashPrefab;
+        [Header("Effects")] [SerializeField] private GameObject muzzleFlashPrefab;
         [SerializeField] private GameObject worldCrosshairPrefab;
         private Renderer _crosshairRenderer;
         [SerializeField] private Color defaultCrosshairColor = Color.white;
@@ -33,8 +35,9 @@ namespace _Scripts.Player
         private const float WeaponHideTime = 5f;
         private float _lastActionTime;
 
-        [Header("Aiming Settings")] 
-        [SerializeField] private Camera playerCamera;
+        [Header("Aiming Settings")] [SerializeField]
+        private Camera playerCamera;
+
         [SerializeField] private float aimFOV = 40f;
         [SerializeField] private float normalFOV = 60f;
         [SerializeField] private float aimSpeed = 10f;
@@ -42,12 +45,16 @@ namespace _Scripts.Player
         [SerializeField] private float crosshairHeightOffset = 0.2f;
         [SerializeField] private LayerMask aimableLayers;
 
-        [Header("Audio Settings")] 
-        [SerializeField] private AudioSource audioSource;
+        [Header("Audio Settings")] [SerializeField]
+        private AudioSource audioSource;
+
         [SerializeField] private AudioClip gunshotSound;
         [SerializeField] private AudioClip reloadSound;
         [SerializeField] private AudioClip emptyGunSound;
-        [SerializeField] private RandoAudio randoAudio; // ✅ Handles random gunshot sounds
+
+        [FormerlySerializedAs("randoAudio")] [SerializeField]
+        private RandomAudio randomAudio; // ✅ Handles random gunshot sounds
+
         [SerializeField] private float gunshotVolume = 1.0f;
 
 
@@ -133,7 +140,7 @@ namespace _Scripts.Player
             if (enemiesInRange.Length > 0)
             {
                 Transform closestEnemy = FindClosestEnemy(enemiesInRange);
-                if (closestEnemy != null)
+                if (closestEnemy is not null)
                 {
                     Vector3 enemyCenter = closestEnemy.position + Vector3.up * crosshairHeightOffset;
                     Vector3 directionToPlayer = (playerCamera.transform.position - enemyCenter).normalized;
@@ -191,7 +198,7 @@ namespace _Scripts.Player
         {
             if (currentClipAmmo <= 0 && storedAmmo <= 0)
             {
-                Debug.Log("Clip Empty! Need to reload!");
+                Debug.Log("Ammo Empty!");
                 audioSource.PlayOneShot(emptyGunSound);
                 return;
             }
@@ -201,27 +208,17 @@ namespace _Scripts.Player
             _player.disableMovement = true;
             _lastActionTime = Time.time;
             pistol.SetActive(true);
-            currentClipAmmo--;
 
             _canShoot = false;
             _animator.SetTrigger(ShootHash);
             StartCoroutine(ShootWithDelay());
         }
 
-        private void PlayRandomGunshot()
-        {
-            audioSource.Stop();
-            AudioClip randomClip = randoAudio.GetRandomClip("Sounds/Pistol/");
-            if (randomClip != null)
-            {
-                audioSource.PlayOneShot(randomClip, gunshotVolume);
-            }
-        }
-
         private IEnumerator ShootWithDelay()
         {
             yield return new WaitForSeconds(0.5f);
 
+            currentClipAmmo--;
             PlayRandomGunshot();
             GameObject muzzleFlash = Instantiate(muzzleFlashPrefab, firePoint.position, firePoint.rotation);
             Destroy(muzzleFlash, 0.1f);
@@ -246,13 +243,22 @@ namespace _Scripts.Player
             _player.disableMovement = false;
         }
 
+        private void PlayRandomGunshot()
+        {
+            audioSource.Stop();
+            AudioClip randomClip = randomAudio.GetRandomClip("Sounds/Pistol/");
+            if (randomClip != null)
+            {
+                audioSource.PlayOneShot(randomClip, gunshotVolume);
+            }
+        }
+
         private IEnumerator Reload()
         {
             if (_isReloading || storedAmmo <= 0 || currentClipAmmo == maxClipSize)
                 yield break;
 
             _isReloading = true;
-            Debug.Log("🔄 Auto-reloading...");
 
             yield return new WaitForSeconds(1f);
 
@@ -263,7 +269,6 @@ namespace _Scripts.Player
             currentClipAmmo += ammoToLoad;
             storedAmmo -= ammoToLoad;
 
-            Debug.Log($"🔋 Reload Complete! Ammo: {currentClipAmmo}/{storedAmmo}");
             _isReloading = false;
             _canShoot = true;
         }
