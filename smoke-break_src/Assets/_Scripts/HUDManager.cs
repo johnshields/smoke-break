@@ -2,6 +2,7 @@ using _Scripts.Player;
 using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
+using System.Collections;
 
 namespace _Scripts
 {
@@ -11,6 +12,7 @@ namespace _Scripts
         private TextMeshProUGUI bulletCounter;
 
         [SerializeField] private Slider healthBar;
+        [SerializeField] private GameObject deathText;
 
         private PistolProfiler _pistol;
         private PlayerProfiler _player;
@@ -39,6 +41,19 @@ namespace _Scripts
         {
             healthBar.value = _player.GetCurrentHealth();
             healthBar.fillRect.gameObject.SetActive(!(_player.GetCurrentHealth() <= 0));
+        }
+
+        public void ShowDeathMessage()
+        {
+            deathText.SetActive(true);
+
+            StartCoroutine(HideDeathMessageAfterDelay());
+        }
+
+        private IEnumerator HideDeathMessageAfterDelay()
+        {
+            yield return new WaitForSeconds(4.5f);
+            deathText.SetActive(false);
         }
     }
 }

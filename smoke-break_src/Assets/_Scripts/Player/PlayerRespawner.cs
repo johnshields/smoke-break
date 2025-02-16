@@ -11,6 +11,7 @@ namespace _Scripts.Player
         private float respawnDelay = 3f;
 
         [SerializeField] private Transform respawnPoint;
+        [SerializeField] private HUDManager hudManager;
 
         private PlayerProfiler _player;
         private CombatProfiler _combatProfiler;
@@ -28,6 +29,7 @@ namespace _Scripts.Player
         public void InitRespawn()
         {
             _animator.SetTrigger(Fall);
+            hudManager.GetComponent<HUDManager>().ShowDeathMessage();
             DisablePlayerActions();
             StartCoroutine(Respawn());
         }

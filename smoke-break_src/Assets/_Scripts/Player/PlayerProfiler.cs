@@ -56,6 +56,8 @@ namespace _Scripts.Player
             _actions = new InputControls();
             _mainCamera = Camera.main;
             grounded = true;
+
+            //if (currentHealth <= 0) _respawner.InitRespawn();
         }
 
         private void OnEnable()
@@ -189,11 +191,7 @@ namespace _Scripts.Player
             Debug.Log($"🔥 Kanta took {damage} damage!");
             currentHealth -= damage;
 
-            if (currentHealth <= 0)
-            {
-                Debug.Log("💀 Kanta has died!");
-                _respawner.InitRespawn();
-            }
+            if (currentHealth <= 0) _respawner.InitRespawn();
         }
 
         public float GetCurrentHealth()
