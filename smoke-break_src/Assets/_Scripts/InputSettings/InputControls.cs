@@ -107,6 +107,15 @@ public partial class @InputControls: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Boost"",
+                    ""type"": ""Button"",
+                    ""id"": ""b4315747-f211-4865-80ee-735c751054c0"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -406,6 +415,28 @@ public partial class @InputControls: IInputActionCollection2, IDisposable
                     ""action"": ""Sprint"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""bf8222f8-4f0d-4b6a-8489-ff53990b067e"",
+                    ""path"": ""<Gamepad>/rightShoulder"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Boost"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""a29a36fe-31ba-45e8-a724-2f2a39bd09fa"",
+                    ""path"": ""<Keyboard>/b"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Boost"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -440,6 +471,7 @@ public partial class @InputControls: IInputActionCollection2, IDisposable
         m_Profiler_Shoot = m_Profiler.FindAction("Shoot", throwIfNotFound: true);
         m_Profiler_Aim = m_Profiler.FindAction("Aim", throwIfNotFound: true);
         m_Profiler_Sprint = m_Profiler.FindAction("Sprint", throwIfNotFound: true);
+        m_Profiler_Boost = m_Profiler.FindAction("Boost", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -510,6 +542,7 @@ public partial class @InputControls: IInputActionCollection2, IDisposable
     private readonly InputAction m_Profiler_Shoot;
     private readonly InputAction m_Profiler_Aim;
     private readonly InputAction m_Profiler_Sprint;
+    private readonly InputAction m_Profiler_Boost;
     public struct ProfilerActions
     {
         private @InputControls m_Wrapper;
@@ -523,6 +556,7 @@ public partial class @InputControls: IInputActionCollection2, IDisposable
         public InputAction @Shoot => m_Wrapper.m_Profiler_Shoot;
         public InputAction @Aim => m_Wrapper.m_Profiler_Aim;
         public InputAction @Sprint => m_Wrapper.m_Profiler_Sprint;
+        public InputAction @Boost => m_Wrapper.m_Profiler_Boost;
         public InputActionMap Get() { return m_Wrapper.m_Profiler; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -559,6 +593,9 @@ public partial class @InputControls: IInputActionCollection2, IDisposable
             @Sprint.started += instance.OnSprint;
             @Sprint.performed += instance.OnSprint;
             @Sprint.canceled += instance.OnSprint;
+            @Boost.started += instance.OnBoost;
+            @Boost.performed += instance.OnBoost;
+            @Boost.canceled += instance.OnBoost;
         }
 
         private void UnregisterCallbacks(IProfilerActions instance)
@@ -590,6 +627,9 @@ public partial class @InputControls: IInputActionCollection2, IDisposable
             @Sprint.started -= instance.OnSprint;
             @Sprint.performed -= instance.OnSprint;
             @Sprint.canceled -= instance.OnSprint;
+            @Boost.started -= instance.OnBoost;
+            @Boost.performed -= instance.OnBoost;
+            @Boost.canceled -= instance.OnBoost;
         }
 
         public void RemoveCallbacks(IProfilerActions instance)
@@ -627,5 +667,6 @@ public partial class @InputControls: IInputActionCollection2, IDisposable
         void OnShoot(InputAction.CallbackContext context);
         void OnAim(InputAction.CallbackContext context);
         void OnSprint(InputAction.CallbackContext context);
+        void OnBoost(InputAction.CallbackContext context);
     }
 }
