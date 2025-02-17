@@ -380,9 +380,6 @@ MonoBehaviour:
   bulletCounter: {fileID: 2131736053}
   healthBar: {fileID: 326996925}
   deathText: {fileID: 1129731415}
-  boostBar: {fileID: 981871452}
-  boostFill: {fileID: 831087190}
-  flashColor: {r: 0.53333336, g: 0, b: 0, a: 1}
 --- !u!1 &326996923
 GameObject:
   m_ObjectHideFlags: 0
@@ -10091,7 +10088,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 10303, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: efc1d4de2fba53243b0b1596c5fd6a53, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -11810,7 +11807,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 7987311750124799592, guid: a64667a5e28bb84409e52fe5768df868, type: 3}
+  - {fileID: 2100000, guid: efc1d4de2fba53243b0b1596c5fd6a53, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -12116,6 +12113,8 @@ MonoBehaviour:
   boostSound: {fileID: 8300000, guid: 799f2fc16f4cf4343be9b1753bc5ef07, type: 3}
   boostVolume: 0.2
   boostBar: {fileID: 981871452}
+  boostFill: {fileID: 831087190}
+  flashColor: {r: 0.5568628, g: 0, b: 0, a: 1}
 --- !u!96 &8969635528611299096
 TrailRenderer:
   serializedVersion: 3
