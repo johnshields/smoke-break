@@ -29,6 +29,9 @@ namespace _Scripts.UI
 
         private void Awake()
         {
+            Cursor.lockState = CursorLockMode.Locked;
+            Cursor.visible = false;
+
             _actions = new InputControls();
             _actions.UI.Pause.performed += TogglePause;
             _actions.UI.Navigate.performed += NavigateMenu;

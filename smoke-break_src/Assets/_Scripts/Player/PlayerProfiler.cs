@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -6,6 +7,8 @@ namespace _Scripts.Player
     [RequireComponent(typeof(Rigidbody), typeof(Animator))]
     public class PlayerProfiler : MonoBehaviour
     {
+        [Header("Animation Parameters")] private int _speedHash;
+        private int _groundedHash;
         private static readonly int Grounded = Animator.StringToHash("Grounded");
         private static readonly int Speed = Animator.StringToHash("Speed");
         private static readonly int Jump = Animator.StringToHash("Jump");
@@ -32,6 +35,7 @@ namespace _Scripts.Player
         private bool _canDodge = true;
         private bool _isDodging;
         public bool disableMovement;
+        public float staggerDuration = 0.5f;
 
         [Header("Sprint Settings")] [SerializeField]
         private float sprintMultiplier = 2f;
@@ -39,9 +43,12 @@ namespace _Scripts.Player
         private bool _isSprinting;
         private PlayerRespawner _respawner;
 
+        [Header("Audio Settings")] [SerializeField]
+        private AudioSource audioSource;
 
-        [Header("Animation Parameters")] private int _speedHash;
-        private int _groundedHash;
+        [SerializeField] private AudioClip staggerSound;
+        [SerializeField] private AudioClip jumpSound;
+
 
         private void Awake()
         {
@@ -142,6 +149,7 @@ namespace _Scripts.Player
 
         private void DelayedJump()
         {
+            audioSource.PlayOneShot(jumpSound);
             _rigidbody.velocity = new Vector3(_rigidbody.velocity.x, 0, _rigidbody.velocity.z);
             _rigidbody.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
         }
@@ -191,7 +199,24 @@ namespace _Scripts.Player
             Debug.Log($"🔥 Kanta took {damage} damage!");
             currentHealth -= damage;
 
+            StartCoroutine(StaggerEffect());
+
             if (currentHealth <= 0) _respawner.InitRespawn();
+        }
+
+        private IEnumerator StaggerEffect()
+        {
+            audioSource.PlayOneShot(staggerSound);
+
+            var originalMovementForce = movementForce;
+            movementForce = 0.5f;
+
+            var knockback = -transform.forward * 20f;
+            _rigidbody.AddForce(knockback, ForceMode.Impulse);
+
+            yield return new WaitForSeconds(staggerDuration);
+
+            movementForce = originalMovementForce;
         }
 
         public float GetCurrentHealth()
