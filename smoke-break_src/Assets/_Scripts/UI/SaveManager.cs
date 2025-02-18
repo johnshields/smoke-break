@@ -16,7 +16,7 @@ namespace _Scripts.UI
             PlayerPrefs.SetString("CurrentLevel", UnityEngine.SceneManagement.SceneManager.GetActiveScene().name);
 
             PlayerPrefs.Save();
-            Debug.Log("Game Saved!");
+            Debug.Log("💾 Game Saved!");
         }
 
         public static void LoadGame(PlayerProfiler player, PistolProfiler pistol)
@@ -33,6 +33,7 @@ namespace _Scripts.UI
             player.RestoreHealth(PlayerPrefs.GetInt("PlayerHealth"));
             PlayerPrefs.SetInt("ClipAmmo", pistol.currentClipAmmo);
             PlayerPrefs.SetInt("StoredAmmo", pistol.storedAmmo);
+            PlayerPrefs.SetString("CurrentLevel", UnityEngine.SceneManagement.SceneManager.GetActiveScene().name);
 
             Debug.Log("Game Loaded!");
         }

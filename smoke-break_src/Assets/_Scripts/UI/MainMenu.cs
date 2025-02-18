@@ -5,16 +5,20 @@ using UnityEngine.InputSystem;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using UnityEngine.EventSystems;
+using System.Collections;
 
 namespace _Scripts.UI
 {
     public class MainMenu : MonoBehaviour
     {
-        [Header("UI Elements")] public GameObject controlsPanel;
-        public Button startGameButton;
-        public Button controlsButton, loadButton, returnButton, quitButton;
-        public TextMeshProUGUI startButtonText;
-        public TextMeshProUGUI controlsButtonText, loadButtonText, returnButtonText, quitButtonText;
+        [Header("UI Elements")] [SerializeField]
+        private GameObject mainMenuPanel, controlsPanel;
+
+        [Header("Buttons")] [SerializeField] private Button startGameButton;
+        [SerializeField] private Button loadButton;
+        [SerializeField] private Button controlsButton;
+        [SerializeField] private Button returnButton;
+        [SerializeField] private Button quitButton;
 
         [Header("Highlight Settings")] [SerializeField]
         private Color highlightColor = Color.green;
@@ -22,11 +26,11 @@ namespace _Scripts.UI
         [SerializeField] private Color defaultColor = Color.white;
 
         private InputControls _actions;
-        private int _currentButtonIndex;
-        private Button[] _buttons;
-        private Image[] _buttonImages;
-        private TextMeshProUGUI[] _texts;
-        private TextMeshProUGUI[] _buttonTexts;
+
+        private int _currentButtonIndex = 0;
+        private Button[] _menuButtons;
+        private Button[] _controlButtons;
+        private Button[] _currentButtons;
 
         private void Awake()
         {
@@ -34,37 +38,74 @@ namespace _Scripts.UI
             _actions.UI.Navigate.performed += NavigateMenu;
             _actions.UI.Submit.performed += SelectButton;
 
-            _buttons = new Button[] { startGameButton, loadButton, controlsButton, returnButton, quitButton };
-            _buttonImages = new Image[_buttons.Length];
-            _texts = new TextMeshProUGUI[]
-                { startButtonText, loadButtonText, controlsButtonText, returnButtonText, quitButtonText };
-            _buttonTexts = new TextMeshProUGUI[_texts.Length];
+            _menuButtons = new Button[] { startGameButton, loadButton, controlsButton, quitButton };
+            _controlButtons = new Button[] { returnButton };
+            _currentButtons = _menuButtons;
 
-            for (int i = 0; i < _buttons.Length; i++)
-            {
-                _buttonImages[i] = _buttons[i].GetComponent<Image>();
-                _buttonTexts[i] = _texts[i].GetComponent<TextMeshProUGUI>();
-            }
+            _currentButtons = _menuButtons;
+            _currentButtonIndex = 0;
+            UpdateButtonSelection();
         }
 
         private void OnEnable()
         {
             _actions.UI.Enable();
-            startGameButton.onClick.AddListener(StartGame);
-            loadButton.onClick.AddListener(LoadGame);
-            controlsButton.onClick.AddListener(OpenControls);
-            returnButton.onClick.AddListener(ReturnButton);
-            quitButton.onClick.AddListener(QuitGame);
-
-            _currentButtonIndex = 0; // Start with first button selected
-            UpdateButtonSelection();
+            AssignButtonActions();
         }
 
         private void OnDisable()
         {
-            _actions.UI.Navigate.performed -= NavigateMenu;
-            _actions.UI.Submit.performed -= SelectButton;
             _actions.UI.Disable();
+            RemoveButtonActions();
+        }
+
+        private void StartGame()
+        {
+            Debug.Log("▶️ Starting New Game...");
+            SaveManager.ResetGame();
+            SceneManager.LoadScene("SampleScene");
+        }
+
+        private void LoadGame()
+        {
+            Debug.Log("▶️ Loading Game...");
+            SaveManager.LoadGame(FindObjectOfType<PlayerProfiler>(), FindObjectOfType<PistolProfiler>());
+            SceneManager.LoadScene(PlayerPrefs.GetString("CurrentLevel"));
+        }
+
+        private void OpenControls()
+        {
+            mainMenuPanel.SetActive(false);
+            controlsPanel.SetActive(true);
+
+            _currentButtons = _controlButtons;
+            _currentButtonIndex = 0;
+
+            StartCoroutine(DelayedSelection());
+        }
+
+        private void ReturnToMainMenu()
+        {
+            Debug.Log("↩️ Returning to Main Menu...");
+            controlsPanel.SetActive(false);
+            mainMenuPanel.SetActive(true);
+
+            _currentButtons = _menuButtons;
+            _currentButtonIndex = 0;
+
+            StartCoroutine(DelayedSelection());
+        }
+
+        private IEnumerator DelayedSelection()
+        {
+            yield return new WaitForSecondsRealtime(0.1f);
+            UpdateButtonSelection();
+        }
+
+        private void QuitGame()
+        {
+            Debug.Log("🚪 Quitting Game...");
+            Application.Quit();
         }
 
         private void NavigateMenu(InputAction.CallbackContext context)
@@ -73,52 +114,71 @@ namespace _Scripts.UI
             if (direction > 0) _currentButtonIndex--;
             else if (direction < 0) _currentButtonIndex++;
 
-            _currentButtonIndex = Mathf.Clamp(_currentButtonIndex, 0, _buttons.Length - 1);
+            _currentButtonIndex = Mathf.Clamp(_currentButtonIndex, 0, _currentButtons.Length - 1);
             UpdateButtonSelection();
-        }
-
-        private void UpdateButtonSelection()
-        {
-            for (int i = 0; i < _buttons.Length; i++)
-            {
-                _buttonImages[i].color = (i == _currentButtonIndex) ? highlightColor : defaultColor;
-                _buttonTexts[i].color = (i == _currentButtonIndex) ? defaultColor : highlightColor;
-            }
-
-            EventSystem.current.SetSelectedGameObject(_buttons[_currentButtonIndex].gameObject);
-            _buttons[_currentButtonIndex].Select();
         }
 
         private void SelectButton(InputAction.CallbackContext context)
         {
-            _buttons[_currentButtonIndex].onClick.Invoke();
+            EventSystem.current.SetSelectedGameObject(_currentButtons[_currentButtonIndex].gameObject);
+            Button selectedButton = _currentButtons[_currentButtonIndex];
+
+            Debug.Log($"🎯 Selected: {selectedButton.name}");
+
+            if (selectedButton == startGameButton)
+            {
+                StartGame();
+            }
+            else if (selectedButton == loadButton)
+            {
+                LoadGame();
+            }
+            else if (selectedButton == controlsButton)
+            {
+                OpenControls();
+            }
+            else if (selectedButton == returnButton)
+            {
+                ReturnToMainMenu();
+            }
+            else if (selectedButton == quitButton)
+            {
+                QuitGame();
+            }
         }
 
-        private void StartGame()
+        private void UpdateButtonSelection()
         {
-            Debug.Log("▶️ Starting Game...");
-            SceneManager.LoadScene("SampleScene");
+            for (int i = 0; i < _currentButtons.Length; i++)
+            {
+                Image buttonImage = _currentButtons[i].GetComponent<Image>();
+                TextMeshProUGUI buttonText = _currentButtons[i].GetComponentInChildren<TextMeshProUGUI>();
+
+                if (buttonImage is not null)
+                    buttonImage.color = (i == _currentButtonIndex) ? highlightColor : defaultColor;
+                if (buttonText is not null)
+                    buttonText.color = (i == _currentButtonIndex) ? defaultColor : highlightColor;
+            }
+
+            _currentButtons[_currentButtonIndex].Select();
         }
 
-        private void LoadGame()
+        private void AssignButtonActions()
         {
-            SaveManager.LoadGame(FindObjectOfType<PlayerProfiler>(), FindObjectOfType<PistolProfiler>());
+            startGameButton.onClick.AddListener(StartGame);
+            loadButton.onClick.AddListener(LoadGame);
+            controlsButton.onClick.AddListener(OpenControls);
+            returnButton.onClick.AddListener(ReturnToMainMenu);
+            quitButton.onClick.AddListener(QuitGame);
         }
 
-        private void OpenControls()
+        private void RemoveButtonActions()
         {
-            controlsPanel.SetActive(true);
-        }
-
-        private void ReturnButton()
-        {
-            controlsPanel.SetActive(false);
-        }
-
-        private void QuitGame()
-        {
-            Debug.Log("Quiting Game");
-            Application.Quit();
+            startGameButton.onClick.RemoveAllListeners();
+            loadButton.onClick.RemoveAllListeners();
+            controlsButton.onClick.RemoveAllListeners();
+            returnButton.onClick.RemoveAllListeners();
+            quitButton.onClick.RemoveAllListeners();
         }
     }
 }

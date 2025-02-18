@@ -20,6 +20,7 @@ namespace _Scripts.Player
         private Animator _animator;
         private InputControls _actions;
         private InputAction _moveKeys;
+        private PistolProfiler _pistol;
 
         [Header("Health Settings")] public int maxHealth = 100;
         public int currentHealth;
@@ -59,14 +60,20 @@ namespace _Scripts.Player
             _animator.SetFloat(_speedHash, 0f);
             _animator.SetBool(Grounded, true);
             _respawner = GetComponent<PlayerRespawner>();
+            _pistol = GetComponent<PistolProfiler>();
 
-            currentHealth = maxHealth;
             _actions = new InputControls();
             _mainCamera = Camera.main;
             grounded = true;
 
             //if (currentHealth <= 0) _respawner.InitRespawn();
         }
+
+        private void Start()
+        {
+            SaveManager.LoadGame(this, _pistol);
+        }
+
 
         private void OnEnable()
         {
@@ -222,7 +229,7 @@ namespace _Scripts.Player
             movementForce = originalMovementForce;
         }
 
-        public float GetCurrentHealth()
+        public int GetCurrentHealth()
         {
             return currentHealth;
         }
