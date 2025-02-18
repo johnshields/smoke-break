@@ -1,32 +1,17 @@
-LOOK
-mouse
-arrow keys
-right stick
+LOOK:        mouse/arrow keys    right stick  
 
-MOVEMENT
-WASD
-left stick
+MOVEMENT:    WASD                left stick  
 
-SPRINT
-left shift
-button south - A/X
+SPRINT:      left shift          RB/R1  
 
-JUMP
-spacebar
-button north - Y/△
+JUMP:        spacebar            A/X 
 
-ATTACK
-right click
-right trigger - RT/R2
+BOOST:       spacebar (double)   A/X (double)  
 
-AIM
-Q
-left shoulder - LB/L1
+DODGE:       C            	      B/O  
 
-SHOOT
-left click/F
-left trigger - LT/L2
+ATTACK:      right click         RT/R2  
 
-DODGE
-C
-button east - B/O
+AIM:         Q            	      LB/L1  
+
+SHOOT:       left click/F        LT/L2  

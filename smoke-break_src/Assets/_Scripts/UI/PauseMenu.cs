@@ -7,12 +7,14 @@ namespace _Scripts.UI
 {
     public class PauseMenu : MonoBehaviour
     {
-        [Header("UI Elements")] [SerializeField]
-        private GameObject pauseMenuUI;
-
+        [Header("UI Elements")] public GameObject pausePanel, controlsPanel;
+        [SerializeField] private GameObject pauseMenuUI;
         [SerializeField] private Button resumeButton;
+        [SerializeField] private Button controlsButton;
         [SerializeField] private Button settingsButton;
+        [SerializeField] private Button returnButton;
         [SerializeField] private Button quitButton;
+
 
         [Header("Highlight Settings")] [SerializeField]
         private Color highlightColor = Color.green;
@@ -32,7 +34,7 @@ namespace _Scripts.UI
             _actions.UI.Navigate.performed += NavigateMenu;
             _actions.UI.Submit.performed += SelectButton;
 
-            _buttons = new Button[] { resumeButton, settingsButton, quitButton };
+            _buttons = new Button[] { resumeButton, controlsButton, settingsButton, returnButton, quitButton };
             _buttonImages = new Image[_buttons.Length];
 
             for (int i = 0; i < _buttons.Length; i++)
@@ -45,7 +47,9 @@ namespace _Scripts.UI
         {
             _actions.UI.Enable();
             resumeButton.onClick.AddListener(ResumeGame);
+            controlsButton.onClick.AddListener(OpenControls);
             settingsButton.onClick.AddListener(OpenSettings);
+            returnButton.onClick.AddListener(ReturnButton);
             quitButton.onClick.AddListener(QuitGame);
         }
 
@@ -84,9 +88,21 @@ namespace _Scripts.UI
             Cursor.visible = false;
         }
 
+        private void OpenControls()
+        {
+            pausePanel.SetActive(false);
+            controlsPanel.SetActive(true);
+        }
+
         private void OpenSettings()
         {
             Debug.Log("⚙️ Open Settings (Not Implemented Yet)");
+        }
+
+        private void ReturnButton()
+        {
+            pausePanel.SetActive(true);
+            controlsPanel.SetActive(false);
         }
 
         private void QuitGame()
@@ -111,7 +127,7 @@ namespace _Scripts.UI
             for (int i = 0; i < _buttons.Length; i++)
             {
                 _buttonImages[i].color =
-                    (i == _currentButtonIndex) ? highlightColor : defaultColor; // ✅ Change Image color
+                    (i == _currentButtonIndex) ? highlightColor : defaultColor;
             }
 
             EventSystem.current.SetSelectedGameObject(_buttons[_currentButtonIndex].gameObject);
