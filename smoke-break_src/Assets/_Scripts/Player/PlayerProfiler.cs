@@ -1,4 +1,5 @@
 using System.Collections;
+using _Scripts.UI;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -138,10 +139,9 @@ namespace _Scripts.Player
 
         private void JumpAction(InputAction.CallbackContext context)
         {
-            if (!grounded) return;
+            if (!grounded && disableMovement) return;
 
             grounded = false;
-
             _animator.SetBool(Grounded, false);
             _animator.SetTrigger(Jump);
             Invoke(nameof(DelayedJump), 0.2f);

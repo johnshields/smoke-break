@@ -1,3 +1,5 @@
+using _Scripts.Player;
+using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
@@ -10,11 +12,8 @@ namespace _Scripts.UI
     {
         [Header("UI Elements")] public GameObject pausePanel, controlsPanel;
         [SerializeField] private GameObject pauseMenuUI;
-        [SerializeField] private Button resumeButton;
-        [SerializeField] private Button controlsButton;
-        [SerializeField] private Button returnButton;
-        [SerializeField] private Button quitButton;
-
+        public Button resumeButton, controlsButton, returnButton, quitButton;
+        public TextMeshProUGUI resumeButtonText, controlsButtonText, returnButtonText, quitButtonText;
 
         [Header("Highlight Settings")] [SerializeField]
         private Color highlightColor = Color.green;
@@ -22,10 +21,13 @@ namespace _Scripts.UI
         [SerializeField] private Color defaultColor = Color.white;
 
         private InputControls _actions;
-        private bool _isPaused;
         private int _currentButtonIndex;
         private Button[] _buttons;
         private Image[] _buttonImages;
+        private TextMeshProUGUI[] _texts;
+        private TextMeshProUGUI[] _buttonTexts;
+        private bool _isPaused;
+        private PlayerProfiler _player;
 
         private void Awake()
         {
@@ -40,9 +42,15 @@ namespace _Scripts.UI
             _buttons = new Button[] { resumeButton, controlsButton, returnButton, quitButton };
             _buttonImages = new Image[_buttons.Length];
 
+            _texts = new TextMeshProUGUI[] { resumeButtonText, controlsButtonText, returnButtonText, quitButtonText };
+            _buttonTexts = new TextMeshProUGUI[_texts.Length];
+
+            _player = FindObjectOfType<PlayerProfiler>();
+
             for (int i = 0; i < _buttons.Length; i++)
             {
-                _buttonImages[i] = _buttons[i].GetComponent<Image>(); // ✅ Get Image component
+                _buttonImages[i] = _buttons[i].GetComponent<Image>();
+                _buttonTexts[i] = _texts[i].GetComponent<TextMeshProUGUI>();
             }
         }
 
@@ -71,6 +79,7 @@ namespace _Scripts.UI
 
         private void PauseGame()
         {
+            _player.disableMovement = true;
             _isPaused = true;
             pauseMenuUI.SetActive(true);
             Time.timeScale = 0f;
@@ -83,6 +92,7 @@ namespace _Scripts.UI
 
         private void ResumeGame()
         {
+            _player.disableMovement = false;
             _isPaused = false;
             pauseMenuUI.SetActive(false);
             Time.timeScale = 1f;
@@ -104,6 +114,7 @@ namespace _Scripts.UI
 
         private void QuitGame()
         {
+            Time.timeScale = 1f;
             Debug.Log("Quiting to Main Menu...");
             SceneManager.LoadScene("MainMenu");
         }
@@ -124,8 +135,8 @@ namespace _Scripts.UI
         {
             for (int i = 0; i < _buttons.Length; i++)
             {
-                _buttonImages[i].color =
-                    (i == _currentButtonIndex) ? highlightColor : defaultColor;
+                _buttonImages[i].color = (i == _currentButtonIndex) ? highlightColor : defaultColor;
+                _buttonTexts[i].color = (i == _currentButtonIndex) ? defaultColor : highlightColor;
             }
 
             EventSystem.current.SetSelectedGameObject(_buttons[_currentButtonIndex].gameObject);

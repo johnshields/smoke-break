@@ -1,3 +1,4 @@
+using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
@@ -9,10 +10,8 @@ namespace _Scripts.UI
     public class MainMenu : MonoBehaviour
     {
         [Header("UI Elements")] public GameObject controlsPanel;
-        [SerializeField] private Button startGameButton;
-        [SerializeField] private Button controlsButton;
-        [SerializeField] private Button returnButton;
-        [SerializeField] private Button quitButton;
+        public Button startGameButton, controlsButton, returnButton, quitButton;
+        public TextMeshProUGUI startButtonText, controlsButtonText, returnButtonText, quitButtonText;
 
         [Header("Highlight Settings")] [SerializeField]
         private Color highlightColor = Color.green;
@@ -23,6 +22,8 @@ namespace _Scripts.UI
         private int _currentButtonIndex;
         private Button[] _buttons;
         private Image[] _buttonImages;
+        private TextMeshProUGUI[] _texts;
+        private TextMeshProUGUI[] _buttonTexts;
 
         private void Awake()
         {
@@ -32,10 +33,13 @@ namespace _Scripts.UI
 
             _buttons = new Button[] { startGameButton, controlsButton, returnButton, quitButton };
             _buttonImages = new Image[_buttons.Length];
+            _texts = new TextMeshProUGUI[] { startButtonText, controlsButtonText, returnButtonText, quitButtonText };
+            _buttonTexts = new TextMeshProUGUI[_texts.Length];
 
             for (int i = 0; i < _buttons.Length; i++)
             {
                 _buttonImages[i] = _buttons[i].GetComponent<Image>();
+                _buttonTexts[i] = _texts[i].GetComponent<TextMeshProUGUI>();
             }
         }
 
@@ -73,6 +77,7 @@ namespace _Scripts.UI
             for (int i = 0; i < _buttons.Length; i++)
             {
                 _buttonImages[i].color = (i == _currentButtonIndex) ? highlightColor : defaultColor;
+                _buttonTexts[i].color = (i == _currentButtonIndex) ? defaultColor : highlightColor;
             }
 
             EventSystem.current.SetSelectedGameObject(_buttons[_currentButtonIndex].gameObject);
