@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 namespace _Scripts.UI
@@ -11,7 +12,6 @@ namespace _Scripts.UI
         [SerializeField] private GameObject pauseMenuUI;
         [SerializeField] private Button resumeButton;
         [SerializeField] private Button controlsButton;
-        [SerializeField] private Button settingsButton;
         [SerializeField] private Button returnButton;
         [SerializeField] private Button quitButton;
 
@@ -37,7 +37,7 @@ namespace _Scripts.UI
             _actions.UI.Navigate.performed += NavigateMenu;
             _actions.UI.Submit.performed += SelectButton;
 
-            _buttons = new Button[] { resumeButton, controlsButton, settingsButton, returnButton, quitButton };
+            _buttons = new Button[] { resumeButton, controlsButton, returnButton, quitButton };
             _buttonImages = new Image[_buttons.Length];
 
             for (int i = 0; i < _buttons.Length; i++)
@@ -51,7 +51,6 @@ namespace _Scripts.UI
             _actions.UI.Enable();
             resumeButton.onClick.AddListener(ResumeGame);
             controlsButton.onClick.AddListener(OpenControls);
-            settingsButton.onClick.AddListener(OpenSettings);
             returnButton.onClick.AddListener(ReturnButton);
             quitButton.onClick.AddListener(QuitGame);
         }
@@ -97,11 +96,6 @@ namespace _Scripts.UI
             controlsPanel.SetActive(true);
         }
 
-        private void OpenSettings()
-        {
-            Debug.Log("⚙️ Open Settings (Not Implemented Yet)");
-        }
-
         private void ReturnButton()
         {
             pausePanel.SetActive(true);
@@ -110,7 +104,8 @@ namespace _Scripts.UI
 
         private void QuitGame()
         {
-            Debug.Log("🚪 Quit Game (Not Implemented Yet)");
+            Debug.Log("Quiting to Main Menu...");
+            SceneManager.LoadScene("MainMenu");
         }
 
         private void NavigateMenu(InputAction.CallbackContext context)
