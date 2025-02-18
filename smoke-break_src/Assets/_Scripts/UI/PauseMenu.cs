@@ -6,13 +6,16 @@ using TMPro;
 using System.Collections;
 using _Scripts.Player;
 using UnityEngine.EventSystems;
+using UnityEngine.Serialization;
 
 namespace _Scripts.UI
 {
     public class PauseMenu : MonoBehaviour
     {
-        [Header("UI Panels")] [SerializeField] private GameObject pauseMenuUI;
+        [Header("UI Panels")] [SerializeField] private GameObject pausePanel;
         [SerializeField] private GameObject controlsPanel;
+        [SerializeField] private TextMeshProUGUI saveNotificationText;
+        [SerializeField] private float saveNotificationDuration = 2f;
 
         [Header("Buttons")] [SerializeField] private Button resumeButton;
         [SerializeField] private Button saveButton;
@@ -42,6 +45,9 @@ namespace _Scripts.UI
             _pauseButtons = new Button[] { resumeButton, saveButton, controlsButton, quitButton };
             _controlButtons = new Button[] { returnButton };
             _currentButtons = _pauseButtons;
+
+            if (saveNotificationText != null)
+                saveNotificationText.gameObject.SetActive(false);
         }
 
         private void OnEnable()
@@ -65,7 +71,7 @@ namespace _Scripts.UI
         private void PauseGame()
         {
             _isPaused = true;
-            pauseMenuUI.SetActive(true);
+            pausePanel.SetActive(true);
             controlsPanel.SetActive(false);
             Time.timeScale = 0f;
             Cursor.lockState = CursorLockMode.None;
@@ -79,7 +85,7 @@ namespace _Scripts.UI
         private void ResumeGame()
         {
             _isPaused = false;
-            pauseMenuUI.SetActive(false);
+            pausePanel.SetActive(false);
             controlsPanel.SetActive(false);
             Time.timeScale = 1f;
             Cursor.lockState = CursorLockMode.Locked;
@@ -88,7 +94,7 @@ namespace _Scripts.UI
 
         private void OpenControls()
         {
-            pauseMenuUI.SetActive(false);
+            pausePanel.SetActive(false);
             controlsPanel.SetActive(true);
 
             _currentButtons = _controlButtons;
@@ -101,7 +107,7 @@ namespace _Scripts.UI
         {
             Debug.Log("↩️ Returning to Pause Menu");
             controlsPanel.SetActive(false);
-            pauseMenuUI.SetActive(true);
+            pausePanel.SetActive(true);
 
             _currentButtons = _pauseButtons;
             _currentButtonIndex = 0;
@@ -117,9 +123,31 @@ namespace _Scripts.UI
 
         private void SaveGame()
         {
-            Debug.Log("💾 SaveGame() Called!");
-            //Debug.Log("💾 Game Saved!");
             SaveManager.SaveGame(FindObjectOfType<PlayerProfiler>(), FindObjectOfType<PistolProfiler>());
+            Debug.Log(
+                $"Game Saved! Position: {PlayerPrefs.GetFloat("PlayerX")}, Ammo: {PlayerPrefs.GetInt("ClipAmmo")}/{PlayerPrefs.GetInt("StoredAmmo")}, Health: {PlayerPrefs.GetInt("PlayerHealth")}");
+            StartCoroutine(ShowSaveNotification());
+        }
+
+        private IEnumerator ShowSaveNotification()
+        {
+            if (saveNotificationText is null) yield break;
+
+            saveNotificationText.gameObject.SetActive(true);
+            saveNotificationText.alpha = 1f;
+
+            yield return new WaitForSecondsRealtime(saveNotificationDuration);
+
+            float fadeDuration = 1f;
+            float elapsedTime = 0f;
+            while (elapsedTime < fadeDuration)
+            {
+                elapsedTime += Time.unscaledDeltaTime;
+                saveNotificationText.alpha = Mathf.Lerp(1f, 0f, elapsedTime / fadeDuration);
+                yield return null;
+            }
+
+            saveNotificationText.gameObject.SetActive(false);
         }
 
         private void QuitGame()
