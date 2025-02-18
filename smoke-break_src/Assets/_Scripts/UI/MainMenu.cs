@@ -1,3 +1,4 @@
+using _Scripts.Player;
 using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -10,8 +11,10 @@ namespace _Scripts.UI
     public class MainMenu : MonoBehaviour
     {
         [Header("UI Elements")] public GameObject controlsPanel;
-        public Button startGameButton, controlsButton, returnButton, quitButton;
-        public TextMeshProUGUI startButtonText, controlsButtonText, returnButtonText, quitButtonText;
+        public Button startGameButton;
+        public Button controlsButton, loadButton, returnButton, quitButton;
+        public TextMeshProUGUI startButtonText;
+        public TextMeshProUGUI controlsButtonText, loadButtonText, returnButtonText, quitButtonText;
 
         [Header("Highlight Settings")] [SerializeField]
         private Color highlightColor = Color.green;
@@ -31,9 +34,10 @@ namespace _Scripts.UI
             _actions.UI.Navigate.performed += NavigateMenu;
             _actions.UI.Submit.performed += SelectButton;
 
-            _buttons = new Button[] { startGameButton, controlsButton, returnButton, quitButton };
+            _buttons = new Button[] { startGameButton, loadButton, controlsButton, returnButton, quitButton };
             _buttonImages = new Image[_buttons.Length];
-            _texts = new TextMeshProUGUI[] { startButtonText, controlsButtonText, returnButtonText, quitButtonText };
+            _texts = new TextMeshProUGUI[]
+                { startButtonText, loadButtonText, controlsButtonText, returnButtonText, quitButtonText };
             _buttonTexts = new TextMeshProUGUI[_texts.Length];
 
             for (int i = 0; i < _buttons.Length; i++)
@@ -47,6 +51,7 @@ namespace _Scripts.UI
         {
             _actions.UI.Enable();
             startGameButton.onClick.AddListener(StartGame);
+            loadButton.onClick.AddListener(LoadGame);
             controlsButton.onClick.AddListener(OpenControls);
             returnButton.onClick.AddListener(ReturnButton);
             quitButton.onClick.AddListener(QuitGame);
@@ -93,6 +98,11 @@ namespace _Scripts.UI
         {
             Debug.Log("▶️ Starting Game...");
             SceneManager.LoadScene("SampleScene");
+        }
+
+        private void LoadGame()
+        {
+            SaveManager.LoadGame(FindObjectOfType<PlayerProfiler>(), FindObjectOfType<PistolProfiler>());
         }
 
         private void OpenControls()

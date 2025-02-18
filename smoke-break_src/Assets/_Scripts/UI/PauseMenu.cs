@@ -12,8 +12,8 @@ namespace _Scripts.UI
     {
         [Header("UI Elements")] public GameObject pausePanel, controlsPanel;
         [SerializeField] private GameObject pauseMenuUI;
-        public Button resumeButton, controlsButton, returnButton, quitButton;
-        public TextMeshProUGUI resumeButtonText, controlsButtonText, returnButtonText, quitButtonText;
+        public Button resumeButton, saveButton, controlsButton, returnButton, quitButton;
+        public TextMeshProUGUI resumeButtonText, saveButtonText, controlsButtonText, returnButtonText, quitButtonText;
 
         [Header("Highlight Settings")] [SerializeField]
         private Color highlightColor = Color.green;
@@ -39,10 +39,11 @@ namespace _Scripts.UI
             _actions.UI.Navigate.performed += NavigateMenu;
             _actions.UI.Submit.performed += SelectButton;
 
-            _buttons = new Button[] { resumeButton, controlsButton, returnButton, quitButton };
+            _buttons = new Button[] { resumeButton, saveButton, controlsButton, returnButton, quitButton };
             _buttonImages = new Image[_buttons.Length];
 
-            _texts = new TextMeshProUGUI[] { resumeButtonText, controlsButtonText, returnButtonText, quitButtonText };
+            _texts = new TextMeshProUGUI[]
+                { resumeButtonText, saveButtonText, controlsButtonText, returnButtonText, quitButtonText };
             _buttonTexts = new TextMeshProUGUI[_texts.Length];
 
             _player = FindObjectOfType<PlayerProfiler>();
@@ -58,6 +59,7 @@ namespace _Scripts.UI
         {
             _actions.UI.Enable();
             resumeButton.onClick.AddListener(ResumeGame);
+            saveButton.onClick.AddListener(SaveGame);
             controlsButton.onClick.AddListener(OpenControls);
             returnButton.onClick.AddListener(ReturnButton);
             quitButton.onClick.AddListener(QuitGame);
@@ -98,6 +100,12 @@ namespace _Scripts.UI
             Time.timeScale = 1f;
             Cursor.lockState = CursorLockMode.Locked;
             Cursor.visible = false;
+        }
+
+        private void SaveGame()
+        {
+            Debug.Log("Game Saved" + PlayerPrefs.GetFloat("PlayerX"));
+            SaveManager.SaveGame(FindObjectOfType<PlayerProfiler>(), FindObjectOfType<PistolProfiler>());
         }
 
         private void OpenControls()

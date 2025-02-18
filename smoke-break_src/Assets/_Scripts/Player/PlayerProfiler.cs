@@ -149,7 +149,9 @@ namespace _Scripts.Player
 
         private void DelayedJump()
         {
-            audioSource.PlayOneShot(jumpSound);
+            if (jumpSound is not null && audioSource is not null)
+                audioSource.PlayOneShot(jumpSound);
+
             _rigidbody.velocity = new Vector3(_rigidbody.velocity.x, 0, _rigidbody.velocity.z);
             _rigidbody.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
         }
@@ -206,7 +208,8 @@ namespace _Scripts.Player
 
         private IEnumerator StaggerEffect()
         {
-            audioSource.PlayOneShot(staggerSound);
+            if (staggerSound is not null && audioSource is not null)
+                audioSource.PlayOneShot(staggerSound);
 
             var originalMovementForce = movementForce;
             movementForce = 0.5f;

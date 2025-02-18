@@ -50,7 +50,9 @@ namespace _Scripts.Player
             _animator = GetComponent<Animator>();
             _moveInput = _actions.Profiler.Movement;
             _mainCamera = Camera.main;
-            _originalColor = boostFill.color;
+
+            if (boostFill is not null)
+                _originalColor = boostFill.color;
         }
 
         private void OnEnable()
