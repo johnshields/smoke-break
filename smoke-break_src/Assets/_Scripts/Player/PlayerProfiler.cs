@@ -98,6 +98,9 @@ namespace _Scripts.Player
 
         private void OnEnable()
         {
+            if (FindObjectOfType<PauseMenu>().isPaused) return; // ✅ Don't re-enable input if paused
+            _actions.Profiler.Enable();
+
             _actions.Profiler.Enable();
             _moveKeys = _actions.Profiler.Movement;
 

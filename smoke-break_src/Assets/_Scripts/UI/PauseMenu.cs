@@ -6,7 +6,6 @@ using TMPro;
 using System.Collections;
 using _Scripts.Player;
 using UnityEngine.EventSystems;
-using UnityEngine.Serialization;
 
 namespace _Scripts.UI
 {
@@ -29,7 +28,7 @@ namespace _Scripts.UI
         [SerializeField] private Color defaultColor = Color.white;
 
         private InputControls _actions;
-        private bool _isPaused = false;
+        public bool isPaused = false;
         private int _currentButtonIndex = 0;
         private Button[] _pauseButtons;
         private Button[] _controlButtons;
@@ -53,24 +52,26 @@ namespace _Scripts.UI
         private void OnEnable()
         {
             _actions.UI.Enable();
-            AssignButtonActions();
+            if (resumeButton != null)
+                AssignButtonActions();
         }
 
         private void OnDisable()
         {
             _actions.UI.Disable();
-            RemoveButtonActions();
+            if (resumeButton != null)
+                RemoveButtonActions();
         }
 
         private void TogglePause(InputAction.CallbackContext context)
         {
-            if (_isPaused) ResumeGame();
+            if (isPaused) ResumeGame();
             else PauseGame();
         }
 
         private void PauseGame()
         {
-            _isPaused = true;
+            isPaused = true;
             pausePanel.SetActive(true);
             controlsPanel.SetActive(false);
             Time.timeScale = 0f;
@@ -84,12 +85,35 @@ namespace _Scripts.UI
 
         private void ResumeGame()
         {
-            _isPaused = false;
+            isPaused = false;
             pausePanel.SetActive(false);
             controlsPanel.SetActive(false);
             Time.timeScale = 1f;
             Cursor.lockState = CursorLockMode.Locked;
             Cursor.visible = false;
+
+            DisableInputs();
+        }
+
+        private void DisableInputs()
+        {
+            _actions.Profiler.Disable();
+            InputSystem.ResetHaptics();
+            InputSystem.DisableDevice(Keyboard.current);
+            InputSystem.DisableDevice(Gamepad.current);
+            InputSystem.DisableDevice(Mouse.current);
+
+            StartCoroutine(EnableInputsAfterDelay());
+        }
+
+        private IEnumerator EnableInputsAfterDelay()
+        {
+            yield return new WaitForSecondsRealtime(0.5f);
+
+            _actions.Profiler.Enable();
+            InputSystem.EnableDevice(Keyboard.current);
+            InputSystem.EnableDevice(Gamepad.current);
+            InputSystem.EnableDevice(Mouse.current);
         }
 
         private void OpenControls()
@@ -153,11 +177,13 @@ namespace _Scripts.UI
             Debug.Log("🚪 Returning to Main Menu...");
             Time.timeScale = 1f;
             SceneManager.LoadScene("MainMenu");
+
+            StartCoroutine(EnableInputsAfterDelay());
         }
 
         private void NavigateMenu(InputAction.CallbackContext context)
         {
-            if (!_isPaused) return;
+            if (!isPaused) return;
 
             float direction = context.ReadValue<Vector2>().y;
             if (direction > 0) _currentButtonIndex--;
@@ -169,7 +195,7 @@ namespace _Scripts.UI
 
         private void SelectButton(InputAction.CallbackContext context)
         {
-            if (!_isPaused) return;
+            if (!isPaused) return;
 
             EventSystem.current.SetSelectedGameObject(_currentButtons[_currentButtonIndex].gameObject);
             Button selectedButton = _currentButtons[_currentButtonIndex];
