@@ -14,6 +14,9 @@ namespace _Scripts.UI
         [Header("UI Elements")] [SerializeField]
         private GameObject mainMenuPanel, controlsPanel;
 
+        [SerializeField] private TextMeshProUGUI saveNotificationText;
+        [SerializeField] private float saveNotificationDuration = 2f;
+
         [Header("Buttons")] [SerializeField] private Button startGameButton;
         [SerializeField] private Button loadButton;
         [SerializeField] private Button controlsButton;
@@ -34,6 +37,9 @@ namespace _Scripts.UI
 
         private void Awake()
         {
+            if (saveNotificationText != null)
+                saveNotificationText.gameObject.SetActive(false);
+
             _actions = new InputControls();
             _actions.UI.Navigate.performed += NavigateMenu;
             _actions.UI.Submit.performed += SelectButton;
@@ -72,7 +78,8 @@ namespace _Scripts.UI
 
             if (!PlayerPrefs.HasKey("SavedLevel"))
             {
-                SceneManager.LoadScene("SampleScene");
+                Debug.Log("no saved game");
+                StartCoroutine(ShowSaveNotification());
                 return;
             }
 
@@ -80,6 +87,27 @@ namespace _Scripts.UI
 
             SaveManager.LoadGame(FindObjectOfType<PlayerProfiler>(), FindObjectOfType<PistolProfiler>());
             SceneManager.LoadScene(savedLevel);
+        }
+
+        private IEnumerator ShowSaveNotification()
+        {
+            if (saveNotificationText is null) yield break;
+
+            saveNotificationText.gameObject.SetActive(true);
+            saveNotificationText.alpha = 1f;
+
+            yield return new WaitForSecondsRealtime(saveNotificationDuration);
+
+            float fadeDuration = 1f;
+            float elapsedTime = 0f;
+            while (elapsedTime < fadeDuration)
+            {
+                elapsedTime += Time.unscaledDeltaTime;
+                saveNotificationText.alpha = Mathf.Lerp(1f, 0f, elapsedTime / fadeDuration);
+                yield return null;
+            }
+
+            saveNotificationText.gameObject.SetActive(false);
         }
 
 
