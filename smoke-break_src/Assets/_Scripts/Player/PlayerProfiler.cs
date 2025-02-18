@@ -66,14 +66,35 @@ namespace _Scripts.Player
             _mainCamera = Camera.main;
             grounded = true;
 
-            //if (currentHealth <= 0) _respawner.InitRespawn();
-        }
+            LoadHealth();
 
-        private void Start()
-        {
+            currentHealth = PlayerPrefs.HasKey("PlayerHealth") ? PlayerPrefs.GetInt("PlayerHealth") : 100;
+
             SaveManager.LoadGame(this, _pistol);
         }
 
+        public void SetCurrentHealth(int health)
+        {
+            currentHealth = health;
+        }
+
+        private void LoadHealth()
+        {
+            currentHealth = PlayerPrefs.HasKey("PlayerHealth") ? PlayerPrefs.GetInt("PlayerHealth") : 100;
+        }
+
+        public int GetCurrentHealth()
+        {
+            PlayerPrefs.SetInt("PlayerHealth", currentHealth);
+            PlayerPrefs.Save();
+
+            return currentHealth;
+        }
+
+        public void RestoreHealth(int itemValue)
+        {
+            currentHealth = Mathf.Clamp(currentHealth + itemValue, 0, maxHealth);
+        }
 
         private void OnEnable()
         {
@@ -125,7 +146,6 @@ namespace _Scripts.Player
 
             RotateCharacter(_moveKeys.ReadValue<Vector2>());
         }
-
 
         private void RotateCharacter(Vector2 input)
         {
@@ -227,16 +247,6 @@ namespace _Scripts.Player
             yield return new WaitForSeconds(staggerDuration);
 
             movementForce = originalMovementForce;
-        }
-
-        public int GetCurrentHealth()
-        {
-            return currentHealth;
-        }
-
-        public void RestoreHealth(int itemValue)
-        {
-            currentHealth = Mathf.Clamp(currentHealth + itemValue, 0, maxHealth);
         }
 
         public void SetActions(bool active)

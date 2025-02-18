@@ -124,8 +124,6 @@ namespace _Scripts.UI
         private void SaveGame()
         {
             SaveManager.SaveGame(FindObjectOfType<PlayerProfiler>(), FindObjectOfType<PistolProfiler>());
-            Debug.Log(
-                $"Game Saved! Position: {PlayerPrefs.GetFloat("PlayerX")}, Ammo: {PlayerPrefs.GetInt("ClipAmmo")}/{PlayerPrefs.GetInt("StoredAmmo")}, Health: {PlayerPrefs.GetInt("PlayerHealth")}");
             StartCoroutine(ShowSaveNotification());
         }
 

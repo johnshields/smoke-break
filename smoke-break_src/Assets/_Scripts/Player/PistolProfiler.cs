@@ -83,6 +83,12 @@ namespace _Scripts.Player
             _worldCrosshair.transform.localScale *= 1.5f;
         }
 
+        public void SetAmmo(int clip, int stored)
+        {
+            currentClipAmmo = clip;
+            storedAmmo = stored;
+        }
+
         private void OnEnable()
         {
             _actions.Profiler.Enable();

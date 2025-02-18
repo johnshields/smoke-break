@@ -69,9 +69,19 @@ namespace _Scripts.UI
         private void LoadGame()
         {
             Debug.Log("▶️ Loading Game...");
+
+            if (!PlayerPrefs.HasKey("SavedLevel"))
+            {
+                SceneManager.LoadScene("SampleScene");
+                return;
+            }
+
+            string savedLevel = PlayerPrefs.GetString("SavedLevel");
+
             SaveManager.LoadGame(FindObjectOfType<PlayerProfiler>(), FindObjectOfType<PistolProfiler>());
-            SceneManager.LoadScene(PlayerPrefs.GetString("CurrentLevel"));
+            SceneManager.LoadScene(savedLevel);
         }
+
 
         private void OpenControls()
         {

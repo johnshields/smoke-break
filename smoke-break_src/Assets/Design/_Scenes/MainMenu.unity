@@ -9265,7 +9265,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxHealth: 100
-  currentHealth: 100
+  currentHealth: 60
   movementForce: 1
   grounded: 0
   jumpForce: 5
