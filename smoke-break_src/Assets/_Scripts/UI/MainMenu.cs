@@ -37,6 +37,9 @@ namespace _Scripts.UI
 
         private void Awake()
         {
+            Cursor.lockState = CursorLockMode.Locked;
+            Cursor.visible = false;
+
             if (saveNotificationText != null)
                 saveNotificationText.gameObject.SetActive(false);
 

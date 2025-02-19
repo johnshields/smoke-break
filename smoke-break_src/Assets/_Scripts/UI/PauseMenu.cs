@@ -36,13 +36,16 @@ namespace _Scripts.UI
 
         private void Awake()
         {
+            Cursor.lockState = CursorLockMode.Locked;
+            Cursor.visible = false;
+
             _actions = new InputControls();
             _actions.UI.Pause.performed += TogglePause;
             _actions.UI.Navigate.performed += NavigateMenu;
             _actions.UI.Submit.performed += SelectButton;
 
-            _pauseButtons = new Button[] { resumeButton, saveButton, controlsButton, quitButton };
-            _controlButtons = new Button[] { returnButton };
+            _pauseButtons = new[] { resumeButton, saveButton, controlsButton, quitButton };
+            _controlButtons = new[] { returnButton };
             _currentButtons = _pauseButtons;
 
             if (saveNotificationText != null)
@@ -74,9 +77,8 @@ namespace _Scripts.UI
             isPaused = true;
             pausePanel.SetActive(true);
             controlsPanel.SetActive(false);
+            AudioListener.pause = true;
             Time.timeScale = 0f;
-            Cursor.lockState = CursorLockMode.None;
-            Cursor.visible = true;
 
             _currentButtons = _pauseButtons;
             _currentButtonIndex = 0;
@@ -88,9 +90,8 @@ namespace _Scripts.UI
             isPaused = false;
             pausePanel.SetActive(false);
             controlsPanel.SetActive(false);
+            AudioListener.pause = false;
             Time.timeScale = 1f;
-            Cursor.lockState = CursorLockMode.Locked;
-            Cursor.visible = false;
 
             DisableInputs();
         }
@@ -175,6 +176,7 @@ namespace _Scripts.UI
         private void QuitGame()
         {
             Debug.Log("🚪 Returning to Main Menu...");
+            AudioListener.pause = false;
             Time.timeScale = 1f;
             SceneManager.LoadScene("MainMenu");
 
