@@ -405,8 +405,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4286678423
-  m_fontColor: {r: 0.5921569, g: 0.52156866, b: 0.5058824, a: 1}
+    rgba: 4288845190
+  m_fontColor: {r: 0.5254902, g: 0.58431375, b: 0.63529414, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -1782,6 +1782,7 @@ MonoBehaviour:
   quitButton: {fileID: 2022814991}
   highlightColor: {r: 0.6156863, g: 0.6862745, b: 0.7411765, a: 1}
   defaultColor: {r: 0.03137255, g: 0.03137255, b: 0.047058824, a: 1}
+  isPaused: 0
 --- !u!1 &695156574
 GameObject:
   m_ObjectHideFlags: 0
@@ -1811,7 +1812,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e0172414e20d48548b658755915d7a6e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  pistolFireSounds:
+  pistolSounds:
   - {fileID: 8300000, guid: 360d64446c1ac4f41b51b7499985d1a8, type: 3}
   - {fileID: 8300000, guid: 4af6f3b245b02354a8c5162110213611, type: 3}
   - {fileID: 8300000, guid: 77cc9501f774c0343afe79efa39273ff, type: 3}
@@ -1831,6 +1832,13 @@ MonoBehaviour:
   - {fileID: 8300000, guid: c04ed6fa72d0dd948bfe87572ef2a861, type: 3}
   - {fileID: 8300000, guid: f291f8ba1e01a0f468c692dd51e9a4de, type: 3}
   - {fileID: 8300000, guid: e916fc0034fd159408bb1d4529e58c64, type: 3}
+  axeSounds:
+  - {fileID: 8300000, guid: 2aa43f7d14155f243a36a81226faccb2, type: 3}
+  - {fileID: 8300000, guid: 5b369109da2086245bfe77e7598b6bae, type: 3}
+  - {fileID: 8300000, guid: 2ee5f4fab4334ab419f14a67234d8b35, type: 3}
+  - {fileID: 8300000, guid: 1ae814d2c72935344a4f69ecdb35f5fd, type: 3}
+  - {fileID: 8300000, guid: 4a438959da63b304e9703ec884469c5c, type: 3}
+  audioSource: {fileID: 2098264201}
 --- !u!4 &695156576
 Transform:
   m_ObjectHideFlags: 0
@@ -3167,8 +3175,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: SMOKED!
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: aa883d692c584c447b5938cf1d3740df, type: 2}
-  m_sharedMaterial: {fileID: 2900056354549878862, guid: aa883d692c584c447b5938cf1d3740df, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 4538f3508961e6e42bf8744ff67441f6, type: 2}
+  m_sharedMaterial: {fileID: 2900056354549878862, guid: 4538f3508961e6e42bf8744ff67441f6, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -6619,8 +6627,8 @@ MonoBehaviour:
   staggerDuration: 0.5
   sprintMultiplier: 2
   audioSource: {fileID: 2098264201}
+  dodgeSound: {fileID: 8300000, guid: 3efc3db2b0beba540b8caf604f8b5585, type: 3}
   staggerSound: {fileID: 8300000, guid: f213908e626150348903575839136bd5, type: 3}
-  jumpSound: {fileID: 8300000, guid: 7408527df7341ab4ba90acb1c18a3186, type: 3}
 --- !u!1 &1619401602250535212
 GameObject:
   m_ObjectHideFlags: 0
@@ -13434,7 +13442,8 @@ MonoBehaviour:
   boostEffect: {fileID: 4047845140373060363}
   audioSource: {fileID: 2098264201}
   boostSound: {fileID: 8300000, guid: 799f2fc16f4cf4343be9b1753bc5ef07, type: 3}
-  boostVolume: 0.2
+  jumpSound: {fileID: 8300000, guid: 7408527df7341ab4ba90acb1c18a3186, type: 3}
+  vol: 0.2
   boostBar: {fileID: 981871452}
   boostFill: {fileID: 831087190}
   flashColor: {r: 0.5568628, g: 0, b: 0, a: 1}
@@ -13449,6 +13458,7 @@ GameObject:
   - component: {fileID: 1973920794314978138}
   - component: {fileID: 1592562235684700848}
   - component: {fileID: 8308889209039207705}
+  - component: {fileID: 9028799375046230540}
   - component: {fileID: 7340464204107697275}
   - component: {fileID: 9028799375046230539}
   - component: {fileID: 5958605752651824154}
@@ -14487,8 +14497,7 @@ MonoBehaviour:
   enemyLayers:
     serializedVersion: 2
     m_Bits: 64
-  audioSource: {fileID: 2098264201}
-  axeSwingSound: {fileID: 8300000, guid: 56460249c1c9b0f4cb2355fd6a4d20af, type: 3}
+  randomAudio: {fileID: 695156575}
 --- !u!33 &8458579778220471755
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -14651,6 +14660,25 @@ MonoBehaviour:
   respawnDelay: 5
   respawnPoint: {fileID: 578262260}
   hudManager: {fileID: 199851621}
+--- !u!114 &9028799375046230540
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5979711990829132460}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c33e754b4b1e7c647847a66eea27ebab, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  animator: {fileID: 5897919289326121628}
+  overrideController: {fileID: 22100000, guid: 37df56af512cf6a48b6e97be166af133, type: 2}
+  attackClips:
+  - {fileID: 7400000, guid: 1500706b51a6c9546898bfb1413eec4a, type: 2}
+  - {fileID: 7400000, guid: 13e3647913e8d0649a80bf62a3514190, type: 2}
+  - {fileID: 7400000, guid: b2692f2591b5aed44bf9140b8e0af587, type: 2}
+  - {fileID: 7400000, guid: 362aa15500731d4478de5f4d3dfe5be7, type: 2}
 --- !u!4 &9070495592048958161
 Transform:
   m_ObjectHideFlags: 0

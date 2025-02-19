@@ -52,8 +52,7 @@ namespace _Scripts.Player
         [SerializeField] private AudioClip reloadSound;
         [SerializeField] private AudioClip emptyGunSound;
 
-        [FormerlySerializedAs("randoAudio")] [SerializeField]
-        private RandomAudio randomAudio; // ✅ Handles random gunshot sounds
+        [SerializeField] private RandomAudio randomAudio; // ✅ Handles random gunshot sounds
 
         [SerializeField] private float gunshotVolume = 1.0f;
 
@@ -225,7 +224,7 @@ namespace _Scripts.Player
             yield return new WaitForSeconds(0.5f);
 
             currentClipAmmo--;
-            PlayRandomGunshot();
+            randomAudio.PlayRandomSound("Sounds/Pistol/", gunshotVolume);
             GameObject muzzleFlash = Instantiate(muzzleFlashPrefab, firePoint.position, firePoint.rotation);
             Destroy(muzzleFlash, 0.1f);
 
@@ -247,16 +246,6 @@ namespace _Scripts.Player
             }
 
             _player.disableMovement = false;
-        }
-
-        private void PlayRandomGunshot()
-        {
-            audioSource.Stop();
-            AudioClip randomClip = randomAudio.GetRandomClip("Sounds/Pistol/");
-            if (randomClip != null)
-            {
-                audioSource.PlayOneShot(randomClip, gunshotVolume);
-            }
         }
 
         private IEnumerator Reload()

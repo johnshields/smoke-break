@@ -7,8 +7,6 @@ namespace _Scripts.Player
 {
     public class CombatProfiler : MonoBehaviour
     {
-        private static readonly int Attack = Animator.StringToHash("Attack");
-
         [Header("Combat Settings")] [SerializeField]
         private Transform attackPoint;
 
@@ -22,11 +20,9 @@ namespace _Scripts.Player
         private const float AttackDelay = 0.5f;
 
         [Header("Audio Settings")] [SerializeField]
-        private AudioSource audioSource;
+        private RandomAudio randomAudio;
 
-        [SerializeField] private AudioClip axeSwingSound;
-
-        private Animator _animator;
+        private RandomAnimation _randomAnimation;
         private InputControls _actions;
         private PlayerProfiler _player;
         private bool _canAttack = true;
@@ -34,7 +30,7 @@ namespace _Scripts.Player
 
         private void Awake()
         {
-            _animator = GetComponent<Animator>();
+            _randomAnimation = GetComponent<RandomAnimation>();
             _actions = new InputControls();
             _player = GetComponent<PlayerProfiler>();
             axe.SetActive(false);
@@ -72,9 +68,10 @@ namespace _Scripts.Player
         {
             _canAttack = false;
             _player.disableMovement = true;
-            _animator.SetTrigger(Attack);
-            audioSource.PlayOneShot(axeSwingSound);
+            _randomAnimation.PlayRandomAttack();
+
             yield return new WaitForSeconds(AttackDelay);
+            randomAudio.PlayRandomSound("Sounds/Axe/", 0.2f);
 
             Collider[] hitEnemies = Physics.OverlapSphere(attackPoint.position, attackRange, enemyLayers);
             foreach (var enemy in hitEnemies)

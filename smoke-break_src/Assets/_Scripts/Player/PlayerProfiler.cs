@@ -48,8 +48,8 @@ namespace _Scripts.Player
         [Header("Audio Settings")] [SerializeField]
         private AudioSource audioSource;
 
+        [SerializeField] private AudioClip dodgeSound;
         [SerializeField] private AudioClip staggerSound;
-        [SerializeField] private AudioClip jumpSound;
 
 
         private void Awake()
@@ -98,7 +98,7 @@ namespace _Scripts.Player
 
         private void OnEnable()
         {
-            if (FindObjectOfType<PauseMenu>().isPaused) return; // ✅ Don't re-enable input if paused
+            if (FindObjectOfType<PauseMenu>().isPaused) return;
             _actions.Profiler.Enable();
 
             _actions.Profiler.Enable();
@@ -127,6 +127,12 @@ namespace _Scripts.Player
 
         private void FixedUpdate()
         {
+            if (currentHealth <= 0 && !_respawner.isRespawning)
+            {
+                _respawner.isRespawning = true;
+                _respawner.InitRespawn();
+            }
+
             if (_isDodging || disableMovement) return;
 
             if (grounded)
@@ -179,9 +185,6 @@ namespace _Scripts.Player
 
         private void DelayedJump()
         {
-            if (jumpSound is not null && audioSource is not null)
-                audioSource.PlayOneShot(jumpSound);
-
             _rigidbody.velocity = new Vector3(_rigidbody.velocity.x, 0, _rigidbody.velocity.z);
             _rigidbody.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
         }
@@ -203,13 +206,26 @@ namespace _Scripts.Player
 
             if (dodgeDirection == Vector3.zero) dodgeDirection = -transform.forward;
 
-            _rigidbody.velocity = dodgeDirection.normalized * dodgeDistance;
+            if (dodgeSound is not null && audioSource is not null)
+                audioSource.PlayOneShot(dodgeSound, 0.2f);
 
-            Invoke(nameof(EndDodge), dodgeDuration);
+            StartCoroutine(SmoothDodge(dodgeDirection.normalized));
         }
 
-        private void EndDodge()
+        private IEnumerator SmoothDodge(Vector3 dodgeDirection)
         {
+            Vector3 startPosition = transform.position;
+            Vector3 targetPosition = startPosition + (dodgeDirection * dodgeDistance);
+
+            float elapsedTime = 0f;
+            while (elapsedTime < dodgeDuration)
+            {
+                transform.position = Vector3.Lerp(startPosition, targetPosition, elapsedTime / dodgeDuration);
+                elapsedTime += Time.deltaTime;
+                yield return null;
+            }
+
+            transform.position = targetPosition;
             _isDodging = false;
             disableMovement = false;
             _canDodge = true;
@@ -228,12 +244,10 @@ namespace _Scripts.Player
 
         public void TakeDamage(int damage)
         {
-            Debug.Log($"🔥 Kanta took {damage} damage!");
+            print($"🔥 Kanta took {damage} damage!");
             currentHealth -= damage;
 
             StartCoroutine(StaggerEffect());
-
-            if (currentHealth <= 0) _respawner.InitRespawn();
         }
 
         private IEnumerator StaggerEffect()

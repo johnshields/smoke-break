@@ -13,13 +13,16 @@ namespace _Scripts.Player
         [SerializeField] private Transform respawnPoint;
         [SerializeField] private HUDManager hudManager;
 
+        public bool isRespawning = false;
         private PlayerProfiler _player;
         private CombatProfiler _combatProfiler;
         private PistolProfiler _pistolProfiler;
         private Animator _animator;
+        private HUDManager _component;
 
         private void Awake()
         {
+            _component = hudManager.GetComponent<HUDManager>();
             _player = GetComponent<PlayerProfiler>();
             _combatProfiler = GetComponent<CombatProfiler>();
             _pistolProfiler = GetComponent<PistolProfiler>();
@@ -29,7 +32,7 @@ namespace _Scripts.Player
         public void InitRespawn()
         {
             _animator.SetTrigger(Fall);
-            hudManager.GetComponent<HUDManager>().ShowDeathMessage();
+            _component.ShowDeathMessage();
             DisablePlayerActions();
             StartCoroutine(Respawn());
         }
@@ -64,7 +67,8 @@ namespace _Scripts.Player
             _player.currentHealth = _player.maxHealth;
             _animator.Rebind();
             _animator.Update(0f);
-            Debug.Log("Kanta has respawned!");
+            isRespawning = false;
+            print("Kanta has respawned!");
         }
     }
 }

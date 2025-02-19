@@ -1,6 +1,7 @@
 using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 namespace _Scripts.Player
@@ -26,7 +27,8 @@ namespace _Scripts.Player
         private AudioSource audioSource;
 
         [SerializeField] private AudioClip boostSound;
-        [SerializeField] private float boostVolume = 0.7f;
+        [SerializeField] private AudioClip jumpSound;
+        [SerializeField] private float vol = 0.2f;
 
         [Header("Dependencies")] private Rigidbody _rigidbody;
         private PlayerProfiler _player;
@@ -86,6 +88,9 @@ namespace _Scripts.Player
         {
             if (_player.grounded || !_jumpPressedOnce)
             {
+                if (jumpSound is not null && audioSource is not null)
+                    audioSource.PlayOneShot(jumpSound);
+
                 _jumpPressedOnce = true;
                 _lastJumpTime = Time.time;
                 return;
@@ -114,7 +119,7 @@ namespace _Scripts.Player
                 boostEffect.Play();
 
             if (audioSource != null && boostSound != null)
-                audioSource.PlayOneShot(boostSound, boostVolume);
+                audioSource.PlayOneShot(boostSound, vol);
 
             if (boostBar != null)
                 StartCoroutine(UpdateBoostBar());
