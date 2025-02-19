@@ -1,5 +1,6 @@
 using System.Collections;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace _Scripts.Player
 {
@@ -20,6 +21,11 @@ namespace _Scripts.Player
         private Animator _animator;
         private HUDManager _component;
 
+        [Header("Audio Settings")] [SerializeField]
+        private AudioSource audioSource;
+
+        [SerializeField] private AudioClip wilhelm;
+
         private void Awake()
         {
             _component = hudManager.GetComponent<HUDManager>();
@@ -31,6 +37,10 @@ namespace _Scripts.Player
 
         public void InitRespawn()
         {
+            if (audioSource is not null && wilhelm is not null)
+                audioSource.PlayOneShot(wilhelm, .5f);
+
+            isRespawning = true;
             _animator.SetTrigger(Fall);
             _component.ShowDeathMessage();
             DisablePlayerActions();

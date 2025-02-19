@@ -23,6 +23,11 @@ namespace _Scripts.AI
         private Rigidbody _rigidbody;
         private bool _isKnockedBack;
 
+        [Header("Audio Settings")] [SerializeField]
+        private AudioSource audioSource;
+
+        [SerializeField] private AudioClip audioClip;
+
         private void Start()
         {
             _rigidbody = GetComponent<Rigidbody>();
@@ -70,6 +75,8 @@ namespace _Scripts.AI
         private void Die()
         {
             Debug.Log($"{gameObject.name} has been destroyed!");
+            if (audioSource is not null && audioClip is not null)
+                audioSource.PlayOneShot(audioClip, .5f);
             Destroy(gameObject);
         }
     }

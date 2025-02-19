@@ -1725,6 +1725,8 @@ MonoBehaviour:
   knockbackForce: 5
   knockbackDuration: 0.2
   enemyRenderer: {fileID: 616964406}
+  audioSource: {fileID: 2098264201}
+  audioClip: {fileID: 8300000, guid: 72e4114552af6f744b5d20e8136e205f, type: 3}
 --- !u!1 &627383477
 GameObject:
   m_ObjectHideFlags: 0
@@ -3502,7 +3504,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1206829578}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 1, z: 0, w: 0}
   m_LocalPosition: {x: -5, y: -0.19519782, z: 40.3}
   m_LocalScale: {x: 0.5, y: 0.5, z: 0.5}
   m_ConstrainProportionsScale: 0
@@ -3512,7 +3514,7 @@ Transform:
   - {fileID: 1856309939}
   - {fileID: 1175589303}
   m_Father: {fileID: 607147398}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 180, z: 0}
 --- !u!95 &1206829580
 Animator:
   serializedVersion: 5
@@ -3600,6 +3602,8 @@ MonoBehaviour:
   knockbackForce: 5
   knockbackDuration: 0.2
   enemyRenderer: {fileID: 296218155}
+  audioSource: {fileID: 2098264201}
+  audioClip: {fileID: 8300000, guid: 72e4114552af6f744b5d20e8136e205f, type: 3}
 --- !u!114 &1206829584
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3845,6 +3849,8 @@ MonoBehaviour:
   knockbackForce: 5
   knockbackDuration: 0.2
   enemyRenderer: {fileID: 1433292133}
+  audioSource: {fileID: 2098264201}
+  audioClip: {fileID: 8300000, guid: 72e4114552af6f744b5d20e8136e205f, type: 3}
 --- !u!4 &1433292136
 Transform:
   m_ObjectHideFlags: 0
@@ -5257,6 +5263,8 @@ MonoBehaviour:
   knockbackForce: 5
   knockbackDuration: 0.2
   enemyRenderer: {fileID: 1911977014}
+  audioSource: {fileID: 2098264201}
+  audioClip: {fileID: 8300000, guid: 72e4114552af6f744b5d20e8136e205f, type: 3}
 --- !u!4 &1911977017
 Transform:
   m_ObjectHideFlags: 0
@@ -6626,7 +6634,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxHealth: 100
-  currentHealth: 60
+  currentHealth: 100
   movementForce: 1
   grounded: 0
   jumpForce: 5
@@ -13170,7 +13178,7 @@ Transform:
   m_GameObject: {fileID: 5013216253268165633}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -5, y: -0.19519782, z: 0.02058053}
+  m_LocalPosition: {x: -5, y: -0.19519782, z: -35}
   m_LocalScale: {x: 0.5, y: 0.5, z: 0.5}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -13219,6 +13227,8 @@ MonoBehaviour:
   knockbackForce: 5
   knockbackDuration: 0.2
   enemyRenderer: {fileID: 2192734820488684067}
+  audioSource: {fileID: 2098264201}
+  audioClip: {fileID: 8300000, guid: 72e4114552af6f744b5d20e8136e205f, type: 3}
 --- !u!114 &5681666085069512382
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -14737,6 +14747,8 @@ MonoBehaviour:
   respawnPoint: {fileID: 578262260}
   hudManager: {fileID: 199851621}
   isRespawning: 0
+  audioSource: {fileID: 2098264201}
+  wilhelm: {fileID: 8300000, guid: fff65f393e2eec0408cd9d8a805cd1d4, type: 3}
 --- !u!114 &9028799375046230540
 MonoBehaviour:
   m_ObjectHideFlags: 0
