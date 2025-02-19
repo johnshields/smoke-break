@@ -88,9 +88,6 @@ namespace _Scripts.Player
         {
             if (_player.grounded || !_jumpPressedOnce)
             {
-                if (jumpSound is not null && audioSource is not null)
-                    audioSource.PlayOneShot(jumpSound);
-
                 _jumpPressedOnce = true;
                 _lastJumpTime = Time.time;
                 return;

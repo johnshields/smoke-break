@@ -163,14 +163,18 @@ namespace _Scripts.AI
             }
         }
 
-
         private void RotateTowards(Vector3 targetPosition)
         {
-            Vector3 direction = (targetPosition - transform.position).normalized;
-
-            if (direction == Vector3.zero) return;
-
+            Vector3 direction = targetPosition - transform.position;
             direction.y = 0;
+            
+            if (direction.sqrMagnitude < 0.0001f)
+            {
+                return;
+            }
+
+            direction.Normalize(); 
+
             Quaternion lookRotation = Quaternion.LookRotation(direction);
             transform.rotation = Quaternion.Slerp(transform.rotation, lookRotation, Time.deltaTime * 5f);
         }

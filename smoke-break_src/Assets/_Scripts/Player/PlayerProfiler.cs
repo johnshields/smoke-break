@@ -45,6 +45,14 @@ namespace _Scripts.Player
         private bool _isSprinting;
         private PlayerRespawner _respawner;
 
+        [Header("Gravity Settings")] [SerializeField]
+        private float gravityForce = -9.81f;
+
+        [SerializeField] private Transform groundCheck;
+        [SerializeField] private LayerMask groundLayer;
+        [SerializeField] private float groundCheckRadius = 0.2f;
+        private bool _groundedGravity;
+
         [Header("Audio Settings")] [SerializeField]
         private AudioSource audioSource;
 
@@ -127,6 +135,13 @@ namespace _Scripts.Player
 
         private void FixedUpdate()
         {
+            _groundedGravity = Physics.CheckSphere(groundCheck.position, groundCheckRadius, groundLayer);
+
+            if (!_groundedGravity)
+            {
+                _rigidbody.AddForce(Vector3.up * gravityForce, ForceMode.Acceleration);
+            }
+
             if (currentHealth <= 0 && !_respawner.isRespawning)
             {
                 _respawner.isRespawning = true;
@@ -141,12 +156,12 @@ namespace _Scripts.Player
                 _animator.SetFloat(Speed, (_rigidbody.velocity.magnitude / MaxSpeed) * speedFactor);
             }
 
-            _forceDirection = Vector3.zero;
-            Vector2 input = _moveKeys.ReadValue<Vector2>();
+            var input = _moveKeys.ReadValue<Vector2>();
 
             var cameraRight = _mainCamera.transform.right;
             var cameraForward = _mainCamera.transform.forward;
 
+            _forceDirection = Vector3.zero;
             _forceDirection += GetCameraDirection(cameraRight, input.x);
             _forceDirection += GetCameraDirection(cameraForward, input.y);
 
@@ -244,10 +259,12 @@ namespace _Scripts.Player
 
         public void TakeDamage(int damage)
         {
-            print($"🔥 Kanta took {damage} damage!");
+            Debug.Log($"🔥 Kanta took {damage} damage!");
             currentHealth -= damage;
 
             StartCoroutine(StaggerEffect());
+
+            if (currentHealth <= 0) _respawner.InitRespawn();
         }
 
         private IEnumerator StaggerEffect()
