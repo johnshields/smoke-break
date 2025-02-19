@@ -4,6 +4,7 @@ using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using TMPro;
 using System.Collections;
+using _Scripts.Managers;
 using _Scripts.Player;
 using UnityEngine.EventSystems;
 

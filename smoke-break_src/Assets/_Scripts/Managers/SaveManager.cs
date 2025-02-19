@@ -2,7 +2,7 @@ using _Scripts.Player;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-namespace _Scripts.UI
+namespace _Scripts.Managers
 {
     public static class SaveManager
     {

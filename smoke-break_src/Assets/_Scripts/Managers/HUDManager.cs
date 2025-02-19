@@ -1,10 +1,10 @@
-using _Scripts.Player;
-using UnityEngine;
-using TMPro;
-using UnityEngine.UI;
 using System.Collections;
+using _Scripts.Player;
+using TMPro;
+using UnityEngine;
+using UnityEngine.UI;
 
-namespace _Scripts
+namespace _Scripts.Managers
 {
     public class HUDManager : MonoBehaviour
     {
