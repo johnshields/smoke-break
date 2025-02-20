@@ -719,7 +719,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 2000, y: 575}
+  m_SizeDelta: {x: 2000, y: 1000}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &340581871
 MonoBehaviour:
@@ -734,7 +734,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.11372549, g: 0.11372549, b: 0.11372549, a: 0.6509804}
+  m_Color: {r: 0.11372549, g: 0.11372549, b: 0.11372549, a: 0.39215687}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -4896,6 +4896,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 07977c7f33c99fb49bfb7d219c5b09fc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  fpsText: {fileID: 0}
 --- !u!114 &1993753724
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4909,6 +4910,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   saveGame: 0
+  resetGame: 0
 --- !u!1 &2012600383
 GameObject:
   m_ObjectHideFlags: 0
