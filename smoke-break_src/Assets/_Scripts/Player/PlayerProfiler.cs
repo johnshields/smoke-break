@@ -221,8 +221,8 @@ namespace _Scripts.Player
 
             if (dodgeDirection == Vector3.zero) dodgeDirection = -transform.forward;
 
-            if (dodgeSound is not null && audioSource is not null)
-                audioSource.PlayOneShot(dodgeSound, 0.2f);
+            // if (dodgeSound is not null && audioSource is not null)
+            //     audioSource.PlayOneShot(dodgeSound, 0.1f);
 
             StartCoroutine(SmoothDodge(dodgeDirection.normalized));
         }
