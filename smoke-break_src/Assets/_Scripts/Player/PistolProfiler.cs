@@ -32,7 +32,7 @@ namespace _Scripts.Player
         [Header("Weapon Visibility")] [SerializeField]
         private GameObject pistol;
 
-        private const float WeaponHideTime = 10f;
+        private const float WeaponHideTime = 20f;
         private float _lastActionTime;
 
         [Header("Aiming Settings")] [SerializeField]

@@ -78,7 +78,6 @@ namespace _Scripts.Player
             LoadHealth();
 
             currentHealth = PlayerPrefs.HasKey("PlayerHealth") ? PlayerPrefs.GetInt("PlayerHealth") : 100;
-
             SaveManager.LoadGame(this, _pistol);
         }
 
@@ -136,17 +135,17 @@ namespace _Scripts.Player
 
         private void FixedUpdate()
         {
+            if (currentHealth <= 0 && !_respawner.isRespawning)
+            {
+                _respawner.isRespawning = true;
+                _respawner.InitRespawn();
+            }
+
             _groundedGravity = Physics.CheckSphere(groundCheck.position, groundCheckRadius, groundLayer);
 
             if (!_groundedGravity)
             {
                 _rigidbody.AddForce(Vector3.up * gravityForce, ForceMode.Acceleration);
-            }
-
-            if (currentHealth <= 0 && !_respawner.isRespawning)
-            {
-                _respawner.isRespawning = true;
-                _respawner.InitRespawn();
             }
 
             if (_isDodging || disableMovement) return;
@@ -260,12 +259,11 @@ namespace _Scripts.Player
 
         public void TakeDamage(int damage)
         {
+            if (_respawner.isRespawning) return;
             Debug.Log($"🔥 Kanta took {damage} damage!");
             currentHealth -= damage;
 
             StartCoroutine(StaggerEffect());
-
-            if (currentHealth <= 0) _respawner.InitRespawn();
         }
 
         private IEnumerator StaggerEffect()

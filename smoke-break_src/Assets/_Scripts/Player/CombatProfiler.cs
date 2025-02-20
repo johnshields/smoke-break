@@ -16,7 +16,7 @@ namespace _Scripts.Player
         [SerializeField] private LayerMask enemyLayers;
 
         [Header("Combat Timings")] private const float AttackCooldown = 0.5f;
-        private const float WeaponHideTime = 10f;
+        private const float WeaponHideTime = 20f;
         private const float AttackDelay = 0.5f;
 
         [Header("Audio Settings")] [SerializeField]

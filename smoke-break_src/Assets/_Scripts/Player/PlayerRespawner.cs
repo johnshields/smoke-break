@@ -41,7 +41,6 @@ namespace _Scripts.Player
             if (audioSource is not null && wilhelm is not null)
                 audioSource.PlayOneShot(wilhelm, .5f);
 
-            isRespawning = true;
             _animator.SetTrigger(Fall);
             _component.ShowDeathMessage();
             DisablePlayerActions();
@@ -65,6 +64,14 @@ namespace _Scripts.Player
         private IEnumerator Respawn()
         {
             yield return new WaitForSeconds(respawnDelay);
+
+            var savedPosition = new Vector3(
+                PlayerPrefs.GetFloat("PlayerX"),
+                PlayerPrefs.GetFloat("PlayerY"),
+                PlayerPrefs.GetFloat("PlayerZ")
+            );
+
+            respawnPoint.transform.position = savedPosition;
 
             if (respawnPoint is not null)
                 transform.position = respawnPoint.position;

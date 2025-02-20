@@ -26,7 +26,7 @@ namespace _Scripts.Managers
         {
             if (!PlayerPrefs.HasKey("PlayerX")) return;
 
-            Vector3 savedPosition = new Vector3(
+            var savedPosition = new Vector3(
                 PlayerPrefs.GetFloat("PlayerX"),
                 PlayerPrefs.GetFloat("PlayerY"),
                 PlayerPrefs.GetFloat("PlayerZ")
