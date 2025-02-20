@@ -73,7 +73,7 @@ namespace _Scripts.UI
         {
             Debug.Log("▶️ Starting New Game...");
             SaveManager.ResetGame();
-            SceneManager.LoadScene("SampleScene");
+            SceneManager.LoadScene("Irani");
         }
 
         private void LoadGame()
