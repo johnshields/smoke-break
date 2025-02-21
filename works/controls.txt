@@ -2,16 +2,16 @@ LOOK:        mouse/arrow keys    right stick
 
 MOVEMENT:    WASD                left stick  
 
-SPRINT:      left shift          RB/R1  
+SPRINT:      left shift          LB/L1  
 
 JUMP:        spacebar            A/X 
 
 BOOST:       spacebar (double)   A/X (double)  
 
-DODGE:       C            	      B/O  
+DODGE:       C            	 B/O  
 
 ATTACK:      right click         RT/R2  
 
-AIM:         Q            	      LB/L1  
+AIM:         Q            	 RB/R1  
 
 SHOOT:       left click/F        LT/L2  

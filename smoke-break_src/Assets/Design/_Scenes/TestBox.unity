@@ -1815,10 +1815,10 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   m_text: "LOOK:        mouse/arrow keys    right stick  \r\n\r\nMOVEMENT:    WASD               
-    left stick  \r\n\r\nSPRINT:      left shift          RB/R1  \r\n\r\nJUMP:       
+    left stick  \r\n\r\nSPRINT:      left shift          LB/L1  \r\n\r\nJUMP:       
     spacebar            A/X \r\n\r\nBOOST:       spacebar (double)   A/X (double) 
     \r\n\r\nDODGE:       C            \t      B/O  \r\n\r\nATTACK:      right click        
-    RT/R2  \r\n\r\nAIM:         Q            \t      LB/L1  \r\n\r\nSHOOT:      
+    RT/R2  \r\n\r\nAIM:         Q            \t      RB/R1  \r\n\r\nSHOOT:      
     left click/F        LT/L2  \r\n"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 66aa52c2d423a3f4cbff24ef2d7b0e14, type: 2}
@@ -12714,7 +12714,6 @@ MonoBehaviour:
   boostEffect: {fileID: 4047845140373060363}
   audioSource: {fileID: 2098264201}
   boostSound: {fileID: 8300000, guid: 799f2fc16f4cf4343be9b1753bc5ef07, type: 3}
-  jumpSound: {fileID: 8300000, guid: 7408527df7341ab4ba90acb1c18a3186, type: 3}
   vol: 0.2
   boostBar: {fileID: 981871452}
   boostFill: {fileID: 831087190}
