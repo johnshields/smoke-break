@@ -13334,7 +13334,7 @@ MonoBehaviour:
   m_OverrideVoxelSize: 0
   m_VoxelSize: 1
   m_MinRegionArea: 2
-  m_NavMeshData: {fileID: 23800000, guid: e5aed2012167871429882f45f2113d3c, type: 2}
+  m_NavMeshData: {fileID: 23800000, guid: 9a59584db0e75d24dbdff38a0d795408, type: 2}
   m_BuildHeightMesh: 0
 --- !u!23 &4526505082883171371
 MeshRenderer:
@@ -13921,7 +13921,7 @@ MonoBehaviour:
   attackRange: 5
   attackDamage: 10
   attackCooldown: 1.5
-  waypointTolerance: 1.5
+  waypointTolerance: 5
 --- !u!195 &5681666085069512383
 NavMeshAgent:
   m_ObjectHideFlags: 0
