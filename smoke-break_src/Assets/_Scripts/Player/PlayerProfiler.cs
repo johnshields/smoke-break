@@ -57,7 +57,6 @@ namespace _Scripts.Player
         [Header("Audio Settings")] [SerializeField]
         private AudioSource audioSource;
 
-        [SerializeField] private AudioClip dodgeSound;
         [SerializeField] private AudioClip staggerSound;
 
 
@@ -135,40 +134,51 @@ namespace _Scripts.Player
 
         private void FixedUpdate()
         {
+            if (_isDodging || disableMovement) return;
+
             if (currentHealth <= 0 && !_respawner.isRespawning)
             {
                 _respawner.isRespawning = true;
                 _respawner.InitRespawn();
             }
 
-            _groundedGravity = Physics.CheckSphere(groundCheck.position, groundCheckRadius, groundLayer);
-
-            if (!_groundedGravity)
-            {
-                _rigidbody.AddForce(Vector3.up * gravityForce, ForceMode.Acceleration);
-            }
-
-            if (_isDodging || disableMovement) return;
-
-            if (grounded)
-            {
-                float speedFactor = _isSprinting ? sprintMultiplier : 1f;
-                _animator.SetFloat(Speed, (_rigidbody.velocity.magnitude / MaxSpeed) * speedFactor);
-            }
-
             var input = _moveKeys.ReadValue<Vector2>();
+            MoveCharacter(input);
+            RotateCharacter(input);
+        }
 
+        private void MoveCharacter(Vector2 input)
+        {
+            // Get camera directions for movement
             var cameraRight = _mainCamera.transform.right;
             var cameraForward = _mainCamera.transform.forward;
 
+            // Reset movement force direction
             _forceDirection = Vector3.zero;
-            _forceDirection += GetCameraDirection(cameraRight, input.x);
-            _forceDirection += GetCameraDirection(cameraForward, input.y);
+            _forceDirection += GetCameraDirection(cameraRight, input.x); // Apply right movement
+            _forceDirection += GetCameraDirection(cameraForward, input.y); // Apply forward movement
 
-            float speedMultiplier = _isSprinting ? sprintMultiplier : 1f;
+            // Determine movement speed based on sprinting state
+            var speedMultiplier = _isSprinting ? sprintMultiplier : 1f;
+
+            // Apply movement force to rigidbody
             _rigidbody.AddForce(_forceDirection * (movementForce * speedMultiplier), ForceMode.Impulse);
 
-            RotateCharacter(_moveKeys.ReadValue<Vector2>());
+            // Check if character is grounded using a downward raycast
+            _groundedGravity = Physics.Raycast(transform.position, Vector3.down, out _, groundCheckRadius, groundLayer);
+
+            // Apply gravity if the character is not grounded
+            if (!_groundedGravity)
+            {
+                _rigidbody.AddForce(Vector3.down * gravityForce, ForceMode.Acceleration);
+            }
+
+            // If the character is not grounded, exit function
+            if (!grounded || !_groundedGravity) return;
+
+            // Adjust animation speed based on movement speed
+            var speedFactor = _isSprinting ? sprintMultiplier : 1f;
+            _animator.SetFloat(Speed, (_rigidbody.velocity.magnitude / MaxSpeed) * speedFactor);
         }
 
         private void RotateCharacter(Vector2 input)
@@ -191,7 +201,6 @@ namespace _Scripts.Player
         private void JumpAction(InputAction.CallbackContext context)
         {
             if (!grounded && disableMovement) return;
-
             grounded = false;
             _animator.SetBool(Grounded, false);
             _animator.SetTrigger(Jump);
@@ -220,9 +229,6 @@ namespace _Scripts.Player
             var dodgeDirection = GetCameraDirection(cameraRight, input.x) + GetCameraDirection(cameraForward, input.y);
 
             if (dodgeDirection == Vector3.zero) dodgeDirection = -transform.forward;
-
-            // if (dodgeSound is not null && audioSource is not null)
-            //     audioSource.PlayOneShot(dodgeSound, 0.1f);
 
             StartCoroutine(SmoothDodge(dodgeDirection.normalized));
         }

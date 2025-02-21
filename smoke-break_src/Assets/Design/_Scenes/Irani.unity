@@ -7237,20 +7237,19 @@ MonoBehaviour:
   currentHealth: 100
   movementForce: 1
   grounded: 0
-  jumpForce: 8
+  jumpForce: 30
   dodgeDistance: 5
   dodgeDuration: 1
   disableMovement: 0
   staggerDuration: 0.5
   sprintMultiplier: 2
-  gravityForce: -10
+  gravityForce: 50
   groundCheck: {fileID: 1330028136849644067}
   groundLayer:
     serializedVersion: 2
     m_Bits: 128
-  groundCheckRadius: 0.2
+  groundCheckRadius: 0.5
   audioSource: {fileID: 1154103203}
-  dodgeSound: {fileID: 8300000, guid: 41599dcc647fd9b4aacbd6c8f159285a, type: 3}
   staggerSound: {fileID: 8300000, guid: f213908e626150348903575839136bd5, type: 3}
 --- !u!1 &1619401602250535212
 GameObject:
@@ -14245,7 +14244,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5fd4a24e4f3cbbf4a897adf7203e1a57, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  boostForce: 75
+  boostForce: 150
   boostCooldown: 1
   fallMultiplier: 15
   doubleJumpTimeLimit: 0.5
