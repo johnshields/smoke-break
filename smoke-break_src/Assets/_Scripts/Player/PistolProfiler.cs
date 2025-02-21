@@ -224,7 +224,7 @@ namespace _Scripts.Player
             yield return new WaitForSeconds(0.5f);
 
             currentClipAmmo--;
-            randomAudio.PlayRandomSound("Sounds/Pistol/", gunshotVolume);
+            randomAudio.PlayRandomSound("pistol", gunshotVolume);
             GameObject muzzleFlash = Instantiate(muzzleFlashPrefab, firePoint.position, firePoint.rotation);
             Destroy(muzzleFlash, 0.1f);
 

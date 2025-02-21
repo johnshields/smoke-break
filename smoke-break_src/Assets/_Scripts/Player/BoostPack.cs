@@ -1,7 +1,6 @@
 using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 namespace _Scripts.Player
@@ -27,7 +26,6 @@ namespace _Scripts.Player
         private AudioSource audioSource;
 
         [SerializeField] private AudioClip boostSound;
-        [SerializeField] private AudioClip jumpSound;
         [SerializeField] private float vol = 0.2f;
 
         [Header("Dependencies")] private Rigidbody _rigidbody;

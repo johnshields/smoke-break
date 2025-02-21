@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -6,22 +7,19 @@ namespace _Scripts
 {
     public class RandomAudio : MonoBehaviour
     {
-        [FormerlySerializedAs("pistolFireSounds")] [Header("Gunshot Sounds")] [SerializeField]
-        private List<AudioClip> pistolSounds;
-
-        [Header("Axe Sounds")] [SerializeField]
-        private List<AudioClip> axeSounds;
+        public List<AudioClip> clipList;
+        public AudioClip[] clipListArray;
 
         public AudioSource audioSource;
 
-        private AudioClip GetRandomClip(string category)
+        private AudioClip GetRandomClip(string path)
         {
-            return category switch
-            {
-                "Sounds/Pistol/" when pistolSounds.Count > 0 => pistolSounds[Random.Range(0, pistolSounds.Count)],
-                "Sounds/Axe/" when axeSounds.Count > 0 => axeSounds[Random.Range(0, axeSounds.Count)],
-                _ => null
-            };
+            clipListArray = Resources.LoadAll<AudioClip>(path);
+
+            clipList = clipListArray.ToList();
+            var clipToPlay = clipList[Random.Range(0, clipList.Count)];
+
+            return clipToPlay;
         }
 
         public void PlayRandomSound(string path, float vol)

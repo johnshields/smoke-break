@@ -71,7 +71,7 @@ namespace _Scripts.Player
             _randomAnimation.PlayRandomAttack();
 
             yield return new WaitForSeconds(AttackDelay);
-            randomAudio.PlayRandomSound("Sounds/Axe/", 0.2f);
+            randomAudio.PlayRandomSound("axe", 0.2f);
 
             Collider[] hitEnemies = Physics.OverlapSphere(attackPoint.position, attackRange, enemyLayers);
             foreach (var enemy in hitEnemies)

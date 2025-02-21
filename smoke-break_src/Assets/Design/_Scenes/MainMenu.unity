@@ -3594,7 +3594,6 @@ MonoBehaviour:
   boostEffect: {fileID: 5347176430255127499}
   audioSource: {fileID: 1881246792}
   boostSound: {fileID: 8300000, guid: 799f2fc16f4cf4343be9b1753bc5ef07, type: 3}
-  jumpSound: {fileID: 0}
   vol: 0.2
   boostBar: {fileID: 0}
   boostFill: {fileID: 0}
@@ -3616,13 +3615,14 @@ GameObject:
   - component: {fileID: 7736720956469656234}
   - component: {fileID: 2205463725915379423}
   - component: {fileID: 2576542002489176668}
+  - component: {fileID: 7736720956469656235}
   m_Layer: 3
   m_Name: Kanta
   m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &2391842094281191809
 Transform:
   m_ObjectHideFlags: 0
@@ -9778,6 +9778,19 @@ CapsuleCollider:
   m_Height: 5.5
   m_Direction: 1
   m_Center: {x: -0.00018942356, y: 2.7477024, z: 7.775754e-19}
+--- !u!114 &7736720956469656235
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2370051512896006764}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 328c466227e74c748bc45aa400f1ca35, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  randomAudio: {fileID: 0}
 --- !u!1 &7790177757902399900
 GameObject:
   m_ObjectHideFlags: 0
