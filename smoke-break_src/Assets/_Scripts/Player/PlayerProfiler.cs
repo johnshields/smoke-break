@@ -7,14 +7,14 @@ namespace _Scripts.Player
 {
     [RequireComponent(typeof(Rigidbody), typeof(Animator), typeof(PlayerHealth))]
     public class PlayerProfiler : MonoBehaviour
-
     {
+        #region Variables
+
         [Header("Animation Parameters")] private static readonly int Grounded = Animator.StringToHash("Grounded");
         private static readonly int Speed = Animator.StringToHash("Speed");
         private static readonly int Jump = Animator.StringToHash("Jump");
         private static readonly int Dodge = Animator.StringToHash("Dodge");
-        private int _speedHash;
-        private int _groundedHash;
+        private static readonly int Injured = Animator.StringToHash("Injured");
 
         [Header("References")] private Rigidbody _rigidbody;
         private Animator _animator;
@@ -22,6 +22,7 @@ namespace _Scripts.Player
         private InputControls _actions;
         private InputAction _moveKeys;
         private PlayerHealth _playerHealth;
+        private PauseMenu _pauseMenu;
 
         [Header("Movement Settings")] public float movementForce = 1f;
         private Vector3 _forceDirection = Vector3.zero;
@@ -58,23 +59,32 @@ namespace _Scripts.Player
 
         [SerializeField] private AudioClip staggerSound;
 
+        private const int InjuryThreshold = 30;
+
+        #endregion
+
+        #region Unity Callbacks
+
         private void Awake()
         {
             _rigidbody = GetComponent<Rigidbody>();
             _animator = GetComponent<Animator>();
             _playerHealth = GetComponent<PlayerHealth>();
-
             _actions = new InputControls();
             _mainCamera = Camera.main;
+
+            if (_pauseMenu != null)
+                _pauseMenu = FindObjectOfType<PauseMenu>();
+
             currentStamina = maxStamina;
+            _moveKeys = _actions.Profiler.Movement;
         }
 
         private void OnEnable()
         {
-            if (FindObjectOfType<PauseMenu>().isPaused) return;
+            if (_pauseMenu is not null && _pauseMenu.isPaused) return;
 
             _actions.Profiler.Enable();
-            _moveKeys = _actions.Profiler.Movement;
             _actions.Profiler.Jump.performed += JumpAction;
             _actions.Profiler.Dodge.performed += DodgeAction;
             _actions.Profiler.Sprint.performed += StartSprinting;
@@ -90,6 +100,12 @@ namespace _Scripts.Player
             _actions.Profiler.Disable();
         }
 
+        private void Update()
+        {
+            DrainStamina();
+            UpdateInjuryState();
+        }
+
         private void FixedUpdate()
         {
             if (_isDodging || disableMovement) return;
@@ -97,7 +113,6 @@ namespace _Scripts.Player
             var input = _moveKeys.ReadValue<Vector2>();
             MoveCharacter(input);
             RotateCharacter(input);
-            DrainStamina();
         }
 
         private void OnCollisionEnter(Collision collision)
@@ -108,6 +123,10 @@ namespace _Scripts.Player
                 _animator.SetBool(Grounded, true);
             }
         }
+
+        #endregion
+
+        #region Movement
 
         private void MoveCharacter(Vector2 input)
         {
@@ -161,6 +180,10 @@ namespace _Scripts.Player
             return direction.normalized * inputAxis;
         }
 
+        #endregion
+
+        #region Jumping & Dodging
+
         private void JumpAction(InputAction.CallbackContext context)
         {
             if (!grounded && disableMovement) return;
@@ -178,7 +201,21 @@ namespace _Scripts.Player
 
         private void DodgeAction(InputAction.CallbackContext context)
         {
-            if (!_canDodge || _isDodging || currentStamina < 10) return;
+            if (!TryDodge()) return;
+
+            var input = _moveKeys.ReadValue<Vector2>();
+            var cameraRight = _mainCamera.transform.right;
+            var cameraForward = _mainCamera.transform.forward;
+
+            var dodgeDirection = GetCameraDirection(cameraRight, input.x) + GetCameraDirection(cameraForward, input.y);
+            if (dodgeDirection == Vector3.zero) dodgeDirection = -transform.forward;
+
+            StartCoroutine(SmoothDodge(dodgeDirection.normalized));
+        }
+
+        private bool TryDodge()
+        {
+            if (!_canDodge || _isDodging || currentStamina < 10) return false;
 
             currentStamina -= 10;
             _playerHealth.invulnerable = true;
@@ -187,15 +224,7 @@ namespace _Scripts.Player
             disableMovement = true;
             _animator.SetTrigger(Dodge);
 
-            var input = _moveKeys.ReadValue<Vector2>();
-            var cameraRight = _mainCamera.transform.right;
-            var cameraForward = _mainCamera.transform.forward;
-
-            var dodgeDirection = GetCameraDirection(cameraRight, input.x) + GetCameraDirection(cameraForward, input.y);
-
-            if (dodgeDirection == Vector3.zero) dodgeDirection = -transform.forward;
-
-            StartCoroutine(SmoothDodge(dodgeDirection.normalized));
+            return true;
         }
 
         private IEnumerator SmoothDodge(Vector3 dodgeDirection)
@@ -229,15 +258,15 @@ namespace _Scripts.Player
             _canDodge = true;
         }
 
+        #endregion
+
+        #region Sprinting & Stamina
+
         private void StartSprinting(InputAction.CallbackContext context)
         {
-            if (_isExhausted)
-            {
-                return;
-            }
+            if (_isExhausted) return;
 
             sprintMultiplier = _playerHealth.currentHealth < 50 ? 1.5f : 2f;
-
             _isSprinting = true;
         }
 
@@ -250,23 +279,20 @@ namespace _Scripts.Player
         {
             if (_isSprinting)
             {
-                currentStamina -= staminaDrainRate * Time.deltaTime;
-                if (currentStamina <= 0)
-                {
-                    currentStamina = 0;
-                    _isExhausted = true;
-                    _isSprinting = false;
-                }
+                currentStamina = Mathf.Clamp(currentStamina - staminaDrainRate * Time.deltaTime, 0, maxStamina);
+                _isExhausted = currentStamina == 0;
+                if (_isExhausted) _isSprinting = false;
             }
             else
             {
-                if (currentStamina < maxStamina)
-                {
-                    currentStamina += staminaRegenRate * Time.deltaTime;
-                    if (currentStamina >= maxStamina / 2) _isExhausted = false;
-                }
+                currentStamina = Mathf.Clamp(currentStamina + staminaRegenRate * Time.deltaTime, 0, maxStamina);
+                _isExhausted = currentStamina < maxStamina / 2;
             }
         }
+
+        #endregion
+
+        #region Combat & Effects
 
         public IEnumerator StaggerEffect()
         {
@@ -284,17 +310,26 @@ namespace _Scripts.Player
             movementForce = originalMovementForce;
         }
 
+        private void UpdateInjuryState()
+        {
+            var isLowHealth = _playerHealth.currentHealth <= InjuryThreshold;
+            var isStandingStill = _moveKeys.ReadValue<Vector2>().sqrMagnitude < 0.01f;
+
+            var shouldBeInjured = isLowHealth && isStandingStill;
+            _animator.SetBool(Injured, shouldBeInjured);
+        }
+
+        #endregion
+
+        #region Misc
+
         public void SetActions(bool active)
         {
-            if (active)
-            {
-                _rigidbody.constraints = RigidbodyConstraints.None;
-                _rigidbody.constraints = RigidbodyConstraints.FreezeRotation;
-            }
-            else
-            {
-                _rigidbody.constraints = RigidbodyConstraints.FreezeAll;
-            }
+            _rigidbody.constraints = active
+                ? RigidbodyConstraints.FreezeRotation
+                : RigidbodyConstraints.FreezeAll;
         }
+
+        #endregion
     }
 }
