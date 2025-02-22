@@ -26,14 +26,14 @@ namespace _Scripts.AI
         private Transform _player;
         private Animator _animator;
         private bool _canAttack = true;
-        private PlayerProfiler _playerScript;
+        private PlayerHealth _playerScript;
 
         private void Awake()
         {
             _agent = GetComponent<NavMeshAgent>();
             _animator = GetComponent<Animator>();
             _player = GameObject.FindGameObjectWithTag("Player").transform;
-            _playerScript = _player.GetComponent<PlayerProfiler>();
+            _playerScript = _player.GetComponent<PlayerHealth>();
 
             _agent.updateRotation = false;
         }

@@ -2967,7 +2967,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1098351669}
   serializedVersion: 2
-  m_LocalRotation: {x: -0.21303385, y: 0.007657724, z: 0.001142608, w: 0.9770142}
+  m_LocalRotation: {x: -0.21303497, y: 0.006953127, z: 0.0010374757, w: 0.9770193}
   m_LocalPosition: {x: 0.0000032398661, y: -8.8181196e-10, z: -0.000007181662}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -6255,14 +6255,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c7d23d6719189294dad9c276ace90e33, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxHealth: 100
-  currentHealth: 100
   movementForce: 1
+  disableMovement: 0
   grounded: 0
   jumpForce: 10
   dodgeDistance: 5
   dodgeDuration: 1
-  disableMovement: 0
   staggerDuration: 0.5
   sprintMultiplier: 2
   gravityForce: -10
@@ -6272,7 +6270,6 @@ MonoBehaviour:
     m_Bits: 128
   groundCheckRadius: 0.2
   audioSource: {fileID: 2098264201}
-  dodgeSound: {fileID: 8300000, guid: 3efc3db2b0beba540b8caf604f8b5585, type: 3}
   staggerSound: {fileID: 8300000, guid: f213908e626150348903575839136bd5, type: 3}
 --- !u!1 &1619401602250535212
 GameObject:
@@ -12737,6 +12734,7 @@ GameObject:
   - component: {fileID: 7819173119770924575}
   - component: {fileID: 5897919289326121628}
   - component: {fileID: 9028799375046230541}
+  - component: {fileID: 9028799375046230542}
   m_Layer: 3
   m_Name: Kanta
   m_TagString: Player
@@ -13965,6 +13963,21 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   randomAudio: {fileID: 695156575}
+--- !u!114 &9028799375046230542
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5979711990829132460}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e5c4ed213c9bb7d4485f206b2a7e96f3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxHealth: 100
+  currentHealth: 60
+  invulnerable: 0
 --- !u!4 &9070495592048958161
 Transform:
   m_ObjectHideFlags: 0

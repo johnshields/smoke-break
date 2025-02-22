@@ -3616,6 +3616,7 @@ GameObject:
   - component: {fileID: 2205463725915379423}
   - component: {fileID: 2576542002489176668}
   - component: {fileID: 7736720956469656235}
+  - component: {fileID: 7736720956469656236}
   m_Layer: 3
   m_Name: Kanta
   m_TagString: Player
@@ -9546,14 +9547,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c7d23d6719189294dad9c276ace90e33, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxHealth: 100
-  currentHealth: 60
   movementForce: 1
+  disableMovement: 0
   grounded: 0
   jumpForce: 5
   dodgeDistance: 20
   dodgeDuration: 1
-  disableMovement: 0
   staggerDuration: 0.5
   sprintMultiplier: 2
   gravityForce: -9.81
@@ -9790,6 +9789,21 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   randomAudio: {fileID: 0}
+--- !u!114 &7736720956469656236
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2370051512896006764}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e5c4ed213c9bb7d4485f206b2a7e96f3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxHealth: 100
+  currentHealth: 60
+  invulnerable: 0
 --- !u!1 &7790177757902399900
 GameObject:
   m_ObjectHideFlags: 0

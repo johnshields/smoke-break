@@ -21,7 +21,7 @@ namespace _Scripts
 
         private Transform _player;
         private Vector3 _startPosition;
-        private PlayerProfiler _playerHealth;
+        private PlayerHealth _playerHealth;
         private PistolProfiler _pistol;
 
         private void Start()
@@ -30,7 +30,7 @@ namespace _Scripts
             if (_player is not null)
             {
                 _pistol = _player.GetComponentInParent<PistolProfiler>();
-                _playerHealth = _player.GetComponentInParent<PlayerProfiler>();
+                _playerHealth = _player.GetComponentInParent<PlayerHealth>();
             }
 
             _startPosition = transform.position;
@@ -84,7 +84,7 @@ namespace _Scripts
             switch (itemType)
             {
                 case ItemType.Health:
-                    if (other.TryGetComponent(out PlayerProfiler playerHealth) &&
+                    if (other.TryGetComponent(out PlayerHealth playerHealth) &&
                         playerHealth.currentHealth < playerHealth.maxHealth)
                     {
                         playerHealth.RestoreHealth(itemValue);

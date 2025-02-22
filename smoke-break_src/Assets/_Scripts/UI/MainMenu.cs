@@ -89,7 +89,8 @@ namespace _Scripts.UI
 
             string savedLevel = PlayerPrefs.GetString("SavedLevel");
 
-            SaveManager.LoadGame(FindObjectOfType<PlayerProfiler>(), FindObjectOfType<PistolProfiler>());
+            SaveManager.LoadGame(FindObjectOfType<PlayerProfiler>(), FindObjectOfType<PlayerHealth>(),
+                FindObjectOfType<PistolProfiler>());
             SceneManager.LoadScene(savedLevel);
         }
 

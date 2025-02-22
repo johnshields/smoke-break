@@ -1,5 +1,4 @@
 using System.Collections;
-using _Scripts.Managers;
 using _Scripts.UI;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -21,10 +20,7 @@ namespace _Scripts.Player
         private Animator _animator;
         private InputControls _actions;
         private InputAction _moveKeys;
-        private PistolProfiler _pistol;
-
-        [Header("Health Settings")] public int maxHealth = 100;
-        public int currentHealth;
+        private PlayerHealth _playerHealth;
 
         [Header("Movement Settings")] public float movementForce = 1f;
         private Vector3 _forceDirection = Vector3.zero;
@@ -39,13 +35,11 @@ namespace _Scripts.Player
         public float staggerDuration = 0.5f;
         private bool _canDodge = true;
         private bool _isDodging;
-        private bool _invulnerable;
 
         [Header("Sprint Settings")] [SerializeField]
         private float sprintMultiplier = 2f;
 
         private bool _isSprinting;
-        private PlayerRespawner _respawner;
 
         [Header("Gravity Settings")] [SerializeField]
         private float gravityForce = -9.81f;
@@ -60,7 +54,6 @@ namespace _Scripts.Player
 
         [SerializeField] private AudioClip staggerSound;
 
-
         private void Awake()
         {
             _rigidbody = GetComponent<Rigidbody>();
@@ -68,33 +61,11 @@ namespace _Scripts.Player
             _speedHash = Animator.StringToHash("Speed");
             _animator.SetFloat(_speedHash, 0f);
             _animator.SetBool(Grounded, true);
-            _respawner = GetComponent<PlayerRespawner>();
-            _pistol = GetComponent<PistolProfiler>();
+            _playerHealth = GetComponent<PlayerHealth>();
 
             _actions = new InputControls();
             _mainCamera = Camera.main;
             grounded = true;
-
-            currentHealth = PlayerPrefs.HasKey("PlayerHealth") ? PlayerPrefs.GetInt("PlayerHealth") : 20;
-            SaveManager.LoadGame(this, _pistol);
-        }
-
-        public void SetCurrentHealth(int health)
-        {
-            currentHealth = health;
-        }
-
-        public int GetCurrentHealth()
-        {
-            PlayerPrefs.SetInt("PlayerHealth", currentHealth);
-            PlayerPrefs.Save();
-
-            return currentHealth;
-        }
-
-        public void RestoreHealth(int itemValue)
-        {
-            currentHealth = Mathf.Clamp(currentHealth + itemValue, 0, maxHealth);
         }
 
         private void OnEnable()
@@ -130,12 +101,6 @@ namespace _Scripts.Player
         private void FixedUpdate()
         {
             if (_isDodging || disableMovement) return;
-
-            if (currentHealth <= 0 && !_respawner.isRespawning)
-            {
-                _respawner.isRespawning = true;
-                _respawner.InitRespawn();
-            }
 
             var input = _moveKeys.ReadValue<Vector2>();
             MoveCharacter(input);
@@ -177,6 +142,16 @@ namespace _Scripts.Player
             _animator.SetFloat(Speed, (_rigidbody.velocity.magnitude / MaxSpeed) * speedFactor);
         }
 
+        private void StartSprinting(InputAction.CallbackContext context)
+        {
+            _isSprinting = true;
+        }
+
+        private void StopSprinting(InputAction.CallbackContext context)
+        {
+            _isSprinting = false;
+        }
+
         private void RotateCharacter(Vector2 input)
         {
             var direction = _rigidbody.velocity;
@@ -213,7 +188,7 @@ namespace _Scripts.Player
         {
             if (!_canDodge || _isDodging) return;
 
-            _invulnerable = true;
+            _playerHealth.invulnerable = true;
             _isDodging = true;
             _canDodge = false;
             disableMovement = true;
@@ -253,7 +228,7 @@ namespace _Scripts.Player
             }
 
             _rigidbody.MovePosition(targetPosition);
-            _invulnerable = false;
+            _playerHealth.invulnerable = false;
             _isDodging = false;
             disableMovement = false;
 
@@ -261,28 +236,7 @@ namespace _Scripts.Player
             _canDodge = true;
         }
 
-        private void StartSprinting(InputAction.CallbackContext context)
-        {
-            _isSprinting = true;
-        }
-
-        private void StopSprinting(InputAction.CallbackContext context)
-        {
-            _isSprinting = false;
-        }
-
-        public void TakeDamage(int damage)
-        {
-            if (_invulnerable) return;
-
-            if (_respawner.isRespawning) return;
-            print($"🔥 Kanta took {damage} damage!");
-            currentHealth -= damage;
-
-            StartCoroutine(StaggerEffect());
-        }
-
-        private IEnumerator StaggerEffect()
+        public IEnumerator StaggerEffect()
         {
             if (staggerSound is not null && audioSource is not null)
                 audioSource.PlayOneShot(staggerSound);

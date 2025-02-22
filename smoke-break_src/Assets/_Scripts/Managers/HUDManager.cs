@@ -15,12 +15,12 @@ namespace _Scripts.Managers
         [SerializeField] private GameObject deathText;
 
         private PistolProfiler _pistol;
-        private PlayerProfiler _player;
+        private PlayerHealth _player;
 
         private void Start()
         {
             _pistol = FindObjectOfType<PistolProfiler>();
-            _player = FindObjectOfType<PlayerProfiler>();
+            _player = FindObjectOfType<PlayerHealth>();
 
             UpdateAmmo();
             UpdateHealth();

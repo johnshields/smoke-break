@@ -149,7 +149,8 @@ namespace _Scripts.UI
 
         private void SaveGame()
         {
-            SaveManager.SaveGame(FindObjectOfType<PlayerProfiler>(), FindObjectOfType<PistolProfiler>());
+            SaveManager.SaveGame(FindObjectOfType<PlayerProfiler>(), FindObjectOfType<PlayerHealth>(),
+                FindObjectOfType<PistolProfiler>());
             StartCoroutine(ShowSaveNotification());
         }
 

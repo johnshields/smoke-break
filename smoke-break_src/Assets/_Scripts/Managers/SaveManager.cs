@@ -6,13 +6,13 @@ namespace _Scripts.Managers
 {
     public static class SaveManager
     {
-        public static void SaveGame(PlayerProfiler player, PistolProfiler pistol)
+        public static void SaveGame(PlayerProfiler player, PlayerHealth health, PistolProfiler pistol)
         {
             PlayerPrefs.SetFloat("PlayerX", player.transform.position.x);
             PlayerPrefs.SetFloat("PlayerY", player.transform.position.y);
             PlayerPrefs.SetFloat("PlayerZ", player.transform.position.z);
 
-            PlayerPrefs.SetInt("PlayerHealth", player.GetCurrentHealth());
+            PlayerPrefs.SetInt("PlayerHealth", health.GetCurrentHealth());
             PlayerPrefs.SetInt("ClipAmmo", pistol.currentClipAmmo);
             PlayerPrefs.SetInt("StoredAmmo", pistol.storedAmmo);
 
@@ -22,7 +22,7 @@ namespace _Scripts.Managers
             PlayerPrefs.Save();
         }
 
-        public static void LoadGame(PlayerProfiler player, PistolProfiler pistol)
+        public static void LoadGame(PlayerProfiler player, PlayerHealth health, PistolProfiler pistol)
         {
             if (!PlayerPrefs.HasKey("PlayerX")) return;
 
@@ -33,7 +33,7 @@ namespace _Scripts.Managers
             );
 
             player.transform.position = savedPosition;
-            player.SetCurrentHealth(PlayerPrefs.GetInt("PlayerHealth"));
+            health.SetCurrentHealth(PlayerPrefs.GetInt("PlayerHealth"));
 
             pistol.SetAmmo(
                 PlayerPrefs.GetInt("ClipAmmo"),

@@ -17,6 +17,7 @@ namespace _Scripts.Player
 
         public bool isRespawning = false;
         private PlayerProfiler _player;
+        private PlayerHealth _playerHealth;
         private CombatProfiler _combatProfiler;
         private PistolProfiler _pistolProfiler;
         private Animator _animator;
@@ -31,6 +32,7 @@ namespace _Scripts.Player
         {
             _component = hudManager.GetComponent<HUDManager>();
             _player = GetComponent<PlayerProfiler>();
+            _playerHealth = GetComponent<PlayerHealth>();
             _combatProfiler = GetComponent<CombatProfiler>();
             _pistolProfiler = GetComponent<PistolProfiler>();
             _animator = GetComponent<Animator>();
@@ -82,7 +84,7 @@ namespace _Scripts.Player
         private void ResetPlayer()
         {
             EnablePlayerActions();
-            _player.currentHealth = _player.maxHealth;
+            _playerHealth.currentHealth = _playerHealth.maxHealth;
             _animator.Rebind();
             _animator.Update(0f);
             isRespawning = false;
