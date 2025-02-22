@@ -259,7 +259,7 @@ namespace _Scripts.Player
         public void TakeDamage(int damage)
         {
             if (_respawner.isRespawning) return;
-            Debug.Log($"🔥 Kanta took {damage} damage!");
+            print($"🔥 Kanta took {damage} damage!");
             currentHealth -= damage;
 
             StartCoroutine(StaggerEffect());

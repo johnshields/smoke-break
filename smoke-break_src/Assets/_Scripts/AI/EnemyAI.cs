@@ -26,12 +26,14 @@ namespace _Scripts.AI
         private Transform _player;
         private Animator _animator;
         private bool _canAttack = true;
+        private PlayerProfiler _playerScript;
 
         private void Awake()
         {
             _agent = GetComponent<NavMeshAgent>();
             _animator = GetComponent<Animator>();
             _player = GameObject.FindGameObjectWithTag("Player").transform;
+            _playerScript = _player.GetComponent<PlayerProfiler>();
 
             _agent.updateRotation = false;
         }
@@ -44,11 +46,7 @@ namespace _Scripts.AI
             {
                 case AIState.Patrolling:
                     Patrol();
-                    if (distanceToPlayer <= detectionRange)
-                    {
-                        _currentState = AIState.Chasing;
-                    }
-
+                    if (distanceToPlayer <= detectionRange) _currentState = AIState.Chasing;
                     break;
                 case AIState.Chasing:
                     ChasePlayer(distanceToPlayer);
@@ -58,9 +56,7 @@ namespace _Scripts.AI
             }
 
             if (_currentState == AIState.Chasing && !_agent.pathPending && _agent.remainingDistance < 0.5f)
-            {
                 _agent.SetDestination(_player.position);
-            }
 
             _animator.SetFloat(Speed, _agent.velocity.magnitude);
         }
@@ -69,7 +65,7 @@ namespace _Scripts.AI
         {
             if (_agent.remainingDistance <= waypointTolerance)
             {
-                Vector3 randomPoint = GetRandomPoint(transform.position, 10f);
+                var randomPoint = GetRandomPoint(transform.position, 10f);
                 _agent.SetDestination(randomPoint);
             }
 
@@ -81,14 +77,8 @@ namespace _Scripts.AI
         private Vector3 GetRandomPoint(Vector3 center, float range)
         {
             var randomPos = center + new Vector3(Random.Range(-range, range), 0, Random.Range(-range, range));
-            NavMeshHit hit;
 
-            if (NavMesh.SamplePosition(randomPos, out hit, range, NavMesh.AllAreas))
-            {
-                return hit.position;
-            }
-
-            return center;
+            return NavMesh.SamplePosition(randomPos, out var hit, range, NavMesh.AllAreas) ? hit.position : center;
         }
 
         private void ChasePlayer(float distanceToPlayer)
@@ -110,9 +100,7 @@ namespace _Scripts.AI
                 }
 
                 if (distanceToPlayer > detectionRange)
-                {
                     StartCoroutine(LosePlayerAfterDelay());
-                }
             }
         }
 
@@ -135,47 +123,37 @@ namespace _Scripts.AI
             _canAttack = false;
             _animator.SetBool(IsAttacking, true);
 
-            yield return new WaitForSeconds(0.5f);
-
-            if (Vector3.Distance(transform.position, _player.position) <= attackRange)
+            while (Vector3.Distance(transform.position, _player.position) <= attackRange)
             {
-                var playerScript = _player.GetComponent<PlayerProfiler>();
+                yield return new WaitForSeconds(.5f);
 
-                if (playerScript != null)
+                if (Vector3.Distance(transform.position, _player.position) <= attackRange)
                 {
-                    playerScript.TakeDamage(attackDamage);
+                    _playerScript?.TakeDamage(attackDamage);
                 }
-            }
 
-            yield return new WaitForSeconds(attackCooldown);
+                yield return new WaitForSeconds(attackCooldown);
+            }
 
             _animator.SetBool(IsAttacking, false);
             _canAttack = true;
-
-            if (Vector3.Distance(transform.position, _player.position) > attackRange)
-            {
-                _agent.isStopped = false;
-                _currentState = AIState.Chasing;
-            }
-            else
-            {
-                StartCoroutine(AttackPlayer());
-            }
+            _agent.isStopped = false;
+            _currentState = AIState.Chasing;
         }
 
         private void RotateTowards(Vector3 targetPosition)
         {
             Vector3 direction = targetPosition - transform.position;
             direction.y = 0;
-            
+
             if (direction.sqrMagnitude < 0.0001f)
             {
                 return;
             }
 
-            direction.Normalize(); 
+            direction.Normalize();
 
-            Quaternion lookRotation = Quaternion.LookRotation(direction);
+            var lookRotation = Quaternion.LookRotation(direction);
             transform.rotation = Quaternion.Slerp(transform.rotation, lookRotation, Time.deltaTime * 5f);
         }
     }

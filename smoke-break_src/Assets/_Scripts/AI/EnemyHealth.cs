@@ -1,5 +1,6 @@
 using System.Collections;
 using UnityEngine;
+using UnityEngine.AI;
 
 namespace _Scripts.AI
 {
@@ -27,10 +28,15 @@ namespace _Scripts.AI
         private AudioSource audioSource;
 
         [SerializeField] private AudioClip audioClip;
+        private NavMeshAgent _agent;
+        private EnemyAI _enemyAI;
 
         private void Start()
         {
+            _enemyAI = GetComponent<EnemyAI>();
+            _agent = GetComponent<NavMeshAgent>();
             _rigidbody = GetComponent<Rigidbody>();
+            _rigidbody.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
 
             if (enemyRenderer != null)
                 _originalColor = enemyRenderer.material.color;
@@ -41,12 +47,12 @@ namespace _Scripts.AI
             if (damage <= 0) return;
 
             health -= damage;
-            GetComponent<EnemyAI>()?.EnterChaseState();
+            _enemyAI?.EnterChaseState();
 
-            if (enemyRenderer != null)
+            if (enemyRenderer is not null)
                 StartCoroutine(FlashEffect());
 
-            if (_rigidbody != null)
+            if (_rigidbody is not null)
                 StartCoroutine(ApplyKnockback(hitDirection));
 
             if (health <= 0)
@@ -55,7 +61,7 @@ namespace _Scripts.AI
 
         private IEnumerator FlashEffect()
         {
-            if (enemyRenderer == null) yield break;
+            if (enemyRenderer is null) yield break;
 
             enemyRenderer.material.color = hitColor;
             yield return new WaitForSeconds(hitEffectDuration);
@@ -64,17 +70,22 @@ namespace _Scripts.AI
 
         private IEnumerator ApplyKnockback(Vector3 direction)
         {
-            if (_rigidbody == null || _isKnockedBack) yield break;
+            if (_rigidbody is null || _isKnockedBack) yield break;
 
             _isKnockedBack = true;
-            _rigidbody.AddForce(direction.normalized * knockbackForce, ForceMode.Impulse);
+            if (_agent) _agent.enabled = false;
+
+            _rigidbody.velocity = direction.normalized * knockbackForce;
+
             yield return new WaitForSeconds(knockbackDuration);
+
+            if (_agent) _agent.enabled = true;
             _isKnockedBack = false;
         }
 
         private void Die()
         {
-            Debug.Log($"{gameObject.name} has been destroyed!");
+            print($"{gameObject.name} has been destroyed!");
             if (audioSource is not null && audioClip is not null)
                 audioSource.PlayOneShot(audioClip, .5f);
             Destroy(gameObject);
