@@ -8,48 +8,57 @@ namespace _Scripts.Managers
 {
     public class HUDManager : MonoBehaviour
     {
-        [Header("HUD Elements")] [SerializeField]
+        [Header("Pistol HUD Elements")] [SerializeField]
         private TextMeshProUGUI bulletCounter;
 
-        [SerializeField] private Slider healthBar;
-        [SerializeField] private Image healthFillImage;
-        [SerializeField] private Slider staminaBar;
-        [SerializeField] private Image staminaFillImage;
-        [SerializeField] private GameObject deathText;
-        [SerializeField] private Color lowStaminaColor = Color.red;
+        [Header("Health HUD Elements")] [SerializeField]
+        private Slider healthBar;
+
+        [SerializeField] private Image healthFill;
         [SerializeField] private Color lowHealthColor = Color.red;
+        private Color _originalHealthColor;
+        [SerializeField] private GameObject deathText;
+
+        [Header("Stamina HUD Elements")] [SerializeField]
+        private Slider staminaBar;
+
+        [SerializeField] private Image staminaFill;
+        [SerializeField] private Color lowStaminaColor = Color.red;
+        private Color _originalStaminaColor;
+
+        [Header("Boost Pack HUD Elements")] [SerializeField]
+        private Slider boostBar;
+
+        [SerializeField] private Image boostFill;
+        [SerializeField] private Color lowBoostColor = Color.red;
+        private Color _originalBoostColor;
 
         private PistolProfiler _pistol;
         private PlayerProfiler _player;
         private PlayerHealth _playerHealth;
-        private Color _originalStaminaColor;
-        private Color _originalHealthColor;
-        private bool _isFlashingHealth;
-        private bool _isFlashingStamina;
-
+        private BoostPack _boostPack;
 
         private void Start()
         {
             _pistol = FindObjectOfType<PistolProfiler>();
             _player = FindObjectOfType<PlayerProfiler>();
             _playerHealth = FindObjectOfType<PlayerHealth>();
+            _boostPack = FindObjectOfType<BoostPack>();
 
-            if (staminaFillImage != null)
-                _originalStaminaColor = staminaFillImage.color;
-
-            if (healthFillImage != null)
-                _originalHealthColor = healthFillImage.color;
+            _originalStaminaColor = staminaFill?.color ?? Color.white;
+            _originalHealthColor = healthFill?.color ?? Color.white;
+            _originalBoostColor = boostFill?.color ?? Color.white;
 
             UpdateAmmo();
             UpdateHealth();
-            UpdateStamina(_player.maxStamina, _player.maxStamina);
+            UpdateStamina();
         }
 
         private void Update()
         {
             UpdateAmmo();
             UpdateHealth();
-            UpdateStamina(_player.currentStamina, _player.maxStamina);
+            UpdateStamina();
         }
 
         private void UpdateAmmo()
@@ -62,31 +71,112 @@ namespace _Scripts.Managers
         {
             if (healthBar is null) return;
             healthBar.value = _playerHealth.GetCurrentHealth();
-            healthBar.fillRect.gameObject.SetActive(!(_playerHealth.GetCurrentHealth() <= 0));
+            healthBar.fillRect.gameObject.SetActive(_playerHealth.GetCurrentHealth() > 0);
 
-            if (healthFillImage is not null)
-                healthFillImage.color = _playerHealth.GetCurrentHealth() < _playerHealth.maxHealth * 0.1f
+            if (healthFill is not null)
+                healthFill.color = _playerHealth.GetCurrentHealth() < _playerHealth.maxHealth * 0.1f
                     ? lowHealthColor
                     : _originalHealthColor;
         }
 
-        private void UpdateStamina(float currentStamina, float maxStamina)
+        private void UpdateStamina()
         {
             if (staminaBar is null) return;
             staminaBar.value = _player.currentStamina / _player.maxStamina;
             staminaBar.fillRect.gameObject.SetActive(_player.currentStamina >= 0);
 
-            if (staminaFillImage is not null)
-                staminaFillImage.color = currentStamina < maxStamina * 0.2f
+            if (staminaFill is not null)
+                staminaFill.color = _player.currentStamina < _player.maxStamina * 0.2f
                     ? lowStaminaColor
                     : _originalStaminaColor;
+        }
+
+        public IEnumerator UpdateBoostBar()
+        {
+            if (boostBar is null || boostFill is null) yield break;
+
+            var originalColor = boostFill.color;
+            var isFlashing = false;
+
+            StartCoroutine(FadeBoostBar(1f));
+
+            // First phase: Draining the boost bar over the cooldown period.
+            for (float elapsedTime = 0; elapsedTime < _boostPack.boostCooldown; elapsedTime += Time.deltaTime)
+            {
+                // Calculate the fill amount based on elapsed time and cooldown duration.
+                var fillAmount = Mathf.Clamp01(1f - (elapsedTime / _boostPack.boostCooldown));
+
+                // Update the boost bar's fill value.
+                boostBar.value = fillAmount;
+
+                // If the fill amount is below 15% and the flashing effect hasn't started, trigger it.
+                if (fillAmount <= 0.15f && !isFlashing)
+                {
+                    isFlashing = true;
+                    StartCoroutine(FlashBoostBar());
+                }
+
+                // Wait until the next frame before continuing the loop.
+                yield return null;
+            }
+
+            // Small delay to visually indicate the boost bar is completely drained.
+            yield return new WaitForSeconds(0.5f);
+
+            // Restore the original color of the boost fill after flashing.
+            boostFill.color = originalColor;
+
+            // Allow the boost to be used again.
+            _boostPack.canBoost = true;
+
+            // Second phase: Refilling the boost bar over the cooldown duration.
+            for (float elapsedTime = 0; elapsedTime < _boostPack.boostCooldown; elapsedTime += Time.deltaTime)
+            {
+                // Gradually increase the boost bar's fill value.
+                boostBar.value = Mathf.Clamp01(elapsedTime / _boostPack.boostCooldown);
+
+                // Wait until the next frame before continuing the loop.
+                yield return null;
+            }
+
+            boostBar.value = 1f;
+
+            StartCoroutine(FadeBoostBar(0f));
+        }
+
+        private IEnumerator FlashBoostBar()
+        {
+            while (boostBar.value <= 0.15f)
+            {
+                boostFill.color = (boostFill.color == lowBoostColor) ? _originalBoostColor : lowBoostColor;
+                yield return new WaitForSeconds(0.1f);
+            }
+
+            yield return new WaitForSeconds(0.1f);
+            boostFill.color = _originalBoostColor;
+            _boostPack.canBoost = true;
+        }
+
+        private IEnumerator FadeBoostBar(float targetAlpha)
+        {
+            var startAlpha = boostFill.color.a;
+            const float fadeDuration = 0.5f;
+            var elapsedTime = 0f;
+
+            while (elapsedTime < fadeDuration)
+            {
+                elapsedTime += Time.deltaTime;
+                var newColor = boostFill.color;
+                newColor.a = Mathf.Lerp(startAlpha, targetAlpha, elapsedTime / fadeDuration);
+                boostFill.color = newColor;
+                yield return null;
+            }
         }
 
         public void ShowDeathMessage()
         {
             if (deathText is null) return;
             deathText.SetActive(true);
-
             StartCoroutine(HideDeathMessageAfterDelay());
         }
 

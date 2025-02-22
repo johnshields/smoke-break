@@ -670,12 +670,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   bulletCounter: {fileID: 2131736053}
   healthBar: {fileID: 326996925}
-  healthFillImage: {fileID: 445567519}
-  staminaBar: {fileID: 741283598}
-  staminaFillImage: {fileID: 1144855411}
-  deathText: {fileID: 1129731415}
-  lowStaminaColor: {r: 0.5568628, g: 0, b: 0, a: 1}
+  healthFill: {fileID: 445567519}
   lowHealthColor: {r: 0.5568628, g: 0, b: 0, a: 1}
+  deathText: {fileID: 1129731415}
+  staminaBar: {fileID: 741283598}
+  staminaFill: {fileID: 1144855411}
+  lowStaminaColor: {r: 0.5568628, g: 0, b: 0, a: 1}
+  boostBar: {fileID: 981871452}
+  boostFill: {fileID: 831087190}
+  lowBoostColor: {r: 0.5568628, g: 0, b: 0, a: 1}
 --- !u!1 &296218153
 GameObject:
   m_ObjectHideFlags: 0
@@ -2532,7 +2535,7 @@ GameObject:
   - component: {fileID: 831087191}
   - component: {fileID: 831087190}
   m_Layer: 5
-  m_Name: Fill
+  m_Name: BoostFill
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2570,7 +2573,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.20784315, g: 0.30980393, b: 0.5019608, a: 0}
+  m_Color: {r: 0.36078432, g: 0.5019608, b: 0.93333334, a: 0}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -14489,13 +14492,11 @@ MonoBehaviour:
   boostCooldown: 1
   fallMultiplier: 15
   doubleJumpTimeLimit: 0.5
+  canBoost: 1
   boostEffect: {fileID: 4047845140373060363}
   audioSource: {fileID: 1154103203}
   boostSound: {fileID: 8300000, guid: 799f2fc16f4cf4343be9b1753bc5ef07, type: 3}
   vol: 0.2
-  boostBar: {fileID: 981871452}
-  boostFill: {fileID: 831087190}
-  flashColor: {r: 0.5568628, g: 0, b: 0, a: 1}
 --- !u!1 &5979711990829132460
 GameObject:
   m_ObjectHideFlags: 0

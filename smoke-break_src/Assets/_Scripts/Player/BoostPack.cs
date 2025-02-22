@@ -1,6 +1,8 @@
 using System.Collections;
+using _Scripts.Managers;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 namespace _Scripts.Player
@@ -12,10 +14,10 @@ namespace _Scripts.Player
         [Header("Boost Settings")] [SerializeField]
         private float boostForce = 15f;
 
-        [SerializeField] private float boostCooldown = 1f;
+        [SerializeField] public float boostCooldown = 1f;
         [SerializeField] private float fallMultiplier = 2.5f;
         [SerializeField] private float doubleJumpTimeLimit = 0.3f;
-        private bool _canBoost = true;
+        public bool canBoost = true;
         private bool _jumpPressedOnce;
         private float _lastJumpTime;
 
@@ -34,13 +36,8 @@ namespace _Scripts.Player
         private Animator _animator;
         private InputAction _moveInput;
         private Camera _mainCamera;
+        private HUDManager _hud;
 
-        [Header("Boost UI Elements")] [SerializeField]
-        private Slider boostBar;
-
-        [SerializeField] private Image boostFill;
-        [SerializeField] private Color flashColor = Color.red;
-        private Color _originalColor;
 
         private void Awake()
         {
@@ -50,9 +47,7 @@ namespace _Scripts.Player
             _animator = GetComponent<Animator>();
             _moveInput = _actions.Profiler.Movement;
             _mainCamera = Camera.main;
-
-            if (boostFill is not null)
-                _originalColor = boostFill.color;
+            _hud = FindObjectOfType<HUDManager>();
         }
 
         private void OnEnable()
@@ -73,7 +68,7 @@ namespace _Scripts.Player
             if (_player.grounded)
             {
                 _jumpPressedOnce = false;
-                _canBoost = true;
+                canBoost = true;
             }
 
             if (!_player.grounded && _rigidbody.velocity.y < 0)
@@ -91,7 +86,7 @@ namespace _Scripts.Player
                 return;
             }
 
-            if (_jumpPressedOnce && Time.time - _lastJumpTime <= doubleJumpTimeLimit && _canBoost)
+            if (_jumpPressedOnce && Time.time - _lastJumpTime <= doubleJumpTimeLimit && canBoost)
             {
                 Debug.Log("🚀 Performing Boost!");
                 PerformBoost();
@@ -101,7 +96,7 @@ namespace _Scripts.Player
 
         private void PerformBoost()
         {
-            _canBoost = false;
+            canBoost = false;
             _animator.SetTrigger(Boost);
 
             var input = _moveInput.ReadValue<Vector2>();
@@ -116,8 +111,8 @@ namespace _Scripts.Player
             if (audioSource != null && boostSound != null)
                 audioSource.PlayOneShot(boostSound, vol);
 
-            if (boostBar != null)
-                StartCoroutine(UpdateBoostBar());
+            if (_hud is null) return;
+            StartCoroutine(_hud.UpdateBoostBar());
 
             Invoke(nameof(ApplyFastFall), 0.3f);
             Invoke(nameof(DisableEffects), 0.3f);
@@ -145,73 +140,6 @@ namespace _Scripts.Player
         {
             if (boostEffect != null)
                 boostEffect.Stop();
-        }
-
-        private IEnumerator UpdateBoostBar()
-        {
-            if (boostBar is null || boostFill is null) yield break;
-
-            var originalColor = boostFill.color;
-            bool isFlashing = false;
-
-            StartCoroutine(FadeBoostBar(1f));
-
-            for (float elapsedTime = 0; elapsedTime < boostCooldown; elapsedTime += Time.deltaTime)
-            {
-                var fillAmount = Mathf.Clamp01(1f - (elapsedTime / boostCooldown));
-                boostBar.value = fillAmount;
-
-                if (fillAmount <= 0.15f && !isFlashing)
-                {
-                    isFlashing = true;
-                    StartCoroutine(FlashBoostBar());
-                }
-
-                yield return null;
-            }
-
-            yield return new WaitForSeconds(0.5f);
-            boostFill.color = originalColor;
-            _canBoost = true;
-
-            for (float elapsedTime = 0; elapsedTime < boostCooldown; elapsedTime += Time.deltaTime)
-            {
-                boostBar.value = Mathf.Clamp01(elapsedTime / boostCooldown);
-                yield return null;
-            }
-
-            boostBar.value = 1f;
-
-            StartCoroutine(FadeBoostBar(0f));
-        }
-
-        private IEnumerator FlashBoostBar()
-        {
-            while (boostBar.value <= 0.15f)
-            {
-                boostFill.color = (boostFill.color == flashColor) ? _originalColor : flashColor;
-                yield return new WaitForSeconds(0.1f);
-            }
-
-            yield return new WaitForSeconds(0.1f);
-            boostFill.color = _originalColor;
-            _canBoost = true;
-        }
-
-        private IEnumerator FadeBoostBar(float targetAlpha)
-        {
-            var startAlpha = boostFill.color.a;
-            const float fadeDuration = 0.5f;
-            var elapsedTime = 0f;
-
-            while (elapsedTime < fadeDuration)
-            {
-                elapsedTime += Time.deltaTime;
-                var newColor = boostFill.color;
-                newColor.a = Mathf.Lerp(startAlpha, targetAlpha, elapsedTime / fadeDuration);
-                boostFill.color = newColor;
-                yield return null;
-            }
         }
     }
 }
