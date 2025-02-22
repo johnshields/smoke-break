@@ -74,20 +74,13 @@ namespace _Scripts.Player
             _mainCamera = Camera.main;
             grounded = true;
 
-            LoadHealth();
-
-            currentHealth = PlayerPrefs.HasKey("PlayerHealth") ? PlayerPrefs.GetInt("PlayerHealth") : 100;
+            currentHealth = PlayerPrefs.HasKey("PlayerHealth") ? PlayerPrefs.GetInt("PlayerHealth") : 20;
             SaveManager.LoadGame(this, _pistol);
         }
 
         public void SetCurrentHealth(int health)
         {
             currentHealth = health;
-        }
-
-        private void LoadHealth()
-        {
-            currentHealth = PlayerPrefs.HasKey("PlayerHealth") ? PlayerPrefs.GetInt("PlayerHealth") : 100;
         }
 
         public int GetCurrentHealth()
