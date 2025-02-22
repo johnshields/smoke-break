@@ -1,23 +1,24 @@
 using System.Collections;
-using _Scripts.UI;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using _Scripts.UI;
 
 namespace _Scripts.Player
 {
-    [RequireComponent(typeof(Rigidbody), typeof(Animator))]
+    [RequireComponent(typeof(Rigidbody), typeof(Animator), typeof(PlayerHealth))]
     public class PlayerProfiler : MonoBehaviour
+
     {
-        [Header("Animation Parameters")] private int _speedHash;
-        private int _groundedHash;
-        private static readonly int Grounded = Animator.StringToHash("Grounded");
+        [Header("Animation Parameters")] private static readonly int Grounded = Animator.StringToHash("Grounded");
         private static readonly int Speed = Animator.StringToHash("Speed");
         private static readonly int Jump = Animator.StringToHash("Jump");
         private static readonly int Dodge = Animator.StringToHash("Dodge");
+        private int _speedHash;
+        private int _groundedHash;
 
-        [Header("References")] private Camera _mainCamera;
-        private Rigidbody _rigidbody;
+        [Header("References")] private Rigidbody _rigidbody;
         private Animator _animator;
+        private Camera _mainCamera;
         private InputControls _actions;
         private InputAction _moveKeys;
         private PlayerHealth _playerHealth;
@@ -58,14 +59,10 @@ namespace _Scripts.Player
         {
             _rigidbody = GetComponent<Rigidbody>();
             _animator = GetComponent<Animator>();
-            _speedHash = Animator.StringToHash("Speed");
-            _animator.SetFloat(_speedHash, 0f);
-            _animator.SetBool(Grounded, true);
             _playerHealth = GetComponent<PlayerHealth>();
 
             _actions = new InputControls();
             _mainCamera = Camera.main;
-            grounded = true;
         }
 
         private void OnEnable()
@@ -89,15 +86,6 @@ namespace _Scripts.Player
             _actions.Profiler.Disable();
         }
 
-        private void OnCollisionEnter(Collision collision)
-        {
-            if (collision.gameObject.layer == LayerMask.NameToLayer("Ground"))
-            {
-                grounded = true;
-                _animator.SetBool(Grounded, true);
-            }
-        }
-
         private void FixedUpdate()
         {
             if (_isDodging || disableMovement) return;
@@ -105,6 +93,15 @@ namespace _Scripts.Player
             var input = _moveKeys.ReadValue<Vector2>();
             MoveCharacter(input);
             RotateCharacter(input);
+        }
+
+        private void OnCollisionEnter(Collision collision)
+        {
+            if (collision.gameObject.layer == LayerMask.NameToLayer("Ground"))
+            {
+                grounded = true;
+                _animator.SetBool(Grounded, true);
+            }
         }
 
         private void MoveCharacter(Vector2 input)
@@ -126,7 +123,7 @@ namespace _Scripts.Player
 
             // Check if character is grounded using a downward raycast
             _groundedGravity =
-                Physics.Raycast(transform.position, Vector3.down, out RaycastHit hit, groundCheckRadius, groundLayer);
+                Physics.Raycast(transform.position, Vector3.down, out _, groundCheckRadius, groundLayer);
 
             // Apply gravity if the character is not grounded
             if (!_groundedGravity)
@@ -140,16 +137,6 @@ namespace _Scripts.Player
             // Adjust animation speed based on movement speed
             var speedFactor = _isSprinting ? sprintMultiplier : 1f;
             _animator.SetFloat(Speed, (_rigidbody.velocity.magnitude / MaxSpeed) * speedFactor);
-        }
-
-        private void StartSprinting(InputAction.CallbackContext context)
-        {
-            _isSprinting = true;
-        }
-
-        private void StopSprinting(InputAction.CallbackContext context)
-        {
-            _isSprinting = false;
         }
 
         private void RotateCharacter(Vector2 input)
@@ -234,6 +221,22 @@ namespace _Scripts.Player
 
             yield return new WaitForSeconds(0.2f);
             _canDodge = true;
+        }
+
+        private void StartSprinting(InputAction.CallbackContext context)
+        {
+            if (_playerHealth.currentHealth < 50)
+            {
+                print("Health is too low to sprint!");
+                return;
+            }
+
+            _isSprinting = true;
+        }
+
+        private void StopSprinting(InputAction.CallbackContext context)
+        {
+            _isSprinting = false;
         }
 
         public IEnumerator StaggerEffect()

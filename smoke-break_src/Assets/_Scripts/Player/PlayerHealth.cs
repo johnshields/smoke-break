@@ -39,11 +39,6 @@ namespace _Scripts.Player
             return currentHealth;
         }
 
-        public void RestoreHealth(int itemValue)
-        {
-            currentHealth = Mathf.Clamp(currentHealth + itemValue, 0, maxHealth);
-        }
-
         public void TakeDamage(int damage)
         {
             if (invulnerable) return;
@@ -53,6 +48,11 @@ namespace _Scripts.Player
             currentHealth -= damage;
 
             StartCoroutine(_player.StaggerEffect());
+        }
+
+        public void RestoreHealth(int itemValue)
+        {
+            currentHealth = Mathf.Clamp(currentHealth + itemValue, 0, maxHealth);
         }
     }
 }
