@@ -1,4 +1,5 @@
 using System.Collections;
+using _Scripts.Managers;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using _Scripts.UI;
@@ -37,10 +38,13 @@ namespace _Scripts.Player
         private bool _canDodge = true;
         private bool _isDodging;
 
-        [Header("Sprint Settings")] [SerializeField]
-        private float sprintMultiplier = 2f;
-
+        [Header("Sprint Settings")] public float maxStamina = 100f;
+        public float currentStamina;
+        [SerializeField] private float staminaDrainRate = 20f;
+        [SerializeField] private float staminaRegenRate = 10f;
+        [SerializeField] private float sprintMultiplier = 2f;
         private bool _isSprinting;
+        private bool _isExhausted;
 
         [Header("Gravity Settings")] [SerializeField]
         private float gravityForce = -9.81f;
@@ -63,6 +67,7 @@ namespace _Scripts.Player
 
             _actions = new InputControls();
             _mainCamera = Camera.main;
+            currentStamina = maxStamina;
         }
 
         private void OnEnable()
@@ -93,6 +98,7 @@ namespace _Scripts.Player
             var input = _moveKeys.ReadValue<Vector2>();
             MoveCharacter(input);
             RotateCharacter(input);
+            DrainStamina();
         }
 
         private void OnCollisionEnter(Collision collision)
@@ -173,8 +179,9 @@ namespace _Scripts.Player
 
         private void DodgeAction(InputAction.CallbackContext context)
         {
-            if (!_canDodge || _isDodging) return;
+            if (!_canDodge || _isDodging || currentStamina < 10) return;
 
+            currentStamina -= 10;
             _playerHealth.invulnerable = true;
             _isDodging = true;
             _canDodge = false;
@@ -225,11 +232,12 @@ namespace _Scripts.Player
 
         private void StartSprinting(InputAction.CallbackContext context)
         {
-            if (_playerHealth.currentHealth < 50)
+            if (_isExhausted)
             {
-                print("Health is too low to sprint!");
                 return;
             }
+
+            sprintMultiplier = _playerHealth.currentHealth < 50 ? 1.5f : 2f;
 
             _isSprinting = true;
         }
@@ -237,6 +245,28 @@ namespace _Scripts.Player
         private void StopSprinting(InputAction.CallbackContext context)
         {
             _isSprinting = false;
+        }
+
+        private void DrainStamina()
+        {
+            if (_isSprinting)
+            {
+                currentStamina -= staminaDrainRate * Time.deltaTime;
+                if (currentStamina <= 0)
+                {
+                    currentStamina = 0;
+                    _isExhausted = true;
+                    _isSprinting = false;
+                }
+            }
+            else
+            {
+                if (currentStamina < maxStamina)
+                {
+                    currentStamina += staminaRegenRate * Time.deltaTime;
+                    if (currentStamina >= maxStamina / 2) _isExhausted = false;
+                }
+            }
         }
 
         public IEnumerator StaggerEffect()
