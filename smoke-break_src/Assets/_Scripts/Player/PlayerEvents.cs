@@ -8,17 +8,17 @@ namespace _Scripts.Player
 
         private void Steps(float vol)
         {
-            randomAudio.PlayRandomSound("steps", vol);
+            randomAudio?.PlayRandomSound("steps", vol);
         }
 
         private void Jumps(float vol)
         {
-            randomAudio.PlayRandomSound("jumps", vol);
+            randomAudio?.PlayRandomSound("jumps", vol);
         }
 
         private void Dodge(float vol)
         {
-            randomAudio.PlayRandomSound("dodge", vol);
+            randomAudio?.PlayRandomSound("dodge", vol);
         }
     }
 }

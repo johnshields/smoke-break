@@ -845,7 +845,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   bulletCounter: {fileID: 0}
   healthBar: {fileID: 0}
+  healthFill: {fileID: 0}
+  lowHealthColor: {r: 1, g: 0, b: 0, a: 1}
   deathText: {fileID: 0}
+  staminaBar: {fileID: 0}
+  staminaFill: {fileID: 0}
+  lowStaminaColor: {r: 1, g: 0, b: 0, a: 1}
+  boostBar: {fileID: 0}
+  boostFill: {fileID: 0}
+  lowBoostColor: {r: 1, g: 0, b: 0, a: 1}
 --- !u!1 &681203216
 GameObject:
   m_ObjectHideFlags: 0
@@ -3591,13 +3599,11 @@ MonoBehaviour:
   boostCooldown: 1
   fallMultiplier: 15
   doubleJumpTimeLimit: 0.5
+  canBoost: 1
   boostEffect: {fileID: 5347176430255127499}
   audioSource: {fileID: 1881246792}
   boostSound: {fileID: 8300000, guid: 799f2fc16f4cf4343be9b1753bc5ef07, type: 3}
   vol: 0.2
-  boostBar: {fileID: 0}
-  boostFill: {fileID: 0}
-  flashColor: {r: 0.5568628, g: 0, b: 0, a: 1}
 --- !u!1 &2370051512896006764
 GameObject:
   m_ObjectHideFlags: 0
@@ -9554,6 +9560,10 @@ MonoBehaviour:
   dodgeDistance: 20
   dodgeDuration: 1
   staggerDuration: 0.5
+  maxStamina: 100
+  currentStamina: 0
+  staminaDrainRate: 20
+  staminaRegenRate: 10
   sprintMultiplier: 2
   gravityForce: -9.81
   groundCheck: {fileID: 0}
