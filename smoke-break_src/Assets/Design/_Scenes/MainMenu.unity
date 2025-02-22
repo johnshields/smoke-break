@@ -3622,7 +3622,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &2391842094281191809
 Transform:
   m_ObjectHideFlags: 0
@@ -9563,7 +9563,6 @@ MonoBehaviour:
     m_Bits: 0
   groundCheckRadius: 0.2
   audioSource: {fileID: 1881246792}
-  dodgeSound: {fileID: 0}
   staggerSound: {fileID: 8300000, guid: f213908e626150348903575839136bd5, type: 3}
 --- !u!4 &7211552487322364608
 Transform:

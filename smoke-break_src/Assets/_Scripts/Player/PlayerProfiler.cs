@@ -29,16 +29,17 @@ namespace _Scripts.Player
         [Header("Movement Settings")] public float movementForce = 1f;
         private Vector3 _forceDirection = Vector3.zero;
         private const float MaxSpeed = 5f;
+        public bool disableMovement;
 
         [Header("Jump Settings")] public bool grounded = true;
         public float jumpForce = 5f;
 
         [Header("Dodge Settings")] public float dodgeDistance = 5f;
         public float dodgeDuration = 0.35f;
+        public float staggerDuration = 0.5f;
         private bool _canDodge = true;
         private bool _isDodging;
-        public bool disableMovement;
-        public float staggerDuration = 0.5f;
+        private bool _invulnerable;
 
         [Header("Sprint Settings")] [SerializeField]
         private float sprintMultiplier = 2f;
@@ -99,11 +100,9 @@ namespace _Scripts.Player
         private void OnEnable()
         {
             if (FindObjectOfType<PauseMenu>().isPaused) return;
-            _actions.Profiler.Enable();
 
             _actions.Profiler.Enable();
             _moveKeys = _actions.Profiler.Movement;
-
             _actions.Profiler.Jump.performed += JumpAction;
             _actions.Profiler.Dodge.performed += DodgeAction;
             _actions.Profiler.Sprint.performed += StartSprinting;
@@ -119,10 +118,13 @@ namespace _Scripts.Player
             _actions.Profiler.Disable();
         }
 
-        private void OnCollisionEnter()
+        private void OnCollisionEnter(Collision collision)
         {
-            grounded = true;
-            _animator.SetBool(Grounded, true);
+            if (collision.gameObject.layer == LayerMask.NameToLayer("Ground"))
+            {
+                grounded = true;
+                _animator.SetBool(Grounded, true);
+            }
         }
 
         private void FixedUpdate()
@@ -158,7 +160,8 @@ namespace _Scripts.Player
             _rigidbody.AddForce(_forceDirection * (movementForce * speedMultiplier), ForceMode.Impulse);
 
             // Check if character is grounded using a downward raycast
-            _groundedGravity = Physics.Raycast(transform.position, Vector3.down, out _, groundCheckRadius, groundLayer);
+            _groundedGravity =
+                Physics.Raycast(transform.position, Vector3.down, out RaycastHit hit, groundCheckRadius, groundLayer);
 
             // Apply gravity if the character is not grounded
             if (!_groundedGravity)
@@ -210,6 +213,7 @@ namespace _Scripts.Player
         {
             if (!_canDodge || _isDodging) return;
 
+            _invulnerable = true;
             _isDodging = true;
             _canDodge = false;
             disableMovement = true;
@@ -228,22 +232,33 @@ namespace _Scripts.Player
 
         private IEnumerator SmoothDodge(Vector3 dodgeDirection)
         {
-            Vector3 startPosition = transform.position;
-            Vector3 targetPosition = startPosition + (dodgeDirection * dodgeDistance);
+            _isDodging = true;
+            _canDodge = false;
+            disableMovement = true;
 
-            float elapsedTime = 0f;
+            var elapsedTime = 0f;
+            var startPosition = transform.position;
+            var targetPosition = startPosition + (dodgeDirection.normalized * dodgeDistance);
+
             while (elapsedTime < dodgeDuration)
             {
-                transform.position = Vector3.Lerp(startPosition, targetPosition, elapsedTime / dodgeDuration);
+                var t = elapsedTime / dodgeDuration;
+                t = Mathf.SmoothStep(0f, 1f, t);
+
+                var newPosition = Vector3.Lerp(startPosition, targetPosition, t);
+                _rigidbody.MovePosition(newPosition);
+
                 elapsedTime += Time.deltaTime;
                 yield return null;
             }
 
-            transform.position = targetPosition;
+            _rigidbody.MovePosition(targetPosition);
+            _invulnerable = false;
             _isDodging = false;
             disableMovement = false;
+
+            yield return new WaitForSeconds(0.2f);
             _canDodge = true;
-            _animator.ResetTrigger(Dodge);
         }
 
         private void StartSprinting(InputAction.CallbackContext context)
@@ -258,6 +273,8 @@ namespace _Scripts.Player
 
         public void TakeDamage(int damage)
         {
+            if (_invulnerable) return;
+
             if (_respawner.isRespawning) return;
             print($"🔥 Kanta took {damage} damage!");
             currentHealth -= damage;
@@ -274,7 +291,7 @@ namespace _Scripts.Player
             movementForce = 0.5f;
 
             var knockback = -transform.forward * 20f;
-            _rigidbody.AddForce(knockback, ForceMode.Impulse);
+            _rigidbody.velocity = knockback;
 
             yield return new WaitForSeconds(staggerDuration);
 
