@@ -2,6 +2,7 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using _Scripts.UI;
+using UnityEngine.Serialization;
 
 namespace _Scripts.Player
 {
@@ -22,6 +23,7 @@ namespace _Scripts.Player
         private InputControls _actions;
         private InputAction _moveKeys;
         private PlayerHealth _playerHealth;
+        private PlayerRespawner _respawner;
         private PauseMenu _pauseMenu;
 
         [Header("Movement Settings")] public float movementForce = 1f;
@@ -57,9 +59,11 @@ namespace _Scripts.Player
         [Header("Audio Settings")] [SerializeField]
         private AudioSource audioSource;
 
+        [SerializeField] private AudioSource heartbeatAudio;
+        [SerializeField] private AudioClip heartbeatSound;
         [SerializeField] private AudioClip staggerSound;
 
-        private const int InjuryThreshold = 30;
+        public int injuryThreshold = 30;
 
         #endregion
 
@@ -70,6 +74,7 @@ namespace _Scripts.Player
             _rigidbody = GetComponent<Rigidbody>();
             _animator = GetComponent<Animator>();
             _playerHealth = GetComponent<PlayerHealth>();
+            _respawner = GetComponent<PlayerRespawner>();
             _actions = new InputControls();
             _mainCamera = Camera.main;
 
@@ -312,11 +317,39 @@ namespace _Scripts.Player
 
         private void UpdateInjuryState()
         {
-            var isLowHealth = _playerHealth.currentHealth <= InjuryThreshold;
+            var isLowHealth = _playerHealth.currentHealth <= injuryThreshold;
             var isStandingStill = _moveKeys.ReadValue<Vector2>().sqrMagnitude < 0.01f;
 
             var shouldBeInjured = isLowHealth && isStandingStill;
             _animator.SetBool(Injured, shouldBeInjured);
+
+            HandleHeartbeat(isLowHealth);
+        }
+
+        private void HandleHeartbeat(bool isLowHealth)
+        {
+            if (_playerHealth.currentHealth <= 0)
+            {
+                if (heartbeatAudio.isPlaying) heartbeatAudio.Stop();
+                return;
+            }
+
+            if (isLowHealth)
+            {
+                if (!heartbeatAudio.isPlaying)
+                {
+                    heartbeatAudio.clip = heartbeatSound;
+                    heartbeatAudio.Play();
+                }
+
+                var healthRatio = _playerHealth.currentHealth / (float)injuryThreshold;
+                heartbeatAudio.volume = Mathf.Lerp(1f, 0.2f, healthRatio);
+                heartbeatAudio.pitch = Mathf.Lerp(1.5f, 0.6f, healthRatio);
+            }
+            else
+            {
+                if (heartbeatAudio.isPlaying) heartbeatAudio.Stop();
+            }
         }
 
         #endregion

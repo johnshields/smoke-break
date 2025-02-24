@@ -17,6 +17,7 @@ namespace _Scripts.Managers
         [SerializeField] private Image healthFill;
         [SerializeField] private Color lowHealthColor = Color.red;
         private Color _originalHealthColor;
+        [SerializeField] private Image injuryOverlay;
         [SerializeField] private GameObject deathText;
 
         [Header("Stamina HUD Elements")] [SerializeField]
@@ -74,9 +75,15 @@ namespace _Scripts.Managers
             healthBar.fillRect.gameObject.SetActive(_playerHealth.GetCurrentHealth() > 0);
 
             if (healthFill is not null)
-                healthFill.color = _playerHealth.GetCurrentHealth() < _playerHealth.maxHealth * 0.1f
+                healthFill.color = _playerHealth.GetCurrentHealth() < _playerHealth.maxHealth * 0.2f
                     ? lowHealthColor
                     : _originalHealthColor;
+
+            var isLowHealth = _playerHealth.currentHealth <= 10;
+            var targetAlpha = isLowHealth ? 0.5f : 0f;
+
+            injuryOverlay.color = new Color(lowHealthColor.r, lowHealthColor.g, lowHealthColor.b,
+                Mathf.Lerp(injuryOverlay.color.a, targetAlpha, Time.deltaTime * 5f));
         }
 
         private void UpdateStamina()
@@ -86,7 +93,7 @@ namespace _Scripts.Managers
             staminaBar.fillRect.gameObject.SetActive(_player.currentStamina >= 0);
 
             if (staminaFill is not null)
-                staminaFill.color = _player.currentStamina < _player.maxStamina * 0.2f
+                staminaFill.color = _player.currentStamina < _player.maxStamina * 0.1f
                     ? lowStaminaColor
                     : _originalStaminaColor;
         }
