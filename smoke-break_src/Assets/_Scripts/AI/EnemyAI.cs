@@ -41,9 +41,9 @@ namespace _Scripts.AI
 
         private void Update()
         {
-            if (_agent == null)
+            if (_agent is null)
             {
-                Debug.LogError($"❌ {gameObject.name} has NO NavMeshAgent! Destroying.");
+                Debug.Log($"❌ {gameObject.name} has NO NavMeshAgent! Destroying.");
                 Destroy(gameObject);
                 return;
             }
@@ -51,14 +51,14 @@ namespace _Scripts.AI
             if (!_agent.isOnNavMesh)
             {
                 // Try to re-warp the agent to a valid NavMesh position
-                Vector3 newPosition = GetRandomNavMeshPosition(transform.position, 10f, 5);
+                var newPosition = GetRandomNavMeshPosition(transform.position, 10f, 5);
                 if (newPosition != Vector3.zero)
                 {
                     _agent.Warp(newPosition);
                 }
                 else
                 {
-                    Debug.LogError($"❌ {gameObject.name} could not recover a valid NavMesh position!");
+                    Debug.Log($"❌ {gameObject.name} could not recover a valid NavMesh position!");
                     gameObject.SetActive(false); // Disable the AI if recovery fails
                 }
 
@@ -88,7 +88,7 @@ namespace _Scripts.AI
         {
             if (_agent == null)
             {
-                Debug.LogError($"🚨 {gameObject.name} is missing a NavMeshAgent component!");
+                Debug.Log($"🚨 {gameObject.name} is missing a NavMeshAgent component!");
                 yield break;
             }
 
@@ -107,7 +107,7 @@ namespace _Scripts.AI
             }
             else
             {
-                Debug.LogError($"❌ {gameObject.name} could not find a valid NavMesh position! Disabling AI.");
+                Debug.Log($"❌ {gameObject.name} could not find a valid NavMesh position! Disabling AI.");
                 gameObject.SetActive(false); // Disable if placement fails
             }
         }
@@ -131,7 +131,7 @@ namespace _Scripts.AI
         {
             if (_agent == null || !_agent.isOnNavMesh)
             {
-                Debug.LogWarning($"⚠️ {gameObject.name} cannot patrol - not on a NavMesh!");
+                Debug.Log($"⚠️ {gameObject.name} cannot patrol - not on a NavMesh!");
                 return;
             }
 
@@ -151,7 +151,7 @@ namespace _Scripts.AI
                 _stuckTimer += Time.deltaTime;
                 if (_stuckTimer >= 2f) // If stuck for more than 2 seconds
                 {
-                    Debug.LogWarning($"⚠️ {gameObject.name} is stuck! Forcing new patrol path.");
+                    Debug.Log($"⚠️ {gameObject.name} is stuck! Forcing new patrol path.");
                     _agent.ResetPath();
                     _stuckTimer = 0;
                 }
