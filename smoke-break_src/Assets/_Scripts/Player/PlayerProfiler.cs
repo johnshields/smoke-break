@@ -2,7 +2,6 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using _Scripts.UI;
-using UnityEngine.Serialization;
 
 namespace _Scripts.Player
 {
@@ -14,7 +13,8 @@ namespace _Scripts.Player
         [Header("Animation Parameters")] private static readonly int Grounded = Animator.StringToHash("Grounded");
         private static readonly int Speed = Animator.StringToHash("Speed");
         private static readonly int Jump = Animator.StringToHash("Jump");
-        private static readonly int Dodge = Animator.StringToHash("Dodge");
+        private static readonly int DodgeBack = Animator.StringToHash("DodgeBack");
+        private static readonly int DodgeRoll = Animator.StringToHash("DodgeRoll");
         private static readonly int Injured = Animator.StringToHash("Injured");
 
         [Header("References")] private Rigidbody _rigidbody;
@@ -33,7 +33,7 @@ namespace _Scripts.Player
         [Header("Jump Settings")] public bool grounded = true;
         public float jumpForce = 5f;
 
-        [Header("Dodge Settings")] public float dodgeDistance = 5f;
+        [Header("DodgeBack Settings")] public float dodgeDistance = 5f;
         public float dodgeDuration = 0.35f;
         public float staggerDuration = 0.5f;
         private bool _canDodge = true;
@@ -211,34 +211,45 @@ namespace _Scripts.Player
             var cameraForward = _mainCamera.transform.forward;
 
             var dodgeDirection = GetCameraDirection(cameraRight, input.x) + GetCameraDirection(cameraForward, input.y);
-            if (dodgeDirection == Vector3.zero) dodgeDirection = -transform.forward;
 
-            StartCoroutine(SmoothDodge(dodgeDirection.normalized));
+            var isMoving = input.sqrMagnitude > 0.01f;
+
+            if (isMoving)
+            {
+                _animator.SetTrigger(DodgeRoll);
+            }
+            else
+            {
+                _animator.SetTrigger(DodgeBack);
+                dodgeDirection = -transform.forward;
+            }
+
+            StartCoroutine(SmoothDodge(dodgeDirection.normalized, isMoving));
         }
 
         private bool TryDodge()
         {
-            if (!_canDodge || _isDodging || currentStamina < 10) return false;
+            if (!_canDodge || _isDodging || currentStamina < 10 || !grounded) return false;
 
             currentStamina -= 10;
             _playerHealth.invulnerable = true;
             _isDodging = true;
             _canDodge = false;
             disableMovement = true;
-            _animator.SetTrigger(Dodge);
 
             return true;
         }
 
-        private IEnumerator SmoothDodge(Vector3 dodgeDirection)
+        private IEnumerator SmoothDodge(Vector3 dodgeDirection, bool isRolling)
         {
             _isDodging = true;
             _canDodge = false;
             disableMovement = true;
 
+            var rollMultiplier = isRolling ? 1.5f : 1f; // Rolls travel further
             var elapsedTime = 0f;
             var startPosition = transform.position;
-            var targetPosition = startPosition + (dodgeDirection.normalized * dodgeDistance);
+            var targetPosition = startPosition + (dodgeDirection.normalized * (dodgeDistance * rollMultiplier));
 
             while (elapsedTime < dodgeDuration)
             {

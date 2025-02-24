@@ -10,7 +10,9 @@ namespace _Scripts.AI
         private int health = 100;
 
         [Header("Hit Effect Settings")] [SerializeField]
-        private Color hitColor = Color.red;
+        private bool isDroid;
+
+        [SerializeField] private Color hitColor = Color.red;
 
         [SerializeField] private float hitEffectDuration = 0.2f;
 
@@ -52,7 +54,7 @@ namespace _Scripts.AI
             if (enemyRenderer is not null)
                 StartCoroutine(FlashEffect());
 
-            //if (_rigidbody is not null) StartCoroutine(ApplyKnockback(hitDirection));
+            if (_rigidbody is not null && !isDroid) StartCoroutine(ApplyKnockback(hitDirection));
 
             if (health <= 0)
                 Die();

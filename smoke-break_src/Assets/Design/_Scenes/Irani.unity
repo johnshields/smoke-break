@@ -971,6 +971,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   health: 100
+  isDroid: 1
   hitColor: {r: 0.53333336, g: 0, b: 0, a: 1}
   hitEffectDuration: 0.2
   knockbackForce: 5
@@ -2777,6 +2778,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   health: 100
+  isDroid: 0
   hitColor: {r: 0.53333336, g: 0, b: 0, a: 1}
   hitEffectDuration: 0.2
   knockbackForce: 5
@@ -3843,6 +3845,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   health: 100
+  isDroid: 1
   hitColor: {r: 0.53333336, g: 0, b: 0, a: 1}
   hitEffectDuration: 0.2
   knockbackForce: 5
@@ -5396,7 +5399,7 @@ MonoBehaviour:
   m_OverrideTileSize: 0
   m_TileSize: 256
   m_OverrideVoxelSize: 0
-  m_VoxelSize: 1.6666666
+  m_VoxelSize: 1.3333334
   m_MinRegionArea: 2
   m_NavMeshData: {fileID: 23800000, guid: 6d8330d6e2d790645abd9d46a893047a, type: 2}
   m_BuildHeightMesh: 0
@@ -5524,6 +5527,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   health: 100
+  isDroid: 1
   hitColor: {r: 0.53333336, g: 0, b: 0, a: 1}
   hitEffectDuration: 0.2
   knockbackForce: 5
@@ -6195,6 +6199,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   health: 100
+  isDroid: 0
   hitColor: {r: 0.53333336, g: 0, b: 0, a: 1}
   hitEffectDuration: 0.2
   knockbackForce: 5
@@ -6565,6 +6570,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   health: 100
+  isDroid: 1
   hitColor: {r: 0.53333336, g: 0, b: 0, a: 1}
   hitEffectDuration: 0.2
   knockbackForce: 5
@@ -7707,6 +7713,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   health: 100
+  isDroid: 1
   hitColor: {r: 0.53333336, g: 0, b: 0, a: 1}
   hitEffectDuration: 0.2
   knockbackForce: 5
@@ -8777,6 +8784,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   health: 100
+  isDroid: 0
   hitColor: {r: 0.53333336, g: 0, b: 0, a: 1}
   hitEffectDuration: 0.2
   knockbackForce: 5
@@ -9019,6 +9027,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   health: 100
+  isDroid: 1
   hitColor: {r: 0.53333336, g: 0, b: 0, a: 1}
   hitEffectDuration: 0.2
   knockbackForce: 5
