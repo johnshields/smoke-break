@@ -8,6 +8,7 @@ namespace _Scripts.AI
     public class EnemyAI : MonoBehaviour
     {
         private static readonly int IsAttacking = Animator.StringToHash("IsAttacking");
+        private static readonly int Speed = Animator.StringToHash("Speed");
 
         [Header("AI Settings")] [SerializeField]
         private float detectionRange = 15f;
@@ -26,6 +27,7 @@ namespace _Scripts.AI
         private Animator _animator;
         private bool _canAttack = true;
         private PlayerHealth _playerScript;
+        private float _stuckTimer;
 
         private void Start()
         {
@@ -34,22 +36,35 @@ namespace _Scripts.AI
             _player = GameObject.FindGameObjectWithTag("Player").transform;
             _playerScript = _player.GetComponent<PlayerHealth>();
 
-            _agent.enabled = false;
-
-            if (NavMesh.SamplePosition(transform.position, out NavMeshHit hit, 10f, NavMesh.AllAreas))
-            {
-                Debug.Log($"Warping {gameObject.name} to valid NavMesh position at {hit.position}");
-
-                transform.position = hit.position;
-                _agent.enabled = true;
-                _agent.Warp(hit.position);
-
-                _agent.ResetPath();
-            }
+            StartCoroutine(InitializeNavMeshAgent()); // Initialize agent safely
         }
 
         private void Update()
         {
+            if (_agent == null)
+            {
+                Debug.LogError($"❌ {gameObject.name} has NO NavMeshAgent! Destroying.");
+                Destroy(gameObject);
+                return;
+            }
+
+            if (!_agent.isOnNavMesh)
+            {
+                // Try to re-warp the agent to a valid NavMesh position
+                Vector3 newPosition = GetRandomNavMeshPosition(transform.position, 10f, 5);
+                if (newPosition != Vector3.zero)
+                {
+                    _agent.Warp(newPosition);
+                }
+                else
+                {
+                    Debug.LogError($"❌ {gameObject.name} could not recover a valid NavMesh position!");
+                    gameObject.SetActive(false); // Disable the AI if recovery fails
+                }
+
+                return;
+            }
+
             var distanceToPlayer = Vector3.Distance(transform.position, _player.position);
 
             switch (_currentState)
@@ -69,26 +84,82 @@ namespace _Scripts.AI
             }
         }
 
-        private void Patrol()
+        private IEnumerator InitializeNavMeshAgent()
         {
-            if (!_agent.hasPath || _agent.remainingDistance <= waypointTolerance)
+            if (_agent == null)
             {
-                var randomPoint = GetRandomPoint(transform.position, 10f);
-
-                if (NavMesh.SamplePosition(randomPoint, out NavMeshHit hit, 10f, NavMesh.AllAreas))
-                    _agent.SetDestination(hit.position);
+                Debug.LogError($"🚨 {gameObject.name} is missing a NavMeshAgent component!");
+                yield break;
             }
 
-            if (_agent.isStopped) _agent.isStopped = false;
+            _agent.enabled = false; // Disable before adjusting position
+            yield return new WaitForSeconds(0.1f); // Small delay to let Unity process
 
-            RotateTowards(_agent.steeringTarget);
+            // Try to find a valid NavMesh position up to 5 times
+            Vector3 spawnPosition = GetRandomNavMeshPosition(transform.position, 10f, 5);
+
+            if (spawnPosition != Vector3.zero)
+            {
+                transform.position = spawnPosition;
+                _agent.enabled = true;
+                _agent.Warp(spawnPosition);
+                _agent.ResetPath(); // Ensure it's on the NavMesh
+            }
+            else
+            {
+                Debug.LogError($"❌ {gameObject.name} could not find a valid NavMesh position! Disabling AI.");
+                gameObject.SetActive(false); // Disable if placement fails
+            }
         }
 
-        private Vector3 GetRandomPoint(Vector3 center, float range)
+        private Vector3 GetRandomNavMeshPosition(Vector3 origin, float range, int maxAttempts)
         {
-            var randomPos = center + new Vector3(Random.Range(-range, range), 0, Random.Range(-range, range));
+            for (int i = 0; i < maxAttempts; i++)
+            {
+                Vector3 randomPoint = origin + new Vector3(Random.Range(-range, range), 0, Random.Range(-range, range));
 
-            return NavMesh.SamplePosition(randomPos, out var hit, range, NavMesh.AllAreas) ? hit.position : center;
+                if (NavMesh.SamplePosition(randomPoint, out NavMeshHit hit, range, NavMesh.AllAreas))
+                {
+                    return hit.position; // Found a valid position
+                }
+            }
+
+            return Vector3.zero; // No valid position found
+        }
+
+        private void Patrol()
+        {
+            if (_agent == null || !_agent.isOnNavMesh)
+            {
+                Debug.LogWarning($"⚠️ {gameObject.name} cannot patrol - not on a NavMesh!");
+                return;
+            }
+
+            // Check if the agent has no path OR has reached its destination
+            if (!_agent.hasPath || _agent.remainingDistance <= waypointTolerance)
+            {
+                // Generate a random point and check if it's valid
+                Vector3 patrolTarget = GetRandomNavMeshPosition(transform.position, 15f, 5);
+
+                if (patrolTarget != Vector3.zero)
+                    _agent.SetDestination(patrolTarget);
+            }
+
+            // Detect if the enemy is stuck (not moving for 2 seconds)
+            if (_agent.velocity.magnitude < 0.1f)
+            {
+                _stuckTimer += Time.deltaTime;
+                if (_stuckTimer >= 2f) // If stuck for more than 2 seconds
+                {
+                    Debug.LogWarning($"⚠️ {gameObject.name} is stuck! Forcing new patrol path.");
+                    _agent.ResetPath();
+                    _stuckTimer = 0;
+                }
+            }
+            else
+            {
+                _stuckTimer = 0; // Reset timer when moving
+            }
         }
 
         private void ChasePlayer(float distanceToPlayer)
@@ -107,6 +178,8 @@ namespace _Scripts.AI
                     _agent.isStopped = false;
                     _agent.ResetPath();
                     _agent.SetDestination(_player.position);
+                    _animator.SetFloat(Speed, _agent.velocity.magnitude);
+                    RotateTowards(_player.position);
                 }
 
                 if (distanceToPlayer > detectionRange)

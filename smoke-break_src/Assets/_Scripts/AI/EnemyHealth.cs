@@ -52,8 +52,7 @@ namespace _Scripts.AI
             if (enemyRenderer is not null)
                 StartCoroutine(FlashEffect());
 
-            if (_rigidbody is not null)
-                StartCoroutine(ApplyKnockback(hitDirection));
+            //if (_rigidbody is not null) StartCoroutine(ApplyKnockback(hitDirection));
 
             if (health <= 0)
                 Die();
