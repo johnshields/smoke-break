@@ -58,6 +58,7 @@ namespace _Scripts.Player
 
         private GameObject _worldCrosshair;
         private InputControls _actions;
+        private InputAction _moveKeys;
         private PlayerProfiler _player;
         private Animator _animator;
         private bool _canShoot = true;
@@ -79,12 +80,7 @@ namespace _Scripts.Player
             _crosshairRenderer.material.color = defaultCrosshairColor;
 
             _worldCrosshair.transform.localScale *= 1.5f;
-        }
-
-        public void SetAmmo(int clip, int stored)
-        {
-            currentClipAmmo = clip;
-            storedAmmo = stored;
+            _moveKeys = _actions.Profiler.Movement;
         }
 
         private void OnEnable()
@@ -123,6 +119,12 @@ namespace _Scripts.Player
             {
                 StartCoroutine(Reload());
             }
+        }
+
+        public void SetAmmo(int clip, int stored)
+        {
+            currentClipAmmo = clip;
+            storedAmmo = stored;
         }
 
         private void StartAiming(InputAction.CallbackContext context)
@@ -188,6 +190,7 @@ namespace _Scripts.Player
         private void SnapToTarget()
         {
             if (_aimTarget == Vector3.zero) return;
+            if (_moveKeys.ReadValue<Vector2>().sqrMagnitude > 0.01f) return;
 
             Vector3 lookDirection = (_aimTarget - transform.position).normalized;
 

@@ -23,7 +23,6 @@ namespace _Scripts.Player
         private InputControls _actions;
         private InputAction _moveKeys;
         private PlayerHealth _playerHealth;
-        private PlayerRespawner _respawner;
         private PauseMenu _pauseMenu;
 
         [Header("Movement Settings")] public float movementForce = 1f;
@@ -74,7 +73,6 @@ namespace _Scripts.Player
             _rigidbody = GetComponent<Rigidbody>();
             _animator = GetComponent<Animator>();
             _playerHealth = GetComponent<PlayerHealth>();
-            _respawner = GetComponent<PlayerRespawner>();
             _actions = new InputControls();
             _mainCamera = Camera.main;
 
