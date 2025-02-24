@@ -8,7 +8,6 @@ namespace _Scripts.AI
     public class EnemyAI : MonoBehaviour
     {
         private static readonly int IsAttacking = Animator.StringToHash("IsAttacking");
-        private static readonly int Speed = Animator.StringToHash("Speed");
 
         [Header("AI Settings")] [SerializeField]
         private float detectionRange = 15f;
@@ -28,14 +27,25 @@ namespace _Scripts.AI
         private bool _canAttack = true;
         private PlayerHealth _playerScript;
 
-        private void Awake()
+        private void Start()
         {
             _agent = GetComponent<NavMeshAgent>();
             _animator = GetComponent<Animator>();
             _player = GameObject.FindGameObjectWithTag("Player").transform;
             _playerScript = _player.GetComponent<PlayerHealth>();
 
-            _agent.updateRotation = false;
+            _agent.enabled = false;
+
+            if (NavMesh.SamplePosition(transform.position, out NavMeshHit hit, 10f, NavMesh.AllAreas))
+            {
+                Debug.Log($"Warping {gameObject.name} to valid NavMesh position at {hit.position}");
+
+                transform.position = hit.position;
+                _agent.enabled = true;
+                _agent.Warp(hit.position);
+
+                _agent.ResetPath();
+            }
         }
 
         private void Update()
@@ -46,27 +56,27 @@ namespace _Scripts.AI
             {
                 case AIState.Patrolling:
                     Patrol();
-                    if (distanceToPlayer <= detectionRange) _currentState = AIState.Chasing;
+                    if (distanceToPlayer <= detectionRange)
+                        _currentState = AIState.Chasing;
                     break;
+
                 case AIState.Chasing:
                     ChasePlayer(distanceToPlayer);
                     break;
+
                 case AIState.Attacking:
                     break;
             }
-
-            if (_currentState == AIState.Chasing && !_agent.pathPending && _agent.remainingDistance < 0.5f)
-                _agent.SetDestination(_player.position);
-
-            _animator.SetFloat(Speed, _agent.velocity.magnitude);
         }
 
         private void Patrol()
         {
-            if (_agent.remainingDistance <= waypointTolerance)
+            if (!_agent.hasPath || _agent.remainingDistance <= waypointTolerance)
             {
                 var randomPoint = GetRandomPoint(transform.position, 10f);
-                _agent.SetDestination(randomPoint);
+
+                if (NavMesh.SamplePosition(randomPoint, out NavMeshHit hit, 10f, NavMesh.AllAreas))
+                    _agent.SetDestination(hit.position);
             }
 
             if (_agent.isStopped) _agent.isStopped = false;
@@ -92,11 +102,11 @@ namespace _Scripts.AI
             }
             else
             {
-                if (_currentState != AIState.Attacking)
+                if (_currentState != AIState.Attacking && _agent.isOnNavMesh)
                 {
                     _agent.isStopped = false;
+                    _agent.ResetPath();
                     _agent.SetDestination(_player.position);
-                    RotateTowards(_player.position);
                 }
 
                 if (distanceToPlayer > detectionRange)
@@ -107,9 +117,11 @@ namespace _Scripts.AI
         private IEnumerator LosePlayerAfterDelay()
         {
             yield return new WaitForSeconds(3f);
+
             if (_currentState == AIState.Chasing)
             {
                 _currentState = AIState.Patrolling;
+                Patrol();
             }
         }
 
@@ -147,9 +159,7 @@ namespace _Scripts.AI
             direction.y = 0;
 
             if (direction.sqrMagnitude < 0.0001f)
-            {
                 return;
-            }
 
             direction.Normalize();
 
