@@ -1,9 +1,6 @@
-using System.Collections;
 using _Scripts.Managers;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.Serialization;
-using UnityEngine.UI;
 
 namespace _Scripts.Player
 {
@@ -17,7 +14,7 @@ namespace _Scripts.Player
         [SerializeField] public float boostCooldown = 1f;
         [SerializeField] private float fallMultiplier = 2.5f;
         [SerializeField] private float doubleJumpTimeLimit = 0.3f;
-        public bool canBoost = true;
+        public bool canBoost;
         private bool _jumpPressedOnce;
         private float _lastJumpTime;
 
@@ -65,15 +62,18 @@ namespace _Scripts.Player
 
         private void Update()
         {
-            if (_player.grounded)
-            {
-                _jumpPressedOnce = false;
-                canBoost = true;
-            }
-
             if (!_player.grounded && _rigidbody.velocity.y < 0)
             {
                 _rigidbody.velocity += Vector3.down * (fallMultiplier * Time.deltaTime);
+            }
+        }
+
+        private void OnCollisionEnter(Collision collision)
+        {
+            if (collision.gameObject.layer == LayerMask.NameToLayer("Ground"))
+            {
+                _jumpPressedOnce = false;
+                canBoost = true;
             }
         }
 
@@ -89,14 +89,14 @@ namespace _Scripts.Player
             if (_jumpPressedOnce && Time.time - _lastJumpTime <= doubleJumpTimeLimit && canBoost)
             {
                 Debug.Log("🚀 Performing Boost!");
-                PerformBoost();
                 _jumpPressedOnce = false;
+                canBoost = false;
+                PerformBoost();
             }
         }
 
         private void PerformBoost()
         {
-            canBoost = false;
             _animator.SetTrigger(Boost);
 
             var input = _moveInput.ReadValue<Vector2>();

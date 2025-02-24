@@ -189,7 +189,8 @@ namespace _Scripts.Player
 
         private void JumpAction(InputAction.CallbackContext context)
         {
-            if (!grounded && disableMovement) return;
+            if (!grounded || disableMovement) return;
+
             grounded = false;
             _animator.SetBool(Grounded, false);
             _animator.SetTrigger(Jump);
