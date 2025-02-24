@@ -16,6 +16,7 @@ namespace _Scripts.Player
         private static readonly int DodgeBack = Animator.StringToHash("DodgeBack");
         private static readonly int DodgeRoll = Animator.StringToHash("DodgeRoll");
         private static readonly int Injured = Animator.StringToHash("Injured");
+        private static readonly int Stagger = Animator.StringToHash("Stagger");
 
         [Header("References")] private Rigidbody _rigidbody;
         private Animator _animator;
@@ -311,6 +312,8 @@ namespace _Scripts.Player
 
         public IEnumerator StaggerEffect()
         {
+            _animator.SetTrigger(Stagger);
+
             if (staggerSound is not null && audioSource is not null)
                 audioSource.PlayOneShot(staggerSound);
 
