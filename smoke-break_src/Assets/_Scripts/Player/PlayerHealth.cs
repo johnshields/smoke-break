@@ -14,7 +14,7 @@ namespace _Scripts.Player
         {
             _player = GetComponent<PlayerProfiler>();
             _respawner = GetComponent<PlayerRespawner>();
-            currentHealth = PlayerPrefs.HasKey("PlayerHealth") ? PlayerPrefs.GetInt("PlayerHealth") : 20;
+            currentHealth = PlayerPrefs.HasKey("PlayerHealth") ? PlayerPrefs.GetInt("PlayerHealth") : 30;
         }
 
         private void Update()
