@@ -14,6 +14,7 @@ namespace _Scripts.UI
     {
         [Header("UI Panels")] [SerializeField] private GameObject pausePanel;
         [SerializeField] private GameObject controlsPanel;
+        [SerializeField] private GameObject quitConfirmPanel;
         [SerializeField] private TextMeshProUGUI saveNotificationText;
         [SerializeField] private float saveNotificationDuration = 2f;
 
@@ -22,6 +23,8 @@ namespace _Scripts.UI
         [SerializeField] private Button controlsButton;
         [SerializeField] private Button returnButton;
         [SerializeField] private Button quitButton;
+        [SerializeField] private Button confirmQuitButton;
+        [SerializeField] private Button cancelQuitButton;
 
         [Header("Highlight Settings")] [SerializeField]
         private Color highlightColor = Color.green;
@@ -33,6 +36,7 @@ namespace _Scripts.UI
         private int _currentButtonIndex = 0;
         private Button[] _pauseButtons;
         private Button[] _controlButtons;
+        private Button[] _quitButtons;
         private Button[] _currentButtons;
 
         private void Awake()
@@ -47,10 +51,14 @@ namespace _Scripts.UI
 
             _pauseButtons = new[] { resumeButton, saveButton, controlsButton, quitButton };
             _controlButtons = new[] { returnButton };
+            _quitButtons = new Button[] { confirmQuitButton, cancelQuitButton };
             _currentButtons = _pauseButtons;
 
             if (saveNotificationText != null)
                 saveNotificationText.gameObject.SetActive(false);
+
+            if (quitConfirmPanel != null)
+                quitConfirmPanel.SetActive(false);
         }
 
         private void OnEnable()
@@ -175,6 +183,34 @@ namespace _Scripts.UI
             saveNotificationText.gameObject.SetActive(false);
         }
 
+        private void HandleQuit(string action)
+        {
+            switch (action)
+            {
+                case "open":
+                    quitConfirmPanel?.SetActive(true);
+                    _currentButtons = _quitButtons;
+                    _currentButtonIndex = 1;
+                    StartCoroutine(DelayedSelection());
+                    break;
+
+                case "confirm":
+                    QuitGame();
+                    break;
+
+                case "cancel":
+                    quitConfirmPanel?.SetActive(false);
+                    _currentButtons = _pauseButtons;
+                    _currentButtonIndex = 0;
+                    StartCoroutine(DelayedSelection());
+                    break;
+
+                default:
+                    Debug.LogError("Invalid action for HandleQuit()");
+                    break;
+            }
+        }
+
         private void QuitGame()
         {
             Debug.Log("🚪 Returning to Main Menu...");
@@ -224,7 +260,15 @@ namespace _Scripts.UI
             }
             else if (selectedButton == quitButton)
             {
-                QuitGame();
+                HandleQuit("open");
+            }
+            else if (selectedButton == confirmQuitButton)
+            {
+                HandleQuit("confirm");
+            }
+            else if (selectedButton == cancelQuitButton)
+            {
+                HandleQuit("cancel");
             }
         }
 
@@ -251,7 +295,9 @@ namespace _Scripts.UI
             saveButton.onClick.AddListener(SaveGame);
             controlsButton.onClick.AddListener(OpenControls);
             returnButton.onClick.AddListener(ReturnToPauseMenu);
-            quitButton.onClick.AddListener(QuitGame);
+            quitButton.onClick.AddListener(() => HandleQuit("open"));
+            confirmQuitButton.onClick.AddListener(() => HandleQuit("confirm"));
+            cancelQuitButton.onClick.AddListener(() => HandleQuit("cancel"));
         }
 
         private void RemoveButtonActions()
@@ -261,6 +307,8 @@ namespace _Scripts.UI
             controlsButton.onClick.RemoveAllListeners();
             returnButton.onClick.RemoveAllListeners();
             quitButton.onClick.RemoveAllListeners();
+            confirmQuitButton.onClick.RemoveAllListeners();
+            cancelQuitButton.onClick.RemoveAllListeners();
         }
     }
 }

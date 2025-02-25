@@ -18,7 +18,6 @@ namespace _Scripts.Managers
             _playerProfiler = FindObjectOfType<PlayerProfiler>();
             _playerHealth = FindObjectOfType<PlayerHealth>();
             _playerRespawner = FindObjectOfType<PlayerRespawner>();
-            SaveManager.SaveGame(_playerProfiler, _playerHealth, _pistolProfiler);
         }
 
         private void Update()
