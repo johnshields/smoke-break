@@ -6327,7 +6327,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1098351669}
   serializedVersion: 2
-  m_LocalRotation: {x: -0.15802376, y: 0.0051843, z: 0.0004789544, w: 0.98742163}
+  m_LocalRotation: {x: -0.15802376, y: 0.0051832846, z: 0.00047885644, w: 0.98742163}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -20245,7 +20245,7 @@ MonoBehaviour:
   maxClipSize: 9
   maxStoredAmmo: 99
   currentClipAmmo: 9
-  storedAmmo: 29
+  storedAmmo: 27
   unlimitedAmmo: 0
   muzzleFlashPrefab: {fileID: 2007973608278441849, guid: 47662ee8fcf36fc4986226b9b0e92fac, type: 3}
   worldCrosshairPrefab: {fileID: 438459696593828562, guid: 0329fd0847cc5d24991e48d2e611ec77, type: 3}

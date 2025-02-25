@@ -86,6 +86,9 @@ namespace _Scripts.Player
 
             _worldCrosshair.transform.localScale *= 1.5f;
             _moveKeys = _actions.Profiler.Movement;
+
+            currentClipAmmo = PlayerPrefs.HasKey("ClipAmmo") ? PlayerPrefs.GetInt("ClipAmmo") : 9;
+            storedAmmo = PlayerPrefs.HasKey("StoredAmmo") ? PlayerPrefs.GetInt("StoredAmmo") : 27;
         }
 
         private void OnEnable()
@@ -103,7 +106,6 @@ namespace _Scripts.Player
             _actions.Profiler.Aim.canceled -= StopAiming;
             _actions.Profiler.Shoot.performed -= ShootAction;
             _actions.Profiler.Reload.performed -= ReloadAction;
-            StopAiming(new InputAction.CallbackContext());
             _actions.Profiler.Disable();
         }
 
@@ -137,6 +139,21 @@ namespace _Scripts.Player
         {
             currentClipAmmo = clip;
             storedAmmo = stored;
+        }
+
+        public int GetCurrentClip()
+        {
+            PlayerPrefs.SetInt("ClipAmmo", currentClipAmmo);
+            PlayerPrefs.Save();
+
+            return currentClipAmmo;
+        }
+
+        public int GetStoredAmmo()
+        {
+            PlayerPrefs.SetInt("StoredAmmo", currentClipAmmo);
+            PlayerPrefs.Save();
+            return storedAmmo;
         }
 
         public void RefillAmmo(int amount)

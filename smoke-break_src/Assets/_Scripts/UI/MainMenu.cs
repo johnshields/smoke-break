@@ -69,7 +69,7 @@ namespace _Scripts.UI
             RemoveButtonActions();
         }
 
-        private void StartGame()
+        private static void StartGame()
         {
             Debug.Log("▶️ Starting New Game...");
             SaveManager.ResetGame();

@@ -13,8 +13,8 @@ namespace _Scripts.Managers
             PlayerPrefs.SetFloat("PlayerZ", player.transform.position.z);
 
             PlayerPrefs.SetInt("PlayerHealth", health.GetCurrentHealth());
-            PlayerPrefs.SetInt("ClipAmmo", pistol.currentClipAmmo);
-            PlayerPrefs.SetInt("StoredAmmo", pistol.storedAmmo);
+            PlayerPrefs.SetInt("ClipAmmo", pistol.GetCurrentClip());
+            PlayerPrefs.SetInt("StoredAmmo", pistol.GetStoredAmmo());
 
             string currentScene = SceneManager.GetActiveScene().name;
             PlayerPrefs.SetString("SavedLevel", currentScene);
@@ -35,10 +35,10 @@ namespace _Scripts.Managers
             player.transform.position = savedPosition;
             health.SetCurrentHealth(PlayerPrefs.GetInt("PlayerHealth"));
 
-            pistol.SetAmmo(
-                PlayerPrefs.GetInt("ClipAmmo"),
-                PlayerPrefs.GetInt("StoredAmmo")
+            pistol.SetAmmo(PlayerPrefs.GetInt("ClipAmmo"), PlayerPrefs.GetInt("StoredAmmo")
             );
+
+            Debug.Log("ammo: " + PlayerPrefs.GetInt("StoredAmmo"));
 
             string savedLevel = PlayerPrefs.GetString("SavedLevel");
             Debug.Log($"🔄 Loading Saved Level: {savedLevel}");

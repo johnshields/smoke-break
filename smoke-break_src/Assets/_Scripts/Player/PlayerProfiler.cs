@@ -82,6 +82,17 @@ namespace _Scripts.Player
 
             currentStamina = maxStamina;
             _moveKeys = _actions.Profiler.Movement;
+
+            if (PlayerPrefs.GetFloat("PlayerX") != 0)
+            {
+                var savedPosition = new Vector3(
+                    PlayerPrefs.GetFloat("PlayerX"),
+                    PlayerPrefs.GetFloat("PlayerY"),
+                    PlayerPrefs.GetFloat("PlayerZ")
+                );
+
+                transform.position = savedPosition;
+            }
         }
 
         private void OnEnable()
