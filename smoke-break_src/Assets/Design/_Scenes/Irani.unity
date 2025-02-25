@@ -20082,7 +20082,6 @@ GameObject:
   - component: {fileID: 7819173119770924575}
   - component: {fileID: 5897919289326121628}
   - component: {fileID: 9028799375046230541}
-  - component: {fileID: 9028799375046230543}
   m_Layer: 3
   m_Name: Kanta
   m_TagString: Player
@@ -21589,18 +21588,6 @@ MonoBehaviour:
   maxHealth: 100
   currentHealth: 50
   invulnerable: 0
---- !u!114 &9028799375046230543
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5979711990829132460}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e6ded1c7b77742f48fa415d118ddb7ba, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!4 &9070495592048958161
 Transform:
   m_ObjectHideFlags: 0

@@ -824,6 +824,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   pausePanel: {fileID: 0}
   controlsPanel: {fileID: 0}
+  quitConfirmPanel: {fileID: 0}
   saveNotificationText: {fileID: 0}
   saveNotificationDuration: 2
   resumeButton: {fileID: 0}
@@ -831,6 +832,8 @@ MonoBehaviour:
   controlsButton: {fileID: 0}
   returnButton: {fileID: 0}
   quitButton: {fileID: 0}
+  confirmQuitButton: {fileID: 0}
+  cancelQuitButton: {fileID: 0}
   highlightColor: {r: 0, g: 1, b: 0, a: 1}
   defaultColor: {r: 1, g: 1, b: 1, a: 1}
   isPaused: 0
@@ -3692,7 +3695,6 @@ GameObject:
   - component: {fileID: 2576542002489176668}
   - component: {fileID: 7736720956469656235}
   - component: {fileID: 7736720956469656236}
-  - component: {fileID: 7736720956469656237}
   m_Layer: 3
   m_Name: Kanta
   m_TagString: Player
@@ -10296,20 +10298,6 @@ MonoBehaviour:
   maxHealth: 100
   currentHealth: 60
   invulnerable: 0
---- !u!114 &7736720956469656237
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2370051512896006764}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e6ded1c7b77742f48fa415d118ddb7ba, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _playerId: 
-  _savePath: 
 --- !u!1 &7790177757902399900
 GameObject:
   m_ObjectHideFlags: 0
