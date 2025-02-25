@@ -6327,7 +6327,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1098351669}
   serializedVersion: 2
-  m_LocalRotation: {x: -0.15802376, y: 0.0051832846, z: 0.00047885644, w: 0.98742163}
+  m_LocalRotation: {x: -0.15802377, y: 0.0051812967, z: 0.00047866962, w: 0.98742163}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -19612,6 +19612,7 @@ GameObject:
   - component: {fileID: 7819173119770924575}
   - component: {fileID: 5897919289326121628}
   - component: {fileID: 9028799375046230541}
+  - component: {fileID: 9028799375046230543}
   m_Layer: 3
   m_Name: Kanta
   m_TagString: Player
@@ -20244,7 +20245,7 @@ MonoBehaviour:
   fireRate: 0.3
   maxClipSize: 9
   maxStoredAmmo: 99
-  currentClipAmmo: 9
+  currentClip: 0
   storedAmmo: 27
   unlimitedAmmo: 0
   muzzleFlashPrefab: {fileID: 2007973608278441849, guid: 47662ee8fcf36fc4986226b9b0e92fac, type: 3}
@@ -20875,6 +20876,18 @@ MonoBehaviour:
   maxHealth: 100
   currentHealth: 50
   invulnerable: 0
+--- !u!114 &9028799375046230543
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5979711990829132460}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e6ded1c7b77742f48fa415d118ddb7ba, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!4 &9070495592048958161
 Transform:
   m_ObjectHideFlags: 0

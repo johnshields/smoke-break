@@ -847,6 +847,7 @@ MonoBehaviour:
   healthBar: {fileID: 0}
   healthFill: {fileID: 0}
   lowHealthColor: {r: 1, g: 0, b: 0, a: 1}
+  injuryOverlay: {fileID: 0}
   deathText: {fileID: 0}
   staminaBar: {fileID: 0}
   staminaFill: {fileID: 0}
@@ -3392,7 +3393,7 @@ MonoBehaviour:
   fireRate: 0.3
   maxClipSize: 9
   maxStoredAmmo: 99
-  currentClipAmmo: 9
+  currentClip: 0
   storedAmmo: 29
   unlimitedAmmo: 0
   muzzleFlashPrefab: {fileID: 2007973608278441849, guid: 47662ee8fcf36fc4986226b9b0e92fac, type: 3}
@@ -3623,6 +3624,7 @@ GameObject:
   - component: {fileID: 2576542002489176668}
   - component: {fileID: 7736720956469656235}
   - component: {fileID: 7736720956469656236}
+  - component: {fileID: 7736720956469656237}
   m_Layer: 3
   m_Name: Kanta
   m_TagString: Player
@@ -9572,7 +9574,10 @@ MonoBehaviour:
     m_Bits: 0
   groundCheckRadius: 0.2
   audioSource: {fileID: 1881246792}
+  heartbeatAudio: {fileID: 0}
+  heartbeatSound: {fileID: 0}
   staggerSound: {fileID: 8300000, guid: f213908e626150348903575839136bd5, type: 3}
+  injuryThreshold: 30
 --- !u!4 &7211552487322364608
 Transform:
   m_ObjectHideFlags: 0
@@ -9814,6 +9819,18 @@ MonoBehaviour:
   maxHealth: 100
   currentHealth: 60
   invulnerable: 0
+--- !u!114 &7736720956469656237
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2370051512896006764}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e6ded1c7b77742f48fa415d118ddb7ba, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &7790177757902399900
 GameObject:
   m_ObjectHideFlags: 0

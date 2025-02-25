@@ -6,6 +6,7 @@ using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using UnityEngine.EventSystems;
 using System.Collections;
+using System.IO;
 using _Scripts.Managers;
 
 namespace _Scripts.UI
@@ -78,20 +79,20 @@ namespace _Scripts.UI
 
         private void LoadGame()
         {
-            Debug.Log("▶️ Loading Game...");
+            var playerId = SaveManager.GetOrCreatePlayerId();
+            var savePath = Path.Combine(SaveManager.SaveDirectory, $"savegame_{playerId}.json");
 
-            if (!PlayerPrefs.HasKey("SavedLevel"))
+            if (!File.Exists(savePath))
             {
                 Debug.Log("no saved game");
                 StartCoroutine(ShowSaveNotification());
                 return;
             }
 
-            string savedLevel = PlayerPrefs.GetString("SavedLevel");
+            var json = File.ReadAllText(savePath);
+            var data = JsonUtility.FromJson<SaveData>(json);
 
-            SaveManager.LoadGame(FindObjectOfType<PlayerProfiler>(), FindObjectOfType<PlayerHealth>(),
-                FindObjectOfType<PistolProfiler>());
-            SceneManager.LoadScene(savedLevel);
+            SceneManager.LoadScene(data.savedLevel);
         }
 
         private IEnumerator ShowSaveNotification()

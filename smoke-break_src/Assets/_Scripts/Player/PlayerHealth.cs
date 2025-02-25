@@ -1,3 +1,5 @@
+using System.IO;
+using _Scripts.Managers;
 using UnityEngine;
 
 namespace _Scripts.Player
@@ -9,12 +11,18 @@ namespace _Scripts.Player
         public bool invulnerable;
         private PlayerRespawner _respawner;
         private PlayerProfiler _player;
+        private string _playerId;
+        private string _savePath;
 
         private void Awake()
         {
+            _playerId = SaveManager.GetOrCreatePlayerId();
+            _savePath = Path.Combine(SaveManager.SaveDirectory, $"savegame_{_playerId}.json");
+
             _player = GetComponent<PlayerProfiler>();
             _respawner = GetComponent<PlayerRespawner>();
-            currentHealth = PlayerPrefs.HasKey("PlayerHealth") ? PlayerPrefs.GetInt("PlayerHealth") : 30;
+
+            LoadHealth();
         }
 
         private void Update()
@@ -26,17 +34,37 @@ namespace _Scripts.Player
             }
         }
 
+        private void LoadHealth()
+        {
+            if (File.Exists(_savePath))
+            {
+                var json = File.ReadAllText(_savePath);
+                var data = JsonUtility.FromJson<SaveData>(json);
+                currentHealth = data.playerHealth;
+            }
+            else
+            {
+                currentHealth = 30;
+            }
+        }
+
+        public int GetCurrentHealth() => currentHealth;
+
         public void SetCurrentHealth(int health)
         {
             currentHealth = health;
+            SaveHealth();
         }
 
-        public int GetCurrentHealth()
+        private void SaveHealth()
         {
-            PlayerPrefs.SetInt("PlayerHealth", currentHealth);
-            PlayerPrefs.Save();
-
-            return currentHealth;
+            if (File.Exists(_savePath))
+            {
+                var json = File.ReadAllText(_savePath);
+                var data = JsonUtility.FromJson<SaveData>(json);
+                data.playerHealth = currentHealth;
+                File.WriteAllText(_savePath, JsonUtility.ToJson(data, true));
+            }
         }
 
         public void TakeDamage(int damage)

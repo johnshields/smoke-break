@@ -1,4 +1,5 @@
 using System.Collections;
+using System.IO;
 using _Scripts.Managers;
 using UnityEngine;
 using UnityEngine.Serialization;
@@ -67,18 +68,29 @@ namespace _Scripts.Player
         {
             yield return new WaitForSeconds(respawnDelay);
 
-            var savedPosition = new Vector3(
-                PlayerPrefs.GetFloat("PlayerX"),
-                PlayerPrefs.GetFloat("PlayerY"),
-                PlayerPrefs.GetFloat("PlayerZ")
-            );
-
-            respawnPoint.transform.position = savedPosition;
+            GetRespawnPoint();
 
             if (respawnPoint is not null)
                 transform.position = respawnPoint.position;
 
             ResetPlayer();
+        }
+
+        private void GetRespawnPoint()
+        {
+            var playerId = SaveManager.GetOrCreatePlayerId();
+            var savePath = Path.Combine(SaveManager.SaveDirectory, $"savegame_{playerId}.json");
+
+            if (File.Exists(savePath))
+            {
+                var json = File.ReadAllText(savePath);
+                var data = JsonUtility.FromJson<SaveData>(json);
+
+                var savedPosition = new Vector3(data.playerX, data.playerY, data.playerZ);
+                respawnPoint.transform.position = savedPosition;
+
+                transform.position = respawnPoint.position;
+            }
         }
 
         private void ResetPlayer()

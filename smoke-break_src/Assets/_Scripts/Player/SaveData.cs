@@ -1,13 +1,25 @@
-﻿namespace _Scripts.Player
+﻿using System;
+using System.Collections.Generic;
+
+namespace _Scripts.Player
 {
+    [Serializable]
     public class SaveData
     {
-        public float PlayerX;
-        public float PlayerY;
-        public float PlayerZ;
-        public int PlayerHealth;
-        public int ClipAmmo;
-        public int StoredAmmo;
-        public string SavedLevel;
+        public string playerId;
+        public string timestamp;
+        public float playerX;
+        public float playerY;
+        public float playerZ;
+        public int playerHealth;
+        public int clipAmmo;
+        public int storedAmmo;
+        public string savedLevel;
+    }
+
+    [Serializable]
+    public class SaveList
+    {
+        public List<SaveData> Saves = new List<SaveData>();
     }
 }

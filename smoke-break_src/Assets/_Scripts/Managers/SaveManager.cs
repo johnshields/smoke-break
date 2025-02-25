@@ -1,3 +1,5 @@
+using System;
+using System.IO;
 using _Scripts.Player;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -6,50 +8,73 @@ namespace _Scripts.Managers
 {
     public static class SaveManager
     {
+        public static string SaveDirectory => Path.Combine(Application.persistentDataPath, "Saves");
+        private const string PlayerIdKey = "PlayerId";
+        private static string _timestamp = DateTime.UtcNow.ToString("o").Replace(':', '-');
+
+        public static string GetOrCreatePlayerId()
+        {
+            if (!PlayerPrefs.HasKey(PlayerIdKey))
+            {
+                var newId = Guid.NewGuid().ToString();
+                PlayerPrefs.SetString(PlayerIdKey, newId);
+                PlayerPrefs.Save();
+            }
+
+            return PlayerPrefs.GetString(PlayerIdKey);
+        }
+
         public static void SaveGame(PlayerProfiler player, PlayerHealth health, PistolProfiler pistol)
         {
-            PlayerPrefs.SetFloat("PlayerX", player.transform.position.x);
-            PlayerPrefs.SetFloat("PlayerY", player.transform.position.y);
-            PlayerPrefs.SetFloat("PlayerZ", player.transform.position.z);
+            if (!Directory.Exists(SaveDirectory))
+                Directory.CreateDirectory(SaveDirectory);
 
-            PlayerPrefs.SetInt("PlayerHealth", health.GetCurrentHealth());
-            PlayerPrefs.SetInt("ClipAmmo", pistol.GetCurrentClip());
-            PlayerPrefs.SetInt("StoredAmmo", pistol.GetStoredAmmo());
+            var playerId = GetOrCreatePlayerId();
+            _timestamp = DateTime.UtcNow.ToString("o").Replace(':', '-');
 
-            string currentScene = SceneManager.GetActiveScene().name;
-            PlayerPrefs.SetString("SavedLevel", currentScene);
+            var data = new SaveData
+            {
+                playerId = playerId,
+                timestamp = _timestamp,
+                playerX = player.transform.position.x,
+                playerY = player.transform.position.y,
+                playerZ = player.transform.position.z,
+                playerHealth = health.GetCurrentHealth(),
+                clipAmmo = pistol.GetCurrentClip(),
+                storedAmmo = pistol.GetStoredAmmo(),
+                savedLevel = SceneManager.GetActiveScene().name
+            };
 
-            PlayerPrefs.Save();
+            var savePath = Path.Combine(SaveDirectory, $"savegame_{playerId}.json");
+            File.WriteAllText(savePath, JsonUtility.ToJson(data, true));
+
+            Debug.Log($"Game saved... \n Player Object: {data}");
         }
 
         public static void LoadGame(PlayerProfiler player, PlayerHealth health, PistolProfiler pistol)
         {
-            if (!PlayerPrefs.HasKey("PlayerX")) return;
+            var playerId = GetOrCreatePlayerId();
+            var savePath = Path.Combine(SaveDirectory, $"savegame_{playerId}.json");
+            if (!File.Exists(savePath)) return;
 
-            var savedPosition = new Vector3(
-                PlayerPrefs.GetFloat("PlayerX"),
-                PlayerPrefs.GetFloat("PlayerY"),
-                PlayerPrefs.GetFloat("PlayerZ")
-            );
+            var json = File.ReadAllText(savePath);
+            var data = JsonUtility.FromJson<SaveData>(json);
 
-            player.transform.position = savedPosition;
-            health.SetCurrentHealth(PlayerPrefs.GetInt("PlayerHealth"));
+            player.transform.position = new Vector3(data.playerX, data.playerY, data.playerZ);
+            health.SetCurrentHealth(data.playerHealth);
+            pistol.SetAmmo(data.clipAmmo, data.storedAmmo);
 
-            pistol.SetAmmo(PlayerPrefs.GetInt("ClipAmmo"), PlayerPrefs.GetInt("StoredAmmo")
-            );
-
-            Debug.Log("ammo: " + PlayerPrefs.GetInt("StoredAmmo"));
-
-            string savedLevel = PlayerPrefs.GetString("SavedLevel");
-            Debug.Log($"🔄 Loading Saved Level: {savedLevel}");
-
-            Debug.Log("Game Loaded!");
+            Debug.Log($"Game Loading... \n Player Object: {data}");
         }
 
         public static void ResetGame()
         {
-            PlayerPrefs.DeleteAll();
-            Debug.Log("Save Data Reset!");
+            if (Directory.Exists(SaveDirectory))
+            {
+                Directory.Delete(SaveDirectory, true);
+                PlayerPrefs.DeleteKey(PlayerIdKey);
+                Debug.Log("All Save Data Reset!");
+            }
         }
     }
 }

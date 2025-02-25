@@ -1,4 +1,6 @@
 using System.Collections;
+using System.IO;
+using _Scripts.Managers;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using _Scripts.UI;
@@ -83,16 +85,7 @@ namespace _Scripts.Player
             currentStamina = maxStamina;
             _moveKeys = _actions.Profiler.Movement;
 
-            if (PlayerPrefs.GetFloat("PlayerX") != 0)
-            {
-                var savedPosition = new Vector3(
-                    PlayerPrefs.GetFloat("PlayerX"),
-                    PlayerPrefs.GetFloat("PlayerY"),
-                    PlayerPrefs.GetFloat("PlayerZ")
-                );
-
-                transform.position = savedPosition;
-            }
+            LoadPlayerPosition();
         }
 
         private void OnEnable()
@@ -136,6 +129,23 @@ namespace _Scripts.Player
             {
                 grounded = true;
                 _animator.SetBool(Grounded, true);
+            }
+        }
+
+        #endregion
+
+        #region Position
+
+        private void LoadPlayerPosition()
+        {
+            var playerId = SaveManager.GetOrCreatePlayerId();
+            var savePath = Path.Combine(SaveManager.SaveDirectory, $"savegame_{playerId}.json");
+
+            if (File.Exists(savePath))
+            {
+                var json = File.ReadAllText(savePath);
+                var data = JsonUtility.FromJson<SaveData>(json);
+                transform.position = new Vector3(data.playerX, data.playerY, data.playerZ);
             }
         }
 

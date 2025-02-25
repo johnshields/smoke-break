@@ -1,4 +1,6 @@
 using System.Collections;
+using System.IO;
+using _Scripts.Managers;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -21,7 +23,7 @@ namespace _Scripts.Player
         private int maxClipSize = 10;
 
         [SerializeField] public int maxStoredAmmo = 99;
-        [SerializeField] public int currentClipAmmo;
+        [SerializeField] public int currentClip;
         [SerializeField] public int storedAmmo;
         [SerializeField] private bool unlimitedAmmo;
 
@@ -66,6 +68,8 @@ namespace _Scripts.Player
         private bool _isAiming;
         private Vector3 _aimTarget;
         private bool _reloadTriggered;
+        private string _playerId;
+        private string _savePath;
 
         #endregion
 
@@ -73,6 +77,9 @@ namespace _Scripts.Player
 
         private void Awake()
         {
+            _playerId = SaveManager.GetOrCreatePlayerId();
+            _savePath = Path.Combine(SaveManager.SaveDirectory, $"savegame_{_playerId}.json");
+
             _actions = new InputControls();
             _player = GetComponent<PlayerProfiler>();
             _animator = GetComponent<Animator>();
@@ -87,8 +94,7 @@ namespace _Scripts.Player
             _worldCrosshair.transform.localScale *= 1.5f;
             _moveKeys = _actions.Profiler.Movement;
 
-            currentClipAmmo = PlayerPrefs.HasKey("ClipAmmo") ? PlayerPrefs.GetInt("ClipAmmo") : 9;
-            storedAmmo = PlayerPrefs.HasKey("StoredAmmo") ? PlayerPrefs.GetInt("StoredAmmo") : 27;
+            LoadAmmo();
         }
 
         private void OnEnable()
@@ -125,7 +131,7 @@ namespace _Scripts.Player
                 SnapToTarget();
             }
 
-            if (currentClipAmmo != 0 || storedAmmo <= 0 || _isReloading) return;
+            if (currentClip != 0 || storedAmmo <= 0 || _isReloading) return;
             if (_reloadTriggered) return;
             _reloadTriggered = true;
             StartCoroutine(ReloadDelay(1f));
@@ -135,25 +141,43 @@ namespace _Scripts.Player
 
         #region Ammo
 
+        private void LoadAmmo()
+        {
+            if (File.Exists(_savePath))
+            {
+                var json = File.ReadAllText(_savePath);
+                var data = JsonUtility.FromJson<SaveData>(json);
+                currentClip = data.clipAmmo;
+                storedAmmo = data.storedAmmo;
+            }
+            else
+            {
+                currentClip = 9;
+                storedAmmo = 27;
+            }
+        }
+
+        public int GetCurrentClip() => currentClip;
+
+        public int GetStoredAmmo() => storedAmmo;
+
         public void SetAmmo(int clip, int stored)
         {
-            currentClipAmmo = clip;
+            currentClip = clip;
             storedAmmo = stored;
+            SaveAmmo();
         }
 
-        public int GetCurrentClip()
+        private void SaveAmmo()
         {
-            PlayerPrefs.SetInt("ClipAmmo", currentClipAmmo);
-            PlayerPrefs.Save();
-
-            return currentClipAmmo;
-        }
-
-        public int GetStoredAmmo()
-        {
-            PlayerPrefs.SetInt("StoredAmmo", currentClipAmmo);
-            PlayerPrefs.Save();
-            return storedAmmo;
+            if (File.Exists(_savePath))
+            {
+                var json = File.ReadAllText(_savePath);
+                var data = JsonUtility.FromJson<SaveData>(json);
+                data.clipAmmo = currentClip;
+                data.storedAmmo = storedAmmo;
+                File.WriteAllText(_savePath, JsonUtility.ToJson(data, true));
+            }
         }
 
         public void RefillAmmo(int amount)
@@ -255,14 +279,14 @@ namespace _Scripts.Player
 
         private void ShootAction(InputAction.CallbackContext context)
         {
-            if (currentClipAmmo <= 0 && storedAmmo <= 0)
+            if (currentClip <= 0 && storedAmmo <= 0)
             {
                 Debug.Log("Ammo Empty!");
                 audioSource.PlayOneShot(emptyGunSound);
                 return;
             }
 
-            if (!_canShoot || _isReloading || currentClipAmmo <= 0) return;
+            if (!_canShoot || _isReloading || currentClip <= 0) return;
 
             _player.disableMovement = true;
             _lastActionTime = Time.time;
@@ -279,7 +303,7 @@ namespace _Scripts.Player
             yield return new WaitForSeconds(0.5f);
 
             // Reduce ammo count in the current clip
-            currentClipAmmo--;
+            currentClip--;
 
             // Play a random gunshot sound from the "pistol" category at the specified volume
             randomAudio.PlayRandomSound("pistol", gunshotVolume);
@@ -302,7 +326,7 @@ namespace _Scripts.Player
             yield return new WaitForSeconds(fireRate);
 
             // Check if the gun is out of ammo
-            if (currentClipAmmo <= 0)
+            if (currentClip <= 0)
             {
                 // Automatically start reloading with a 1-second delay
                 StartCoroutine(ReloadDelay(1f));
@@ -325,7 +349,7 @@ namespace _Scripts.Player
 
         private IEnumerator ReloadDelay(float reloadTime)
         {
-            if (_isReloading || storedAmmo <= 0 || currentClipAmmo == maxClipSize)
+            if (_isReloading || storedAmmo <= 0 || currentClip == maxClipSize)
                 yield break;
 
             _isReloading = true;
@@ -333,10 +357,10 @@ namespace _Scripts.Player
             yield return new WaitForSeconds(reloadTime);
 
             audioSource.PlayOneShot(reloadSound);
-            var ammoNeeded = maxClipSize - currentClipAmmo;
+            var ammoNeeded = maxClipSize - currentClip;
             var ammoToLoad = Mathf.Min(ammoNeeded, storedAmmo);
 
-            currentClipAmmo += ammoToLoad;
+            currentClip += ammoToLoad;
             storedAmmo -= ammoToLoad;
 
             _isReloading = false;

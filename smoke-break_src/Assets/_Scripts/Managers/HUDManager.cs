@@ -65,7 +65,7 @@ namespace _Scripts.Managers
         private void UpdateAmmo()
         {
             if (bulletCounter is null) return;
-            bulletCounter.text = $"{_pistol.currentClipAmmo}/{_pistol.storedAmmo}";
+            bulletCounter.text = $"{_pistol.currentClip}/{_pistol.storedAmmo}";
         }
 
         private void UpdateHealth()
