@@ -107,6 +107,15 @@ public partial class @InputControls: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Reload"",
+                    ""type"": ""Button"",
+                    ""id"": ""8c1690df-2bb0-4891-95c7-6720b814243b"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -406,6 +415,28 @@ public partial class @InputControls: IInputActionCollection2, IDisposable
                     ""action"": ""Sprint"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""bb5fef5b-21cd-49bc-91c0-4948c5e563bc"",
+                    ""path"": ""<Keyboard>/r"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Reload"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""38353b3e-cf43-4cb1-b7bc-f4b10e1979ff"",
+                    ""path"": ""<Gamepad>/buttonWest"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Reload"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         },
@@ -596,6 +627,7 @@ public partial class @InputControls: IInputActionCollection2, IDisposable
         m_Profiler_Shoot = m_Profiler.FindAction("Shoot", throwIfNotFound: true);
         m_Profiler_Aim = m_Profiler.FindAction("Aim", throwIfNotFound: true);
         m_Profiler_Sprint = m_Profiler.FindAction("Sprint", throwIfNotFound: true);
+        m_Profiler_Reload = m_Profiler.FindAction("Reload", throwIfNotFound: true);
         // UI
         m_UI = asset.FindActionMap("UI", throwIfNotFound: true);
         m_UI_Pause = m_UI.FindAction("Pause", throwIfNotFound: true);
@@ -671,6 +703,7 @@ public partial class @InputControls: IInputActionCollection2, IDisposable
     private readonly InputAction m_Profiler_Shoot;
     private readonly InputAction m_Profiler_Aim;
     private readonly InputAction m_Profiler_Sprint;
+    private readonly InputAction m_Profiler_Reload;
     public struct ProfilerActions
     {
         private @InputControls m_Wrapper;
@@ -684,6 +717,7 @@ public partial class @InputControls: IInputActionCollection2, IDisposable
         public InputAction @Shoot => m_Wrapper.m_Profiler_Shoot;
         public InputAction @Aim => m_Wrapper.m_Profiler_Aim;
         public InputAction @Sprint => m_Wrapper.m_Profiler_Sprint;
+        public InputAction @Reload => m_Wrapper.m_Profiler_Reload;
         public InputActionMap Get() { return m_Wrapper.m_Profiler; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -720,6 +754,9 @@ public partial class @InputControls: IInputActionCollection2, IDisposable
             @Sprint.started += instance.OnSprint;
             @Sprint.performed += instance.OnSprint;
             @Sprint.canceled += instance.OnSprint;
+            @Reload.started += instance.OnReload;
+            @Reload.performed += instance.OnReload;
+            @Reload.canceled += instance.OnReload;
         }
 
         private void UnregisterCallbacks(IProfilerActions instance)
@@ -751,6 +788,9 @@ public partial class @InputControls: IInputActionCollection2, IDisposable
             @Sprint.started -= instance.OnSprint;
             @Sprint.performed -= instance.OnSprint;
             @Sprint.canceled -= instance.OnSprint;
+            @Reload.started -= instance.OnReload;
+            @Reload.performed -= instance.OnReload;
+            @Reload.canceled -= instance.OnReload;
         }
 
         public void RemoveCallbacks(IProfilerActions instance)
@@ -850,6 +890,7 @@ public partial class @InputControls: IInputActionCollection2, IDisposable
         void OnShoot(InputAction.CallbackContext context);
         void OnAim(InputAction.CallbackContext context);
         void OnSprint(InputAction.CallbackContext context);
+        void OnReload(InputAction.CallbackContext context);
     }
     public interface IUIActions
     {

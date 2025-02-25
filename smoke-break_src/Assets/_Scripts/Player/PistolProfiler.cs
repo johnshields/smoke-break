@@ -6,6 +6,8 @@ namespace _Scripts.Player
 {
     public class PistolProfiler : MonoBehaviour
     {
+        #region Variables
+
         private static readonly int ShootHash = Animator.StringToHash("Shoot");
 
         [Header("Pistol Settings")] [SerializeField]
@@ -50,9 +52,7 @@ namespace _Scripts.Player
         [SerializeField] private AudioClip gunshotSound;
         [SerializeField] private AudioClip reloadSound;
         [SerializeField] private AudioClip emptyGunSound;
-
-        [SerializeField] private RandomAudio randomAudio; // ✅ Handles random gunshot sounds
-
+        [SerializeField] private RandomAudio randomAudio;
         [SerializeField] private float gunshotVolume = 1.0f;
 
 
@@ -65,6 +65,11 @@ namespace _Scripts.Player
         private bool _isReloading;
         private bool _isAiming;
         private Vector3 _aimTarget;
+        private bool _reloadTriggered;
+
+        #endregion
+
+        #region Unity Callbacks
 
         private void Awake()
         {
@@ -85,17 +90,20 @@ namespace _Scripts.Player
 
         private void OnEnable()
         {
-            _actions.Profiler.Enable();
-            _actions.Profiler.Shoot.performed += ShootAction;
             _actions.Profiler.Aim.performed += StartAiming;
             _actions.Profiler.Aim.canceled += StopAiming;
+            _actions.Profiler.Shoot.performed += ShootAction;
+            _actions.Profiler.Reload.performed += ReloadAction;
+            _actions.Profiler.Enable();
         }
 
         private void OnDisable()
         {
-            _actions.Profiler.Shoot.performed -= ShootAction;
             _actions.Profiler.Aim.performed -= StartAiming;
             _actions.Profiler.Aim.canceled -= StopAiming;
+            _actions.Profiler.Shoot.performed -= ShootAction;
+            _actions.Profiler.Reload.performed -= ReloadAction;
+            StopAiming(new InputAction.CallbackContext());
             _actions.Profiler.Disable();
         }
 
@@ -115,17 +123,31 @@ namespace _Scripts.Player
                 SnapToTarget();
             }
 
-            if (currentClipAmmo == 0 && storedAmmo > 0 && !_isReloading)
-            {
-                StartCoroutine(Reload());
-            }
+            if (currentClipAmmo != 0 || storedAmmo <= 0 || _isReloading) return;
+            if (_reloadTriggered) return;
+            _reloadTriggered = true;
+            StartCoroutine(ReloadDelay(1f));
         }
+
+        #endregion
+
+        #region Ammo
 
         public void SetAmmo(int clip, int stored)
         {
             currentClipAmmo = clip;
             storedAmmo = stored;
         }
+
+        public void RefillAmmo(int amount)
+        {
+            storedAmmo = Mathf.Min(storedAmmo + amount, maxStoredAmmo);
+            Debug.Log($"Ammo refilled! Stored Ammo: {storedAmmo}");
+        }
+
+        #endregion
+
+        #region Aiming
 
         private void StartAiming(InputAction.CallbackContext context)
         {
@@ -141,20 +163,28 @@ namespace _Scripts.Player
 
         private void UpdateCrosshairPosition()
         {
-            Collider[] enemiesInRange = Physics.OverlapSphere(transform.position, 35f, aimableLayers);
+            var enemiesInRange = Physics.OverlapSphere(transform.position, 35f, aimableLayers);
 
             if (enemiesInRange.Length > 0)
             {
-                Transform closestEnemy = FindClosestEnemy(enemiesInRange);
+                var closestEnemy = FindClosestEnemy(enemiesInRange);
+
                 if (closestEnemy is not null)
                 {
-                    Vector3 enemyCenter = closestEnemy.position + Vector3.up * crosshairHeightOffset;
-                    Vector3 directionToPlayer = (playerCamera.transform.position - enemyCenter).normalized;
+                    var enemyCenter = closestEnemy.position + Vector3.up * crosshairHeightOffset;
+                    var directionToPlayer = (playerCamera.transform.position - enemyCenter).normalized;
 
                     _aimTarget = enemyCenter + directionToPlayer * 1.5f;
 
-                    _worldCrosshair.transform.position = _aimTarget;
-                    _worldCrosshair.transform.rotation = Quaternion.LookRotation(-directionToPlayer);
+                    if (_worldCrosshair.transform.position != _aimTarget)
+                    {
+                        _worldCrosshair.transform.position = _aimTarget;
+                    }
+
+                    if (_worldCrosshair.transform.rotation != Quaternion.LookRotation(-directionToPlayer))
+                    {
+                        _worldCrosshair.transform.rotation = Quaternion.LookRotation(-directionToPlayer);
+                    }
 
                     if (!_worldCrosshair.activeSelf)
                         _worldCrosshair.SetActive(true);
@@ -172,11 +202,12 @@ namespace _Scripts.Player
             if (enemies.Length == 0) return null;
 
             Transform closest = null;
-            float minDistance = Mathf.Infinity;
+            var minDistance = Mathf.Infinity;
 
-            foreach (Collider enemy in enemies)
+            foreach (var enemy in enemies)
             {
-                float distance = Vector3.Distance(transform.position, enemy.transform.position);
+                var distance = Vector3.Distance(transform.position, enemy.transform.position);
+
                 if (distance < minDistance)
                 {
                     minDistance = distance;
@@ -192,14 +223,18 @@ namespace _Scripts.Player
             if (_aimTarget == Vector3.zero) return;
             if (_moveKeys.ReadValue<Vector2>().sqrMagnitude > 0.01f) return;
 
-            Vector3 lookDirection = (_aimTarget - transform.position).normalized;
+            var lookDirection = (_aimTarget - transform.position).normalized;
 
             if (lookDirection.sqrMagnitude < 0.01f) return;
 
             lookDirection.y = 0;
-            Quaternion targetRotation = Quaternion.LookRotation(lookDirection);
+            var targetRotation = Quaternion.LookRotation(lookDirection);
             transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * aimSnapSpeed);
         }
+
+        #endregion
+
+        #region Shooting and Reloading
 
         private void ShootAction(InputAction.CallbackContext context)
         {
@@ -223,57 +258,76 @@ namespace _Scripts.Player
 
         private IEnumerator ShootWithDelay()
         {
+            // Wait before firing the shot to simulate gun handling delay
             yield return new WaitForSeconds(0.5f);
 
+            // Reduce ammo count in the current clip
             currentClipAmmo--;
+
+            // Play a random gunshot sound from the "pistol" category at the specified volume
             randomAudio.PlayRandomSound("pistol", gunshotVolume);
-            GameObject muzzleFlash = Instantiate(muzzleFlashPrefab, firePoint.position, firePoint.rotation);
-            Destroy(muzzleFlash, 0.1f);
 
-            GameObject bullet = Instantiate(bulletPrefab, firePoint.position, Quaternion.identity);
-            Rigidbody rb = bullet.GetComponent<Rigidbody>();
+            // Create a muzzle flash effect at the gun's fire point
+            var muzzleFlash = Instantiate(muzzleFlashPrefab, firePoint.position, firePoint.rotation);
+            Destroy(muzzleFlash, 0.1f); // Destroy the effect after 0.1 seconds to clean up memory
 
-            Vector3 shotDirection = (_aimTarget - firePoint.position).normalized;
+            // Instantiate a bullet at the fire point
+            var bullet = Instantiate(bulletPrefab, firePoint.position, Quaternion.identity);
+            var rb = bullet.GetComponent<Rigidbody>(); // Get the bullet's Rigidbody for physics movement
+
+            // Calculate the direction of the shot based on the aiming target
+            var shotDirection = (_aimTarget - firePoint.position).normalized;
+
+            // Apply velocity to the bullet to make it move in the calculated direction
             rb.velocity = shotDirection * bulletSpeed;
 
+            // Wait for the weapon's fire rate cooldown before allowing another shot
             yield return new WaitForSeconds(fireRate);
 
+            // Check if the gun is out of ammo
             if (currentClipAmmo <= 0)
             {
-                StartCoroutine(Reload());
+                // Automatically start reloading with a 1-second delay
+                StartCoroutine(ReloadDelay(1f));
             }
             else
             {
+                // Allow shooting again if ammo is still available
                 _canShoot = true;
             }
 
+            // Re-enable player movement after shooting
             _player.disableMovement = false;
         }
 
-        private IEnumerator Reload()
+        private void ReloadAction(InputAction.CallbackContext context)
+        {
+            if (_isReloading) return;
+            StartCoroutine(ReloadDelay(0));
+        }
+
+        private IEnumerator ReloadDelay(float reloadTime)
         {
             if (_isReloading || storedAmmo <= 0 || currentClipAmmo == maxClipSize)
                 yield break;
 
             _isReloading = true;
 
-            yield return new WaitForSeconds(1f);
+            yield return new WaitForSeconds(reloadTime);
 
             audioSource.PlayOneShot(reloadSound);
-            int ammoNeeded = maxClipSize - currentClipAmmo;
-            int ammoToLoad = Mathf.Min(ammoNeeded, storedAmmo);
+            var ammoNeeded = maxClipSize - currentClipAmmo;
+            var ammoToLoad = Mathf.Min(ammoNeeded, storedAmmo);
 
             currentClipAmmo += ammoToLoad;
             storedAmmo -= ammoToLoad;
 
             _isReloading = false;
+            _reloadTriggered = false;
+            _player.disableMovement = false;
             _canShoot = true;
         }
 
-        public void RefillAmmo(int amount)
-        {
-            storedAmmo = Mathf.Min(storedAmmo + amount, maxStoredAmmo);
-            Debug.Log($"Ammo refilled! Stored Ammo: {storedAmmo}");
-        }
+        #endregion
     }
 }
