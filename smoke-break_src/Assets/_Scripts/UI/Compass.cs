@@ -1,38 +1,40 @@
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace _Scripts.UI
 {
     public class Compass : MonoBehaviour
     {
+        [SerializeField] private Rect texRect = new(0, 0, 3.0f / 8.0f, 1.0f);
+
+        private RawImage _compassImage;
+        private Transform _target;
         private Transform _northPoint;
-        private Transform _player;
-        private Vector3 _direction;
-        private const float SmoothSpeed = 5f;
 
         private void Start()
         {
-            _northPoint = GameObject.FindGameObjectWithTag("NorthPoint")?.transform;
-            _player = Camera.main?.transform;
-
-            if (_northPoint == null)
-                Debug.LogError("No GameObject found with tag 'NorthPoint'.");
-
-            if (_player == null)
-                Debug.LogError("No Camera found.");
+            _target = GameObject.FindGameObjectWithTag("Player").transform;
+            _northPoint = GameObject.FindGameObjectWithTag("NorthPoint").transform;
+            _compassImage = GetComponent<RawImage>();
         }
 
-        private void LateUpdate()
+        private void Update()
         {
-            if (!_northPoint || !_player) return;
+            if (!_target || !_northPoint || !_compassImage) return;
 
-            var toNorth = _northPoint.position - _player.position;
+            // Calculate direction to NorthPoint
+            var toNorth = _northPoint.position - _target.position;
             var northAngle = Mathf.Atan2(toNorth.x, toNorth.z) * Mathf.Rad2Deg;
-            var playerAngle = _player.eulerAngles.y;
 
-            var targetRotation = playerAngle - northAngle;
-            _direction.z = Mathf.LerpAngle(_direction.z, targetRotation, Time.deltaTime * SmoothSpeed);
+            // Get player's current rotation
+            var playerAngle = _target.eulerAngles.y;
 
-            transform.localEulerAngles = _direction;
+            // Calculate relative angle difference (North should always be at center)
+            var relativeAngle = Mathf.DeltaAngle(playerAngle, northAngle);
+
+            // Convert angle (-180 to 180) into UV offset (0 to 1)
+            texRect.x = (5.0f / 16.0f) + (relativeAngle / 720.0f);
+            _compassImage.uvRect = texRect; // Update RawImage's UV mapping
         }
     }
 }
