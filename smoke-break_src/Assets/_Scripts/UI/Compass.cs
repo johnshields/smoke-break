@@ -15,26 +15,21 @@ namespace _Scripts.UI
             _player = Camera.main?.transform;
 
             if (_northPoint == null)
-            {
-                Debug.LogError(
-                    "No GameObject found with tag 'NorthPoint'. Please assign a north reference in the scene.");
-            }
+                Debug.LogError("No GameObject found with tag 'NorthPoint'.");
 
             if (_player == null)
-            {
-                Debug.LogError("No Camera found. Make sure the camera follows the player.");
-            }
+                Debug.LogError("No Camera found.");
         }
 
         private void LateUpdate()
         {
-            if (_northPoint == null || _player == null) return;
+            if (!_northPoint || !_player) return;
 
-            Vector3 toNorth = _northPoint.position - _player.position;
-            float northAngle = Mathf.Atan2(toNorth.x, toNorth.z) * Mathf.Rad2Deg;
-            float playerAngle = _player.eulerAngles.y;
+            var toNorth = _northPoint.position - _player.position;
+            var northAngle = Mathf.Atan2(toNorth.x, toNorth.z) * Mathf.Rad2Deg;
+            var playerAngle = _player.eulerAngles.y;
 
-            float targetRotation = playerAngle - northAngle;
+            var targetRotation = playerAngle - northAngle;
             _direction.z = Mathf.LerpAngle(_direction.z, targetRotation, Time.deltaTime * SmoothSpeed);
 
             transform.localEulerAngles = _direction;

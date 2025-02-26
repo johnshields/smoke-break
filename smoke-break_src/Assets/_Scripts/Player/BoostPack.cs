@@ -73,8 +73,13 @@ namespace _Scripts.Player
             if (collision.gameObject.layer == LayerMask.NameToLayer("Ground"))
             {
                 _jumpPressedOnce = false;
-                canBoost = true;
+                Invoke(nameof(EnableBoost), .5f);
             }
+        }
+
+        private void EnableBoost()
+        {
+            canBoost = true;
         }
 
         private void JumpAction(InputAction.CallbackContext context)
@@ -94,6 +99,7 @@ namespace _Scripts.Player
                 PerformBoost();
             }
         }
+
 
         private void PerformBoost()
         {

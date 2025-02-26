@@ -35,6 +35,7 @@ namespace _Scripts.Player
 
         [Header("Jump Settings")] public bool grounded = true;
         public float jumpForce = 5f;
+        private bool _canJump;
 
         [Header("DodgeBack Settings")] public float dodgeDistance = 5f;
         public float dodgeDuration = 0.35f;
@@ -129,6 +130,7 @@ namespace _Scripts.Player
             {
                 grounded = true;
                 _animator.SetBool(Grounded, true);
+                Invoke(nameof(EnableJump), .5f);
             }
         }
 
@@ -209,14 +211,20 @@ namespace _Scripts.Player
 
         #region Jumping & Dodging
 
+        private void EnableJump()
+        {
+            _canJump = true;
+        }
+
         private void JumpAction(InputAction.CallbackContext context)
         {
-            if (!grounded || disableMovement) return;
+            if (!grounded || disableMovement || !_canJump) return;
 
+            _canJump = false;
             grounded = false;
             _animator.SetBool(Grounded, false);
             _animator.SetTrigger(Jump);
-            Invoke(nameof(DelayedJump), 0.2f);
+            Invoke(nameof(DelayedJump), .2f);
         }
 
         private void DelayedJump()
