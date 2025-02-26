@@ -896,7 +896,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 620, y: 350}
+  m_SizeDelta: {x: 620, y: 375}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &681203218
 MonoBehaviour:
@@ -1064,7 +1064,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 260, y: 135}
+  m_AnchoredPosition: {x: 260, y: 150}
   m_SizeDelta: {x: 1000, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &737656269
@@ -1092,7 +1092,7 @@ MonoBehaviour:
     spacebar            A/X \r\n\r\nBOOST:       spacebar (double)   A/X (double) 
     \r\n\r\nDODGE:       C            \t      B/O  \r\n\r\nATTACK:      right click        
     RT/R2  \r\n\r\nAIM:         Q            \t      RB/R1  \r\n\r\nSHOOT:      
-    left click/F        LT/L2  \r\n"
+    left click/F        LT/L2 \n\nRELOAD:      R \r\t\t               X/\u2B1C\n"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 66aa52c2d423a3f4cbff24ef2d7b0e14, type: 2}
   m_sharedMaterial: {fileID: 4483909513856558407, guid: 66aa52c2d423a3f4cbff24ef2d7b0e14, type: 2}
@@ -1734,7 +1734,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: -145}
+  m_AnchoredPosition: {x: 0, y: -160}
   m_SizeDelta: {x: 150, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &987032207

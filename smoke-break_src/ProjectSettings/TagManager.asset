@@ -10,6 +10,8 @@ TagManager:
   - Axe
   - Enemy
   - Ground
+  - Target
+  - NorthPoint
   layers:
   - Default
   - TransparentFX
