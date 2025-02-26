@@ -167,7 +167,7 @@ namespace _Scripts.Managers
         private IEnumerator FadeBoostBar(float targetAlpha)
         {
             var startAlpha = boostFill.color.a;
-            const float fadeDuration = 0.5f;
+            const float fadeDuration = 0.25f;
             var elapsedTime = 0f;
 
             while (elapsedTime < fadeDuration)

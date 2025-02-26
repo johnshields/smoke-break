@@ -73,7 +73,7 @@ namespace _Scripts.Player
             if (collision.gameObject.layer == LayerMask.NameToLayer("Ground"))
             {
                 _jumpPressedOnce = false;
-                Invoke(nameof(EnableBoost), .5f);
+                Invoke(nameof(EnableBoost), .2f);
             }
         }
 

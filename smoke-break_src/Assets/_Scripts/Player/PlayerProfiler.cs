@@ -130,7 +130,7 @@ namespace _Scripts.Player
             {
                 grounded = true;
                 _animator.SetBool(Grounded, true);
-                Invoke(nameof(EnableJump), .5f);
+                Invoke(nameof(EnableJump), .2f);
             }
         }
 
