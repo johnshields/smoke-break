@@ -8,9 +8,14 @@ namespace _Scripts.Managers
 {
     public static class SaveManager
     {
-        public static string SaveDirectory => Path.Combine(Application.persistentDataPath, "Saves");
+        private static string SaveDirectory => Path.Combine(Application.persistentDataPath, "Saves");
         private const string PlayerIdKey = "PlayerId";
         private static string _timestamp = DateTime.UtcNow.ToString("o").Replace(':', '-');
+
+        public static string GetSaveDirectory()
+        {
+            return SaveDirectory;
+        }
 
         public static string GetOrCreatePlayerId()
         {

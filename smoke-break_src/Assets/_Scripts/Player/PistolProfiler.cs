@@ -78,7 +78,7 @@ namespace _Scripts.Player
         private void Awake()
         {
             _playerId = SaveManager.GetOrCreatePlayerId();
-            _savePath = Path.Combine(SaveManager.SaveDirectory, $"savegame_{_playerId}.json");
+            _savePath = Path.Combine(SaveManager.GetSaveDirectory(), $"savegame_{_playerId}.json");
 
             _actions = new InputControls();
             _player = GetComponent<PlayerProfiler>();
@@ -288,7 +288,7 @@ namespace _Scripts.Player
 
             if (!_canShoot || _isReloading || currentClip <= 0) return;
 
-            _player.disableMovement = true;
+            _player.SetMovement(true);
             _lastActionTime = Time.time;
             pistol.SetActive(true);
 
@@ -338,7 +338,7 @@ namespace _Scripts.Player
             }
 
             // Re-enable player movement after shooting
-            _player.disableMovement = false;
+            _player.SetMovement(false);
         }
 
         private void ReloadAction(InputAction.CallbackContext context)
@@ -365,7 +365,7 @@ namespace _Scripts.Player
 
             _isReloading = false;
             _reloadTriggered = false;
-            _player.disableMovement = false;
+            _player.SetMovement(false);
             _canShoot = true;
         }
 

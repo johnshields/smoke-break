@@ -1,23 +1,26 @@
 using System.IO;
 using _Scripts.Managers;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace _Scripts.Player
 {
     public class PlayerHealth : MonoBehaviour
     {
-        [Header("Health Settings")] public int maxHealth = 100;
-        public int currentHealth;
-        public bool invulnerable;
+        private string _savePath;
+
+        [Header("Health Settings")] [SerializeField]
+        private int maxHealth = 100;
+
+        [SerializeField] private int currentHealth;
+        private bool _invulnerable;
         private PlayerRespawner _respawner;
         private PlayerProfiler _player;
-        private string _playerId;
-        private string _savePath;
 
         private void Awake()
         {
-            _playerId = SaveManager.GetOrCreatePlayerId();
-            _savePath = Path.Combine(SaveManager.SaveDirectory, $"savegame_{_playerId}.json");
+            var playerId = SaveManager.GetOrCreatePlayerId();
+            _savePath = Path.Combine(SaveManager.GetSaveDirectory(), $"savegame_{playerId}.json");
 
             _player = GetComponent<PlayerProfiler>();
             _respawner = GetComponent<PlayerRespawner>();
@@ -48,7 +51,13 @@ namespace _Scripts.Player
             }
         }
 
+        public int GetMaxHealth() => maxHealth;
         public int GetCurrentHealth() => currentHealth;
+
+        public void SetInvulnerable(bool value)
+        {
+            _invulnerable = value;
+        }
 
         public void SetCurrentHealth(int health)
         {
@@ -69,7 +78,7 @@ namespace _Scripts.Player
 
         public void TakeDamage(int damage)
         {
-            if (invulnerable) return;
+            if (_invulnerable) return;
 
             if (_respawner.isRespawning) return;
             print($"🔥 Kanta took {damage} damage!");

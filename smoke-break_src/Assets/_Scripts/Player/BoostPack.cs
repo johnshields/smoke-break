@@ -11,7 +11,7 @@ namespace _Scripts.Player
         [Header("Boost Settings")] [SerializeField]
         private float boostForce = 15f;
 
-        [SerializeField] public float boostCooldown = 1f;
+        [SerializeField] private float boostCooldown = 1f;
         [SerializeField] private float fallMultiplier = 2.5f;
         [SerializeField] private float doubleJumpTimeLimit = 0.3f;
         public bool canBoost;
@@ -75,6 +75,11 @@ namespace _Scripts.Player
                 _jumpPressedOnce = false;
                 Invoke(nameof(EnableBoost), .2f);
             }
+        }
+
+        public float GetBoostCooldown()
+        {
+            return boostCooldown;
         }
 
         private void EnableBoost()

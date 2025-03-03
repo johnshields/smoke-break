@@ -12,6 +12,8 @@ namespace _Scripts.Player
     {
         #region Variables
 
+        private string _savePath;
+
         [Header("Animation Parameters")] private static readonly int Grounded = Animator.StringToHash("Grounded");
         private static readonly int Speed = Animator.StringToHash("Speed");
         private static readonly int Jump = Animator.StringToHash("Jump");
@@ -28,23 +30,27 @@ namespace _Scripts.Player
         private PlayerHealth _playerHealth;
         private PauseMenu _pauseMenu;
 
-        [Header("Movement Settings")] public float movementForce = 1f;
+        [Header("Movement Settings")] private bool disableMovement;
+        [SerializeField] private float movementForce = 1f;
         private Vector3 _forceDirection = Vector3.zero;
         private const float MaxSpeed = 5f;
-        public bool disableMovement;
 
         [Header("Jump Settings")] public bool grounded = true;
-        public float jumpForce = 5f;
+        [SerializeField] private float jumpForce = 5f;
         private bool _canJump;
 
-        [Header("DodgeBack Settings")] public float dodgeDistance = 5f;
-        public float dodgeDuration = 0.35f;
-        public float staggerDuration = 0.5f;
+        [Header("DodgeBack Settings")] [SerializeField]
+        private float dodgeDistance = 20f;
+
+        [SerializeField] private float dodgeDuration = 0.8f;
+        [SerializeField] private float staggerDuration = 0.5f;
         private bool _canDodge = true;
         private bool _isDodging;
 
-        [Header("Sprint Settings")] public float maxStamina = 100f;
-        public float currentStamina;
+        [Header("Sprint Settings")] [SerializeField]
+        private float maxStamina = 100f;
+
+        [SerializeField] private float currentStamina;
         [SerializeField] private float staminaDrainRate = 20f;
         [SerializeField] private float staminaRegenRate = 10f;
         [SerializeField] private float sprintMultiplier = 2f;
@@ -74,6 +80,9 @@ namespace _Scripts.Player
 
         private void Awake()
         {
+            var playerId = SaveManager.GetOrCreatePlayerId();
+            _savePath = Path.Combine(SaveManager.GetSaveDirectory(), $"savegame_{playerId}.json");
+
             _rigidbody = GetComponent<Rigidbody>();
             _animator = GetComponent<Animator>();
             _playerHealth = GetComponent<PlayerHealth>();
@@ -136,16 +145,32 @@ namespace _Scripts.Player
 
         #endregion
 
+        #region Getters and Setters
+
+        public float GetMaxStamina()
+        {
+            return maxStamina;
+        }
+
+        public float GetCurrentStamina()
+        {
+            return currentStamina;
+        }
+
+        public void SetMovement(bool value)
+        {
+            disableMovement = value;
+        }
+
+        #endregion
+
         #region Position
 
         private void LoadPlayerPosition()
         {
-            var playerId = SaveManager.GetOrCreatePlayerId();
-            var savePath = Path.Combine(SaveManager.SaveDirectory, $"savegame_{playerId}.json");
-
-            if (File.Exists(savePath))
+            if (File.Exists(_savePath))
             {
-                var json = File.ReadAllText(savePath);
+                var json = File.ReadAllText(_savePath);
                 var data = JsonUtility.FromJson<SaveData>(json);
                 transform.position = new Vector3(data.playerX, data.playerY, data.playerZ);
             }
@@ -263,7 +288,7 @@ namespace _Scripts.Player
             if (!_canDodge || _isDodging || currentStamina < 10 || !grounded) return false;
 
             currentStamina -= 10;
-            _playerHealth.invulnerable = true;
+            _playerHealth.SetInvulnerable(true);
             _isDodging = true;
             _canDodge = false;
             disableMovement = true;
@@ -295,7 +320,7 @@ namespace _Scripts.Player
             }
 
             _rigidbody.MovePosition(targetPosition);
-            _playerHealth.invulnerable = false;
+            _playerHealth.SetInvulnerable(false);
             _isDodging = false;
             disableMovement = false;
 
@@ -311,7 +336,7 @@ namespace _Scripts.Player
         {
             if (_isExhausted) return;
 
-            sprintMultiplier = _playerHealth.currentHealth < 50 ? 1.5f : 2f;
+            sprintMultiplier = _playerHealth.GetCurrentHealth() < 50 ? 1.5f : 2f;
             _isSprinting = true;
         }
 
@@ -359,7 +384,7 @@ namespace _Scripts.Player
 
         private void UpdateInjuryState()
         {
-            var isLowHealth = _playerHealth.currentHealth <= injuryThreshold;
+            var isLowHealth = _playerHealth.GetCurrentHealth() <= injuryThreshold;
             var isStandingStill = _moveKeys.ReadValue<Vector2>().sqrMagnitude < 0.01f;
 
             var shouldBeInjured = isLowHealth && isStandingStill;
@@ -370,7 +395,9 @@ namespace _Scripts.Player
 
         private void HandleHeartbeat(bool isLowHealth)
         {
-            if (_playerHealth.currentHealth <= 0)
+            var health = _playerHealth.GetCurrentHealth();
+
+            if (health <= 0)
             {
                 if (heartbeatAudio.isPlaying) heartbeatAudio.Stop();
                 return;
@@ -384,7 +411,7 @@ namespace _Scripts.Player
                     heartbeatAudio.Play();
                 }
 
-                var healthRatio = _playerHealth.currentHealth / (float)injuryThreshold;
+                var healthRatio = health / (float)injuryThreshold;
                 heartbeatAudio.volume = Mathf.Lerp(1f, 0.2f, healthRatio);
                 heartbeatAudio.pitch = Mathf.Lerp(1.5f, 0.6f, healthRatio);
             }

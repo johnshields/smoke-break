@@ -33,6 +33,7 @@ namespace _Scripts.Managers
         [SerializeField] private Image boostFill;
         [SerializeField] private Color lowBoostColor = Color.red;
         private Color _originalBoostColor;
+        private float _boostCooldown;
 
         private PistolProfiler _pistol;
         private PlayerProfiler _player;
@@ -45,6 +46,7 @@ namespace _Scripts.Managers
             _player = FindObjectOfType<PlayerProfiler>();
             _playerHealth = FindObjectOfType<PlayerHealth>();
             _boostPack = FindObjectOfType<BoostPack>();
+            _boostCooldown = _boostPack.GetBoostCooldown();
 
             _originalStaminaColor = staminaFill?.color ?? Color.white;
             _originalHealthColor = healthFill?.color ?? Color.white;
@@ -75,11 +77,11 @@ namespace _Scripts.Managers
             healthBar.fillRect.gameObject.SetActive(_playerHealth.GetCurrentHealth() > 0);
 
             if (healthFill is not null)
-                healthFill.color = _playerHealth.GetCurrentHealth() < _playerHealth.maxHealth * 0.2f
+                healthFill.color = _playerHealth.GetCurrentHealth() < _playerHealth.GetCurrentHealth() * 0.2f
                     ? lowHealthColor
                     : _originalHealthColor;
 
-            var isLowHealth = _playerHealth.currentHealth <= 10;
+            var isLowHealth = _playerHealth.GetCurrentHealth() <= 10;
             var targetAlpha = isLowHealth ? 0.5f : 0f;
 
             injuryOverlay.color = new Color(lowHealthColor.r, lowHealthColor.g, lowHealthColor.b,
@@ -88,12 +90,15 @@ namespace _Scripts.Managers
 
         private void UpdateStamina()
         {
+            var currentStamina = _player.GetCurrentStamina();
+            var maxStamina = _player.GetMaxStamina();
+
             if (staminaBar is null) return;
-            staminaBar.value = _player.currentStamina / _player.maxStamina;
-            staminaBar.fillRect.gameObject.SetActive(_player.currentStamina >= 0);
+            staminaBar.value = currentStamina / maxStamina;
+            staminaBar.fillRect.gameObject.SetActive(currentStamina >= 0);
 
             if (staminaFill is not null)
-                staminaFill.color = _player.currentStamina < _player.maxStamina * 0.1f
+                staminaFill.color = currentStamina < maxStamina * 0.1f
                     ? lowStaminaColor
                     : _originalStaminaColor;
         }
@@ -108,10 +113,10 @@ namespace _Scripts.Managers
             StartCoroutine(FadeBoostBar(1f));
 
             // First phase: Draining the boost bar over the cooldown period.
-            for (float elapsedTime = 0; elapsedTime < _boostPack.boostCooldown; elapsedTime += Time.deltaTime)
+            for (float elapsedTime = 0; elapsedTime < _boostCooldown; elapsedTime += Time.deltaTime)
             {
                 // Calculate the fill amount based on elapsed time and cooldown duration.
-                var fillAmount = Mathf.Clamp01(1f - (elapsedTime / _boostPack.boostCooldown));
+                var fillAmount = Mathf.Clamp01(1f - elapsedTime / _boostCooldown);
 
                 // Update the boost bar's fill value.
                 boostBar.value = fillAmount;
@@ -137,10 +142,10 @@ namespace _Scripts.Managers
             _boostPack.canBoost = true;
 
             // Second phase: Refilling the boost bar over the cooldown duration.
-            for (float elapsedTime = 0; elapsedTime < _boostPack.boostCooldown; elapsedTime += Time.deltaTime)
+            for (float elapsedTime = 0; elapsedTime < _boostCooldown; elapsedTime += Time.deltaTime)
             {
                 // Gradually increase the boost bar's fill value.
-                boostBar.value = Mathf.Clamp01(elapsedTime / _boostPack.boostCooldown);
+                boostBar.value = Mathf.Clamp01(elapsedTime / _boostCooldown);
 
                 // Wait until the next frame before continuing the loop.
                 yield return null;

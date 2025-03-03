@@ -5,11 +5,11 @@ namespace _Scripts.Managers
 {
     public class InitSave : MonoBehaviour
     {
+        [SerializeField] private bool saveGame;
+        [SerializeField] private bool resetGame;
         private PlayerProfiler _playerProfiler;
         private PistolProfiler _pistolProfiler;
         private PlayerHealth _playerHealth;
-        public bool saveGame;
-        public bool resetGame;
         private PlayerRespawner _playerRespawner;
 
         private void Start()

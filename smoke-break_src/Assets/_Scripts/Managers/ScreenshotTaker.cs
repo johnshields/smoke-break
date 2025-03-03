@@ -20,7 +20,7 @@ namespace _Scripts.Managers
 
         private void SaveScreenshot()
         {
-            string picturesFolder = Environment.GetFolderPath(Environment.SpecialFolder.MyPictures);
+            var picturesFolder = Environment.GetFolderPath(Environment.SpecialFolder.MyPictures);
             string screenshotFolder = Path.Combine(picturesFolder, "smoke-break_pics");
 
             // Ensure the folder exists

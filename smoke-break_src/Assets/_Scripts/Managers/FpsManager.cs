@@ -5,7 +5,7 @@ namespace _Scripts.Managers
 {
     public class FpsManager : MonoBehaviour
     {
-        public TextMeshProUGUI fpsText;
+        [SerializeField] private TextMeshProUGUI fpsText;
         private float _deltaTime;
 
         private void Start()

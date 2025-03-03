@@ -67,7 +67,7 @@ namespace _Scripts.Player
         private IEnumerator PerformAttack()
         {
             _canAttack = false;
-            _player.disableMovement = true;
+            _player.SetMovement(true);
             _randomAnimation.PlayRandomAttack();
 
             yield return new WaitForSeconds(AttackDelay);
@@ -81,7 +81,7 @@ namespace _Scripts.Player
             }
 
             yield return new WaitForSeconds(AttackCooldown);
-            _player.disableMovement = false;
+            _player.SetMovement(false);
             _canAttack = true;
         }
     }

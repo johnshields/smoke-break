@@ -59,7 +59,7 @@ namespace _Scripts
                 case ItemType.Health:
                     if (_playerHealth is not null)
                     {
-                        return _playerHealth.currentHealth < _playerHealth.maxHealth;
+                        return _playerHealth.GetCurrentHealth() < _playerHealth.GetMaxHealth();
                     }
 
                     break;
@@ -85,7 +85,7 @@ namespace _Scripts
             {
                 case ItemType.Health:
                     if (other.TryGetComponent(out PlayerHealth playerHealth) &&
-                        playerHealth.currentHealth < playerHealth.maxHealth)
+                        playerHealth.GetCurrentHealth() < playerHealth.GetMaxHealth())
                     {
                         playerHealth.RestoreHealth(itemValue);
                         PlayPickupSound();

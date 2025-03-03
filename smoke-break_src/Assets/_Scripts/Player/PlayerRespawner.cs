@@ -8,6 +8,8 @@ namespace _Scripts.Player
 {
     public class PlayerRespawner : MonoBehaviour
     {
+        private string _savePath;
+
         private static readonly int Fall = Animator.StringToHash("Fall");
 
         [Header("Respawn Settings")] [SerializeField]
@@ -28,9 +30,13 @@ namespace _Scripts.Player
         private AudioSource audioSource;
 
         [SerializeField] private AudioClip wilhelm;
+        private int _playerMaxHealth;
 
         private void Awake()
         {
+            var playerId = SaveManager.GetOrCreatePlayerId();
+            _savePath = Path.Combine(SaveManager.GetSaveDirectory(), $"savegame_{playerId}.json");
+
             _component = hudManager.GetComponent<HUDManager>();
             _player = GetComponent<PlayerProfiler>();
             _playerHealth = GetComponent<PlayerHealth>();
@@ -78,12 +84,9 @@ namespace _Scripts.Player
 
         private void GetRespawnPoint()
         {
-            var playerId = SaveManager.GetOrCreatePlayerId();
-            var savePath = Path.Combine(SaveManager.SaveDirectory, $"savegame_{playerId}.json");
-
-            if (File.Exists(savePath))
+            if (File.Exists(_savePath))
             {
-                var json = File.ReadAllText(savePath);
+                var json = File.ReadAllText(_savePath);
                 var data = JsonUtility.FromJson<SaveData>(json);
 
                 var savedPosition = new Vector3(data.playerX, data.playerY, data.playerZ);
@@ -96,7 +99,8 @@ namespace _Scripts.Player
         private void ResetPlayer()
         {
             EnablePlayerActions();
-            _playerHealth.currentHealth = _playerHealth.maxHealth;
+            _playerMaxHealth = _playerHealth.GetCurrentHealth();
+            _playerMaxHealth = _playerHealth.GetMaxHealth();
             _animator.Rebind();
             _animator.Update(0f);
             isRespawning = false;

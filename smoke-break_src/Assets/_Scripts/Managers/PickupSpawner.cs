@@ -5,20 +5,20 @@ namespace _Scripts.Managers
 {
     public class PickupSpawner : MonoBehaviour
     {
-        public Terrain terrain; // Assign your terrain in the Inspector
-        public GameObject[] pickupPrefabs; // Array of different pickup prefabs
-        public int pickupCount = 20; // Number of pickups to spawn
-        public float minSpawnDistance = 2f; // Minimum distance between pickups
-        public float pickupHeightOffset = 0.5f; // Offset to ensure pickups do not spawn under terrain
+        [SerializeField] private Terrain terrain; // Assign your terrain in the Inspector
+        [SerializeField] private GameObject[] pickupPrefabs; // Array of different pickup prefabs
+        [SerializeField] private int pickupCount = 20; // Number of pickups to spawn
+        [SerializeField] private float minSpawnDistance = 2f; // Minimum distance between pickups
+        [SerializeField] private float pickupHeightOffset = 0.5f; // Offset to ensure pickups do not spawn under terrain
 
-        private List<Vector3> spawnedPositions = new List<Vector3>();
+        private readonly List<Vector3> _spawnedPositions = new();
 
-        void Start()
+        private void Start()
         {
             SpawnPickups();
         }
 
-        void SpawnPickups()
+        private void SpawnPickups()
         {
             int attempts = 0;
             int spawned = 0;
@@ -36,7 +36,7 @@ namespace _Scripts.Managers
                 {
                     GameObject randomPickup = pickupPrefabs[Random.Range(0, pickupPrefabs.Length)];
                     Instantiate(randomPickup, randomPosition + Vector3.up * pickupHeightOffset, Quaternion.identity);
-                    spawnedPositions.Add(randomPosition);
+                    _spawnedPositions.Add(randomPosition);
                     spawned++;
                 }
 
@@ -44,7 +44,7 @@ namespace _Scripts.Managers
             }
         }
 
-        Vector3 GetRandomPositionOnTerrain(Vector3 terrainPosition, float terrainWidth, float terrainLength,
+        private Vector3 GetRandomPositionOnTerrain(Vector3 terrainPosition, float terrainWidth, float terrainLength,
             float terrainHeight)
         {
             float randomX = Random.Range(terrainPosition.x, terrainPosition.x + terrainWidth);
@@ -63,9 +63,9 @@ namespace _Scripts.Managers
             return new Vector3(randomX, terrainY + pickupHeightOffset, randomZ);
         }
 
-        bool IsValidSpawnPosition(Vector3 position)
+        private bool IsValidSpawnPosition(Vector3 position)
         {
-            foreach (var spawnPos in spawnedPositions)
+            foreach (var spawnPos in _spawnedPositions)
             {
                 if (Vector3.Distance(spawnPos, position) < minSpawnDistance)
                 {

@@ -13,6 +13,8 @@ namespace _Scripts.UI
 {
     public class MainMenu : MonoBehaviour
     {
+        private string _savePath;
+
         [Header("UI Elements")] [SerializeField]
         private GameObject mainMenuPanel, controlsPanel, quitConfirmPanel;
 
@@ -34,7 +36,7 @@ namespace _Scripts.UI
 
         private InputControls _actions;
 
-        private int _currentButtonIndex = 0;
+        private int _currentButtonIndex;
         private Button[] _menuButtons;
         private Button[] _controlButtons;
         private Button[] _quitButtons;
@@ -42,6 +44,9 @@ namespace _Scripts.UI
 
         private void Awake()
         {
+            var playerId = SaveManager.GetOrCreatePlayerId();
+            _savePath = Path.Combine(SaveManager.GetSaveDirectory(), $"savegame_{playerId}.json");
+
             Cursor.lockState = CursorLockMode.Locked;
             Cursor.visible = false;
 
@@ -55,9 +60,9 @@ namespace _Scripts.UI
             _actions.UI.Navigate.performed += NavigateMenu;
             _actions.UI.Submit.performed += SelectButton;
 
-            _menuButtons = new Button[] { startGameButton, loadButton, controlsButton, quitButton };
-            _controlButtons = new Button[] { returnButton };
-            _quitButtons = new Button[] { confirmQuitButton, cancelQuitButton };
+            _menuButtons = new[] { startGameButton, loadButton, controlsButton, quitButton };
+            _controlButtons = new[] { returnButton };
+            _quitButtons = new[] { confirmQuitButton, cancelQuitButton };
             _currentButtons = _menuButtons;
 
             _currentButtons = _menuButtons;
@@ -86,17 +91,14 @@ namespace _Scripts.UI
 
         private void LoadGame()
         {
-            var playerId = SaveManager.GetOrCreatePlayerId();
-            var savePath = Path.Combine(SaveManager.SaveDirectory, $"savegame_{playerId}.json");
-
-            if (!File.Exists(savePath))
+            if (!File.Exists(_savePath))
             {
                 Debug.Log("no saved game");
                 StartCoroutine(ShowSaveNotification());
                 return;
             }
 
-            var json = File.ReadAllText(savePath);
+            var json = File.ReadAllText(_savePath);
             var data = JsonUtility.FromJson<SaveData>(json);
 
             SceneManager.LoadScene(data.savedLevel);
@@ -111,8 +113,9 @@ namespace _Scripts.UI
 
             yield return new WaitForSecondsRealtime(saveNotificationDuration);
 
-            float fadeDuration = 1f;
-            float elapsedTime = 0f;
+            const float fadeDuration = 1f;
+            var elapsedTime = 0f;
+
             while (elapsedTime < fadeDuration)
             {
                 elapsedTime += Time.unscaledDeltaTime;
@@ -184,7 +187,8 @@ namespace _Scripts.UI
 
         private void NavigateMenu(InputAction.CallbackContext context)
         {
-            float direction = context.ReadValue<Vector2>().y;
+            var direction = context.ReadValue<Vector2>().y;
+
             if (direction > 0) _currentButtonIndex--;
             else if (direction < 0) _currentButtonIndex++;
 
@@ -195,7 +199,7 @@ namespace _Scripts.UI
         private void SelectButton(InputAction.CallbackContext context)
         {
             EventSystem.current.SetSelectedGameObject(_currentButtons[_currentButtonIndex].gameObject);
-            Button selectedButton = _currentButtons[_currentButtonIndex];
+            var selectedButton = _currentButtons[_currentButtonIndex];
 
             Debug.Log($"🎯 Selected: {selectedButton.name}");
 
@@ -231,10 +235,10 @@ namespace _Scripts.UI
 
         private void UpdateButtonSelection()
         {
-            for (int i = 0; i < _currentButtons.Length; i++)
+            for (var i = 0; i < _currentButtons.Length; i++)
             {
-                Image buttonImage = _currentButtons[i].GetComponent<Image>();
-                TextMeshProUGUI buttonText = _currentButtons[i].GetComponentInChildren<TextMeshProUGUI>();
+                var buttonImage = _currentButtons[i].GetComponent<Image>();
+                var buttonText = _currentButtons[i].GetComponentInChildren<TextMeshProUGUI>();
 
                 if (buttonImage is not null)
                     buttonImage.color = (i == _currentButtonIndex) ? highlightColor : defaultColor;
