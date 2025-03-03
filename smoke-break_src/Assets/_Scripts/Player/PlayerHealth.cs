@@ -1,7 +1,6 @@
 using System.IO;
 using _Scripts.Managers;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace _Scripts.Player
 {
@@ -12,10 +11,10 @@ namespace _Scripts.Player
         [Header("Health Settings")] [SerializeField]
         private int maxHealth = 100;
 
-        [SerializeField] private int currentHealth;
         private bool _invulnerable;
         private PlayerRespawner _respawner;
         private PlayerProfiler _player;
+        public int currentHealth = 100;
 
         private void Awake()
         {

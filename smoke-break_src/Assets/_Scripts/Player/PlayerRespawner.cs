@@ -2,14 +2,12 @@ using System.Collections;
 using System.IO;
 using _Scripts.Managers;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace _Scripts.Player
 {
     public class PlayerRespawner : MonoBehaviour
     {
         private string _savePath;
-
         private static readonly int Fall = Animator.StringToHash("Fall");
 
         [Header("Respawn Settings")] [SerializeField]
@@ -30,7 +28,6 @@ namespace _Scripts.Player
         private AudioSource audioSource;
 
         [SerializeField] private AudioClip wilhelm;
-        private int _playerMaxHealth;
 
         private void Awake()
         {
@@ -98,8 +95,7 @@ namespace _Scripts.Player
         private void ResetPlayer()
         {
             EnablePlayerActions();
-            _playerMaxHealth = _playerHealth.GetCurrentHealth();
-            _playerMaxHealth = _playerHealth.GetMaxHealth();
+            _playerHealth.currentHealth = _playerHealth.GetMaxHealth();
             _animator.Rebind();
             _animator.Update(0f);
             isRespawning = false;

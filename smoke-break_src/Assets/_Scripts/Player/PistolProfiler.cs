@@ -29,8 +29,8 @@ namespace _Scripts.Player
 
         [Header("Effects")] [SerializeField] private GameObject muzzleFlashPrefab;
         [SerializeField] private GameObject worldCrosshairPrefab;
-        private Renderer _crosshairRenderer;
         [SerializeField] private Color defaultCrosshairColor = Color.white;
+        private Renderer _crosshairRenderer;
 
         [Header("Weapon Visibility")] [SerializeField]
         private GameObject pistol;
