@@ -12,12 +12,7 @@ namespace _Scripts.Managers
         private const string PlayerIdKey = "PlayerId";
         private static string _timestamp = DateTime.UtcNow.ToString("o").Replace(':', '-');
 
-        public static string GetSaveDirectory()
-        {
-            return SaveDirectory;
-        }
-
-        public static string GetOrCreatePlayerId()
+        private static string GetOrCreatePlayerId()
         {
             if (!PlayerPrefs.HasKey(PlayerIdKey))
             {
@@ -28,6 +23,12 @@ namespace _Scripts.Managers
 
             return PlayerPrefs.GetString(PlayerIdKey);
         }
+
+        public static string GetSaveFilePath()
+        {
+            return Path.Combine(SaveDirectory, $"savegame_{GetOrCreatePlayerId()}.json");
+        }
+
 
         public static void SaveGame(PlayerProfiler player, PlayerHealth health, PistolProfiler pistol)
         {

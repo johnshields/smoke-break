@@ -80,8 +80,7 @@ namespace _Scripts.Player
 
         private void Awake()
         {
-            var playerId = SaveManager.GetOrCreatePlayerId();
-            _savePath = Path.Combine(SaveManager.GetSaveDirectory(), $"savegame_{playerId}.json");
+            _savePath = SaveManager.GetSaveFilePath();
 
             _rigidbody = GetComponent<Rigidbody>();
             _animator = GetComponent<Animator>();

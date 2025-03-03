@@ -34,8 +34,7 @@ namespace _Scripts.Player
 
         private void Awake()
         {
-            var playerId = SaveManager.GetOrCreatePlayerId();
-            _savePath = Path.Combine(SaveManager.GetSaveDirectory(), $"savegame_{playerId}.json");
+            _savePath = SaveManager.GetSaveFilePath();
 
             _component = hudManager.GetComponent<HUDManager>();
             _player = GetComponent<PlayerProfiler>();

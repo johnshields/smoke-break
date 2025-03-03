@@ -57,7 +57,6 @@ namespace _Scripts.Player
         [SerializeField] private RandomAudio randomAudio;
         [SerializeField] private float gunshotVolume = 1.0f;
 
-
         private GameObject _worldCrosshair;
         private InputControls _actions;
         private InputAction _moveKeys;
@@ -77,8 +76,7 @@ namespace _Scripts.Player
 
         private void Awake()
         {
-            _playerId = SaveManager.GetOrCreatePlayerId();
-            _savePath = Path.Combine(SaveManager.GetSaveDirectory(), $"savegame_{_playerId}.json");
+            _savePath = SaveManager.GetSaveFilePath();
 
             _actions = new InputControls();
             _player = GetComponent<PlayerProfiler>();

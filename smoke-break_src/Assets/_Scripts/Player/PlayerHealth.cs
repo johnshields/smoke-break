@@ -19,8 +19,7 @@ namespace _Scripts.Player
 
         private void Awake()
         {
-            var playerId = SaveManager.GetOrCreatePlayerId();
-            _savePath = Path.Combine(SaveManager.GetSaveDirectory(), $"savegame_{playerId}.json");
+            _savePath = SaveManager.GetSaveFilePath();
 
             _player = GetComponent<PlayerProfiler>();
             _respawner = GetComponent<PlayerRespawner>();
