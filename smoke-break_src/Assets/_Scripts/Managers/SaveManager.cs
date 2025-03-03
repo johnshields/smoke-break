@@ -71,6 +71,7 @@ namespace _Scripts.Managers
             pistol.SetAmmo(data.clipAmmo, data.storedAmmo);
 
             Debug.Log($"Game Loading... \n Player Object: {data}");
+            SceneManager.LoadScene(data.savedLevel);
         }
 
         public static void ResetGame()

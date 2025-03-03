@@ -14,6 +14,9 @@ namespace _Scripts.UI
     public class MainMenu : MonoBehaviour
     {
         private string _savePath;
+        private PlayerProfiler _playerProfiler;
+        private PlayerHealth _playerHealth;
+        private PistolProfiler _pistolProfiler;
 
         [Header("UI Elements")] [SerializeField]
         private GameObject mainMenuPanel, controlsPanel, quitConfirmPanel;
@@ -44,6 +47,10 @@ namespace _Scripts.UI
 
         private void Awake()
         {
+            _playerProfiler = FindObjectOfType<PlayerProfiler>();
+            _playerHealth = FindObjectOfType<PlayerHealth>();
+            _pistolProfiler = FindObjectOfType<PistolProfiler>();
+
             _savePath = SaveManager.GetSaveFilePath();
 
             Cursor.lockState = CursorLockMode.Locked;
@@ -94,13 +101,11 @@ namespace _Scripts.UI
             {
                 Debug.Log("no saved game");
                 StartCoroutine(ShowSaveNotification());
-                return;
             }
-
-            var json = File.ReadAllText(_savePath);
-            var data = JsonUtility.FromJson<SaveData>(json);
-
-            SceneManager.LoadScene(data.savedLevel);
+            else
+            {
+                SaveManager.LoadGame(_playerProfiler, _playerHealth, _pistolProfiler);
+            }
         }
 
         private IEnumerator ShowSaveNotification()
