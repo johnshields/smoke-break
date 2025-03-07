@@ -30,14 +30,18 @@ namespace _Scripts.Player
         private PlayerHealth _playerHealth;
         private PauseMenu _pauseMenu;
 
-        [Header("Movement Settings")] private bool disableMovement;
-        [SerializeField] private float movementForce = 1f;
+        [Header("Movement Settings")] [SerializeField]
+        private float movementForce = 1f;
+
+        private bool _disableMovement;
         private Vector3 _forceDirection = Vector3.zero;
         private const float MaxSpeed = 5f;
 
-        [Header("Jump Settings")] public bool grounded = true;
-        [SerializeField] private float jumpForce = 5f;
+        [Header("Jump Settings")] [SerializeField]
+        private float jumpForce = 5f;
+
         private bool _canJump;
+        public bool grounded = true;
 
         [Header("DodgeBack Settings")] [SerializeField]
         private float dodgeDistance = 20f;
@@ -125,7 +129,7 @@ namespace _Scripts.Player
 
         private void FixedUpdate()
         {
-            if (_isDodging || disableMovement) return;
+            if (_isDodging || _disableMovement) return;
 
             var input = _moveKeys.ReadValue<Vector2>();
             MoveCharacter(input);
@@ -146,19 +150,13 @@ namespace _Scripts.Player
 
         #region Getters and Setters
 
-        public float GetMaxStamina()
-        {
-            return maxStamina;
-        }
+        public float GetMaxStamina() => maxStamina;
 
-        public float GetCurrentStamina()
-        {
-            return currentStamina;
-        }
+        public float GetCurrentStamina() => currentStamina;
 
         public void SetMovement(bool value)
         {
-            disableMovement = value;
+            _disableMovement = value;
         }
 
         #endregion
@@ -242,7 +240,7 @@ namespace _Scripts.Player
 
         private void JumpAction(InputAction.CallbackContext context)
         {
-            if (!grounded || disableMovement || !_canJump) return;
+            if (!grounded || _disableMovement || !_canJump) return;
 
             _canJump = false;
             grounded = false;
@@ -290,7 +288,7 @@ namespace _Scripts.Player
             _playerHealth.SetInvulnerable(true);
             _isDodging = true;
             _canDodge = false;
-            disableMovement = true;
+            _disableMovement = true;
 
             return true;
         }
@@ -299,7 +297,7 @@ namespace _Scripts.Player
         {
             _isDodging = true;
             _canDodge = false;
-            disableMovement = true;
+            _disableMovement = true;
 
             var rollMultiplier = isRolling ? 1.5f : 1f; // Rolls travel further
             var elapsedTime = 0f;
@@ -321,7 +319,7 @@ namespace _Scripts.Player
             _rigidbody.MovePosition(targetPosition);
             _playerHealth.SetInvulnerable(false);
             _isDodging = false;
-            disableMovement = false;
+            _disableMovement = false;
 
             yield return new WaitForSeconds(0.2f);
             _canDodge = true;

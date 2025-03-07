@@ -1,15 +1,19 @@
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace _Scripts.Managers
 {
     public class PickupSpawner : MonoBehaviour
     {
-        [SerializeField] private Terrain terrain; // Assign your terrain in the Inspector
-        [SerializeField] private GameObject[] pickupPrefabs; // Array of different pickup prefabs
-        [SerializeField] private int pickupCount = 20; // Number of pickups to spawn
-        [SerializeField] private float minSpawnDistance = 2f; // Minimum distance between pickups
-        [SerializeField] private float pickupHeightOffset = 0.5f; // Offset to ensure pickups do not spawn under terrain
+        [SerializeField] private Terrain terrain;
+        [SerializeField] private GameObject[] pickupPrefabs;
+        [SerializeField] private int[] pickupCounts;
+        [SerializeField] private float minSpawnDistance = 2f;
+        [SerializeField] private float heightOffset = 1f;
+        [SerializeField] private float maxPickupHeight = 10f;
+        [SerializeField] private Transform pickupParent;
 
         private readonly List<Vector3> _spawnedPositions = new();
 
@@ -20,60 +24,69 @@ namespace _Scripts.Managers
 
         private void SpawnPickups()
         {
-            int attempts = 0;
-            int spawned = 0;
-
-            Vector3 terrainPosition = terrain.transform.position;
-            float terrainWidth = terrain.terrainData.size.x;
-            float terrainLength = terrain.terrainData.size.z;
-            float terrainHeight = terrain.terrainData.size.y;
-
-            while (spawned < pickupCount && attempts < pickupCount * 5)
+            if (pickupCounts.Length != pickupPrefabs.Length)
             {
-                Vector3 randomPosition =
-                    GetRandomPositionOnTerrain(terrainPosition, terrainWidth, terrainLength, terrainHeight);
-                if (IsValidSpawnPosition(randomPosition))
-                {
-                    GameObject randomPickup = pickupPrefabs[Random.Range(0, pickupPrefabs.Length)];
-                    Instantiate(randomPickup, randomPosition + Vector3.up * pickupHeightOffset, Quaternion.identity);
-                    _spawnedPositions.Add(randomPosition);
-                    spawned++;
-                }
+                Debug.LogError("Mismatch between pickup prefabs and pickup counts!");
+                return;
+            }
 
-                attempts++;
+            var tPosition = terrain.transform.position;
+            var tWidth = terrain.terrainData.size.x;
+            var tLength = terrain.terrainData.size.z;
+            var tHeight = terrain.terrainData.size.y;
+
+            for (var i = 0; i < pickupPrefabs.Length; i++)
+            {
+                var spawned = 0;
+                var attempts = 0;
+                while (spawned < pickupCounts[i] && attempts < pickupCounts[i] * 5)
+                {
+                    var randomPosition = GetRandomPosition(tPosition, tWidth, tLength, tHeight);
+
+                    // Ensure the pickup height does not exceed maxPickupHeight
+                    if (randomPosition.y - tPosition.y > maxPickupHeight)
+                    {
+                        attempts++;
+                        continue; // Skip this spawn and try again
+                    }
+
+                    if (IsValidSpawnPosition(randomPosition))
+                    {
+                        var pickup = Instantiate(pickupPrefabs[i], randomPosition + Vector3.up * heightOffset,
+                            Quaternion.identity);
+
+                        pickup.transform.SetParent(pickupParent, true);
+                        _spawnedPositions.Add(randomPosition);
+                        spawned++;
+                    }
+
+                    attempts++;
+                }
             }
         }
 
-        private Vector3 GetRandomPositionOnTerrain(Vector3 terrainPosition, float terrainWidth, float terrainLength,
-            float terrainHeight)
+        private Vector3 GetRandomPosition(Vector3 tPosition, float tWidth, float tLength, float tHeight)
         {
-            float randomX = Random.Range(terrainPosition.x, terrainPosition.x + terrainWidth);
-            float randomZ = Random.Range(terrainPosition.z, terrainPosition.z + terrainLength);
+            var randomX = Random.Range(tPosition.x, tPosition.x + tWidth);
+            var randomZ = Random.Range(tPosition.z, tPosition.z + tLength);
 
-            Vector3 rayOrigin = new Vector3(randomX, terrainPosition.y + terrainHeight + 10f, randomZ);
-            Ray ray = new Ray(rayOrigin, Vector3.down);
-            RaycastHit hit;
+            var rayOrigin = new Vector3(randomX, tPosition.y + tHeight + 10f, randomZ);
+            var ray = new Ray(rayOrigin, Vector3.down);
 
-            if (Physics.Raycast(ray, out hit, terrainHeight + 20f))
+            if (Physics.Raycast(ray, out var hit, tHeight + 20f))
             {
-                return hit.point + Vector3.up * pickupHeightOffset; // Ensure pickup is slightly above terrain
+                var clampedHeight = Mathf.Min(hit.point.y, tPosition.y + maxPickupHeight); // Cap the height
+                return new Vector3(randomX, clampedHeight + heightOffset, randomZ); // Adjusted height
             }
 
-            float terrainY = terrain.SampleHeight(new Vector3(randomX, 0, randomZ)) + terrainPosition.y;
-            return new Vector3(randomX, terrainY + pickupHeightOffset, randomZ);
+            var terrainY = terrain.SampleHeight(new Vector3(randomX, 0, randomZ)) + tPosition.y;
+            var clampedTerrainY = Mathf.Min(terrainY, tPosition.y + maxPickupHeight); // Cap the height
+            return new Vector3(randomX, clampedTerrainY + heightOffset, randomZ);
         }
 
         private bool IsValidSpawnPosition(Vector3 position)
         {
-            foreach (var spawnPos in _spawnedPositions)
-            {
-                if (Vector3.Distance(spawnPos, position) < minSpawnDistance)
-                {
-                    return false; // Too close to an existing pickup
-                }
-            }
-
-            return true;
+            return _spawnedPositions.All(spawnPos => !(Vector3.Distance(spawnPos, position) < minSpawnDistance));
         }
     }
 }

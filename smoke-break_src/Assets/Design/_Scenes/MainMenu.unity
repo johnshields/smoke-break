@@ -529,7 +529,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 200}
-  m_SizeDelta: {x: 800, y: 50}
+  m_SizeDelta: {x: 1000, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &513992599
 MonoBehaviour:
@@ -578,8 +578,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 100
-  m_fontSizeBase: 100
+  m_fontSize: 125
+  m_fontSizeBase: 125
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -802,18 +802,17 @@ MonoBehaviour:
   newGamePanel: {fileID: 4255539059148636678}
   saveNotificationText: {fileID: 932343141}
   saveNotificationDuration: 2
+  highlightColor: {r: 0.6156863, g: 0.6862745, b: 0.7411765, a: 1}
+  defaultColor: {r: 0.04705883, g: 0.04705883, b: 0.04705883, a: 1}
   startGameButton: {fileID: 748605580}
   loadButton: {fileID: 2116321866}
   controlsButton: {fileID: 531383896}
-  returnButton: {fileID: 987032207}
   quitButton: {fileID: 2022814991}
+  returnButton: {fileID: 987032207}
   confirmQuitButton: {fileID: 5945903658539877776}
   cancelQuitButton: {fileID: 8795812188982118376}
-  newGameButton: {fileID: 748605580}
   confirmNewGameButton: {fileID: 8511836165235992878}
   cancelNewGameButton: {fileID: 4239617604245518201}
-  highlightColor: {r: 0.6156863, g: 0.6862745, b: 0.7411765, a: 1}
-  defaultColor: {r: 0.04705883, g: 0.04705883, b: 0.04705883, a: 1}
 --- !u!114 &627383480
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -10409,8 +10408,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   movementForce: 1
-  grounded: 0
   jumpForce: 5
+  grounded: 0
   dodgeDistance: 20
   dodgeDuration: 1
   staggerDuration: 0.5
@@ -10823,8 +10822,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e5c4ed213c9bb7d4485f206b2a7e96f3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxHealth: 100
   currentHealth: 60
+  maxHealth: 100
 --- !u!1 &7790177757902399900
 GameObject:
   m_ObjectHideFlags: 0

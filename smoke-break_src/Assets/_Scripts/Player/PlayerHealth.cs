@@ -9,12 +9,12 @@ namespace _Scripts.Player
         private string _savePath;
 
         [Header("Health Settings")] [SerializeField]
-        private int maxHealth = 100;
+        private int currentHealth = 100;
 
+        [SerializeField] private int maxHealth = 100;
         private bool _invulnerable;
         private PlayerRespawner _respawner;
         private PlayerProfiler _player;
-        public int currentHealth = 100;
 
         private void Awake()
         {

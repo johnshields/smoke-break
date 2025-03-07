@@ -29,7 +29,6 @@ namespace _Scripts.Managers
             return Path.Combine(SaveDirectory, $"savegame_{GetOrCreatePlayerId()}.json");
         }
 
-
         public static void SaveGame(PlayerProfiler player, PlayerHealth health, PistolProfiler pistol)
         {
             if (!Directory.Exists(SaveDirectory))

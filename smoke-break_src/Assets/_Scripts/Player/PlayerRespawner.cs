@@ -95,7 +95,7 @@ namespace _Scripts.Player
         private void ResetPlayer()
         {
             EnablePlayerActions();
-            _playerHealth.currentHealth = _playerHealth.GetMaxHealth();
+            _playerHealth.SetCurrentHealth(_playerHealth.GetMaxHealth());
             _animator.Rebind();
             _animator.Update(0f);
             isRespawning = false;
