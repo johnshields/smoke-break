@@ -1,0 +1,6 @@
+﻿{
+  "objectives": [
+    { "key": "FindIcarus", "message": "FIND STARSHIP ICARUS!", "delay": 28.0, "completed": false },
+    { "key": "Dummy", "message": "DUMMY!", "delay": 5.0, "completed": false }
+  ]
+}

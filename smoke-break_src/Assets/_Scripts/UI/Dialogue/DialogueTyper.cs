@@ -39,7 +39,7 @@ namespace _Scripts.UI.Dialogue
             messageText.gameObject.SetActive(true);
             if (_dialogues.Count == 0)
             {
-                LoadDialogueFromJson("dialogue/dialogues");
+                LoadDialogueFromJson("dialogues");
             }
 
             StartTypeWriter(dialogueKey);

@@ -98,7 +98,6 @@ namespace _Scripts.Player
 
             if (_jumpPressedOnce && Time.time - _lastJumpTime <= doubleJumpTimeLimit && canBoost)
             {
-                Debug.Log("🚀 Performing Boost!");
                 _jumpPressedOnce = false;
                 canBoost = false;
                 PerformBoost();
