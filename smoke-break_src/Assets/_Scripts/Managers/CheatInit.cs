@@ -16,10 +16,10 @@ namespace _Scripts.Managers
 
         private void Start()
         {
-            _pistolProfiler = FindObjectOfType<PistolProfiler>();
-            _playerProfiler = FindObjectOfType<PlayerProfiler>();
-            _playerHealth = FindObjectOfType<PlayerHealth>();
-            _playerRespawner = FindObjectOfType<PlayerRespawner>();
+            _pistolProfiler = FindFirstObjectByType<PistolProfiler>();
+            _playerProfiler = FindFirstObjectByType<PlayerProfiler>();
+            _playerHealth = FindFirstObjectByType<PlayerHealth>();
+            _playerRespawner = FindFirstObjectByType<PlayerRespawner>();
         }
 
         private void Update()

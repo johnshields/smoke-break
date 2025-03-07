@@ -76,7 +76,7 @@ namespace _Scripts.AI
             _isKnockedBack = true;
             if (_agent) _agent.enabled = false;
 
-            _rigidbody.velocity = direction.normalized * knockbackForce;
+            _rigidbody.linearVelocity = direction.normalized * knockbackForce;
 
             yield return new WaitForSeconds(knockbackDuration);
 

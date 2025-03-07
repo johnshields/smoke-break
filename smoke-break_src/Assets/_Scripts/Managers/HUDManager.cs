@@ -42,10 +42,10 @@ namespace _Scripts.Managers
 
         private void Start()
         {
-            _pistol = FindObjectOfType<PistolProfiler>();
-            _player = FindObjectOfType<PlayerProfiler>();
-            _playerHealth = FindObjectOfType<PlayerHealth>();
-            _boostPack = FindObjectOfType<BoostPack>();
+            _pistol = FindFirstObjectByType<PistolProfiler>();
+            _player = FindFirstObjectByType<PlayerProfiler>();
+            _playerHealth = FindFirstObjectByType<PlayerHealth>();
+            _boostPack = FindFirstObjectByType<BoostPack>();
             _boostCooldown = _boostPack.GetBoostCooldown();
 
             _originalStaminaColor = staminaFill?.color ?? Color.white;

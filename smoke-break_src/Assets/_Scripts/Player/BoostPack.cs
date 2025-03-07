@@ -44,7 +44,7 @@ namespace _Scripts.Player
             _animator = GetComponent<Animator>();
             _moveInput = _actions.Profiler.Movement;
             _mainCamera = Camera.main;
-            _hud = FindObjectOfType<HUDManager>();
+            _hud = FindFirstObjectByType<HUDManager>();
         }
 
         private void OnEnable()
@@ -62,9 +62,9 @@ namespace _Scripts.Player
 
         private void Update()
         {
-            if (!_player.grounded && _rigidbody.velocity.y < 0)
+            if (!_player.grounded && _rigidbody.linearVelocity.y < 0)
             {
-                _rigidbody.velocity += Vector3.down * (fallMultiplier * Time.deltaTime);
+                _rigidbody.linearVelocity += Vector3.down * (fallMultiplier * Time.deltaTime);
             }
         }
 
@@ -113,7 +113,7 @@ namespace _Scripts.Player
             var input = _moveInput.ReadValue<Vector2>();
             var boostDirection = GetBoostDirection(input);
 
-            _rigidbody.velocity = Vector3.zero;
+            _rigidbody.linearVelocity = Vector3.zero;
             _rigidbody.AddForce(boostDirection.normalized * boostForce, ForceMode.Impulse);
 
             if (boostEffect != null)
@@ -144,7 +144,8 @@ namespace _Scripts.Player
 
         private void ApplyFastFall()
         {
-            _rigidbody.velocity = new Vector3(_rigidbody.velocity.x, -fallMultiplier, _rigidbody.velocity.z);
+            _rigidbody.linearVelocity =
+                new Vector3(_rigidbody.linearVelocity.x, -fallMultiplier, _rigidbody.linearVelocity.z);
         }
 
         private void DisableEffects()

@@ -318,7 +318,7 @@ namespace _Scripts.Player
             var shotDirection = (_aimTarget - firePoint.position).normalized;
 
             // Apply velocity to the bullet to make it move in the calculated direction
-            rb.velocity = shotDirection * bulletSpeed;
+            rb.linearVelocity = shotDirection * bulletSpeed;
 
             // Wait for the weapon's fire rate cooldown before allowing another shot
             yield return new WaitForSeconds(fireRate);

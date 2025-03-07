@@ -93,7 +93,7 @@ namespace _Scripts.Player
             _mainCamera = Camera.main;
 
             if (_pauseMenu != null)
-                _pauseMenu = FindObjectOfType<PauseMenu>();
+                _pauseMenu = FindFirstObjectByType<PauseMenu>();
 
             currentStamina = maxStamina;
             _moveKeys = _actions.Profiler.Movement;
@@ -209,12 +209,12 @@ namespace _Scripts.Player
 
             // Adjust animation speed based on movement speed
             var speedFactor = _isSprinting ? sprintMultiplier : 1f;
-            _animator.SetFloat(Speed, (_rigidbody.velocity.magnitude / MaxSpeed) * speedFactor);
+            _animator.SetFloat(Speed, (_rigidbody.linearVelocity.magnitude / MaxSpeed) * speedFactor);
         }
 
         private void RotateCharacter(Vector2 input)
         {
-            var direction = _rigidbody.velocity;
+            var direction = _rigidbody.linearVelocity;
             direction.y = 0f;
 
             if (input.sqrMagnitude > 0.5f && direction.sqrMagnitude > 0.5f)
@@ -251,7 +251,7 @@ namespace _Scripts.Player
 
         private void DelayedJump()
         {
-            _rigidbody.velocity = new Vector3(_rigidbody.velocity.x, 0, _rigidbody.velocity.z);
+            _rigidbody.linearVelocity = new Vector3(_rigidbody.linearVelocity.x, 0, _rigidbody.linearVelocity.z);
             _rigidbody.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
         }
 
@@ -372,7 +372,7 @@ namespace _Scripts.Player
             movementForce = 0.5f;
 
             var knockback = -transform.forward * 20f;
-            _rigidbody.velocity = knockback;
+            _rigidbody.linearVelocity = knockback;
 
             yield return new WaitForSeconds(staggerDuration);
 

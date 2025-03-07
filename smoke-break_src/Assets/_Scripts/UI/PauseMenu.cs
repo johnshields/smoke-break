@@ -32,15 +32,23 @@ namespace _Scripts.UI
         [SerializeField] private Color defaultColor = Color.white;
 
         private InputControls _actions;
-        public bool isPaused = false;
-        private int _currentButtonIndex = 0;
+        public bool isPaused;
+        private int _currentButtonIndex;
         private Button[] _pauseButtons;
         private Button[] _controlButtons;
         private Button[] _quitButtons;
         private Button[] _currentButtons;
 
+        private PlayerProfiler _playerProfiler;
+        private PlayerHealth _playerHealth;
+        private PistolProfiler _pistolProfiler;
+
         private void Awake()
         {
+            _playerProfiler = FindFirstObjectByType<PlayerProfiler>();
+            _playerHealth = FindFirstObjectByType<PlayerHealth>();
+            _pistolProfiler = FindFirstObjectByType<PistolProfiler>();
+
             Cursor.lockState = CursorLockMode.Locked;
             Cursor.visible = false;
 
@@ -51,7 +59,7 @@ namespace _Scripts.UI
 
             _pauseButtons = new[] { resumeButton, saveButton, controlsButton, quitButton };
             _controlButtons = new[] { returnButton };
-            _quitButtons = new Button[] { confirmQuitButton, cancelQuitButton };
+            _quitButtons = new[] { confirmQuitButton, cancelQuitButton };
             _currentButtons = _pauseButtons;
 
             if (saveNotificationText != null)
@@ -157,8 +165,7 @@ namespace _Scripts.UI
 
         private void SaveGame()
         {
-            SaveManager.SaveGame(FindObjectOfType<PlayerProfiler>(), FindObjectOfType<PlayerHealth>(),
-                FindObjectOfType<PistolProfiler>());
+            SaveManager.SaveGame(_playerProfiler, _playerHealth, _pistolProfiler);
             StartCoroutine(ShowSaveNotification());
         }
 

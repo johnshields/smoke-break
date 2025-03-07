@@ -103,9 +103,9 @@ namespace _Scripts.UI
         private void InitializeDependencies()
         {
             _savePath = SaveManager.GetSaveFilePath();
-            _playerProfiler = FindObjectOfType<PlayerProfiler>();
-            _playerHealth = FindObjectOfType<PlayerHealth>();
-            _pistolProfiler = FindObjectOfType<PistolProfiler>();
+            _playerProfiler = FindFirstObjectByType<PlayerProfiler>();
+            _playerHealth = FindFirstObjectByType<PlayerHealth>();
+            _pistolProfiler = FindFirstObjectByType<PistolProfiler>();
 
             _actions = new InputControls();
             _actions.UI.Navigate.performed += NavigateMenu;
