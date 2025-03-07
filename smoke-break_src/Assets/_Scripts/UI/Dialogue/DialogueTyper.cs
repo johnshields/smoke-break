@@ -12,6 +12,11 @@ namespace _Scripts.UI.Dialogue
         public TextMeshProUGUI messageText;
         private readonly Dictionary<string, string[]> _dialogues = new();
         private string[] _currentLines;
+        
+        [Header("Audio Settings")]
+        [SerializeField] private AudioSource audioSource;
+        [SerializeField] private AudioClip dialogueSound;
+        
         public float fadeDuration = 1.5f;
 
         private void Start()
@@ -81,6 +86,14 @@ namespace _Scripts.UI.Dialogue
             {
                 messageText.text = ""; // Clear text for the new line
                 var words = line.Split(' ');
+                
+                // Play dialogue sound when a new line appears
+                if (audioSource is not null && dialogueSound is not null)
+                {
+                    audioSource.clip = dialogueSound;
+                    audioSource.loop = true; // Loop the sound while typing
+                    audioSource.Play();
+                }
 
                 for (var i = 0; i < words.Length; i++)
                 {
@@ -91,6 +104,10 @@ namespace _Scripts.UI.Dialogue
                     messageText.text = _currentText;
                     yield return new WaitForSeconds(0.3f); // Adjust delay per word
                 }
+                
+                // Stop sound once the line is fully displayed
+                if (audioSource is not null && audioSource.isPlaying)
+                    audioSource.Stop();
 
                 _currentText = ""; // Reset for the next line
                 yield return new WaitForSeconds(1f); // Pause before next line
