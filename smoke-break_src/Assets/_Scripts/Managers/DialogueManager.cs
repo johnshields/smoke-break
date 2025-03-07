@@ -1,3 +1,4 @@
+using System.IO;
 using _Scripts.UI.Dialogue;
 using UnityEngine;
 
@@ -5,6 +6,7 @@ namespace _Scripts.Managers
 {
     public class DialogueManager : MonoBehaviour
     {
+        private string _savePath;
         private static DialogueManager _instance;
         public static DialogueManager Instance 
         { 
@@ -22,6 +24,8 @@ namespace _Scripts.Managers
         
         private void Awake()
         {
+            _savePath = SaveManager.GetSaveFilePath();
+            
             if (_instance == null)
             {
                 _instance = this;
@@ -35,7 +39,8 @@ namespace _Scripts.Managers
 
         private void Start()
         {
-            Invoke(nameof(OpeningDialogue), 2.5f);
+            if (!File.Exists(_savePath) || new FileInfo(_savePath).Length == 0)
+                Invoke(nameof(OpeningDialogue), 2.5f);
         }
         
         private void OpeningDialogue()
