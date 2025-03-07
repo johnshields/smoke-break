@@ -7,117 +7,141 @@ namespace _Scripts.UI.Dialogue
 {
     public class DialogueTyper : MonoBehaviour
     {
-        private bool _complete;
-        private string _currentText = "";
-        public TextMeshProUGUI messageText;
-        private readonly Dictionary<string, string[]> _dialogues = new();
-        private string[] _currentLines;
-        
-        [Header("Audio Settings")]
+        #region Variables
+
+        [Header("UI References")]
+        [SerializeField] private TextMeshProUGUI messageText;
         [SerializeField] private AudioSource audioSource;
-        [SerializeField] private AudioClip dialogueSound;
+
+        [Header("Dialogue Settings")]
+        [SerializeField] private float wordDelay = 0.05f;
+        [SerializeField] private float lineDelay = 1.5f;
+        [SerializeField] private float fadeDuration = 1.5f;
+
+        [Header("Debug Settings")]
+        [SerializeField] private bool enableDebugLogs;
+
+        private readonly Dictionary<string, List<(string text, string sound)>> _dialogues = new();
+        private List<(string text, string sound)> _currentLines;
         
-        public float fadeDuration = 1.5f;
+        #endregion
 
-        private void Start()
+        #region Initialization
+
+        public void InitDialogue(DialogueKey dialogueKey)
         {
-            if (messageText == null)
+            if (!messageText || !audioSource)
             {
-                Debug.LogError("Message Text is not assigned in the Inspector!", this);
+                Debug.LogError("❌ UI components (messageText or audioSource) are not assigned.");
+                return;
             }
-        }
 
-        public void WriteDialogue(DialogueKey dialogueKey)
-        {
-            if (_complete) return;
             messageText.gameObject.SetActive(true);
-            LoadDialogueFromJson($"dialogue/dialogues");
+            if (_dialogues.Count == 0)
+            {
+                LoadDialogueFromJson("dialogue/dialogues");
+            }
+
             StartTypeWriter(dialogueKey);
         }
+
+        #endregion
+
+        #region JSON Loading
 
         private void LoadDialogueFromJson(string filePath)
         {
             var jsonFile = Resources.Load<TextAsset>(filePath);
-            if (jsonFile != null)
+            if (jsonFile == null)
             {
-                var data = JsonUtility.FromJson<DialogueData>(jsonFile.text);
-                if (data?.dialogues != null)
-                {
-                    _dialogues.Clear();
-                    foreach (var entry in data.dialogues)
-                    {
-                        _dialogues[entry.key] = entry.lines;
-                    }
+                LogError($"❌ JSON file not found at Resources/{filePath}.json");
+                return;
+            }
 
-                    Debug.Log("Dialogue JSON Loaded Successfully!");
-                }
-                else
-                {
-                    Debug.LogError("Dialogue JSON structure is incorrect or empty.");
-                }
-            }
-            else
+            var data = JsonUtility.FromJson<DialogueData>(jsonFile.text);
+            if (data?.dialogues == null)
             {
-                Debug.LogError($"JSON file not found at Resources/{filePath}.json");
+                LogError("❌ Dialogue JSON structure is incorrect or empty.");
+                return;
             }
+
+            _dialogues.Clear();
+            foreach (var entry in data.dialogues)
+            {
+                var lines = new List<(string text, string sound)>();
+                foreach (var line in entry.lines)
+                {
+                    lines.Add((line.text, line.sound));
+                }
+                _dialogues[entry.key] = lines;
+            }
+
+            LogDebug($"✅ Dialogue JSON Loaded Successfully! Keys: {string.Join(", ", _dialogues.Keys)}");
         }
+
+        #endregion
+
+        #region Dialogue Processing
 
         private void StartTypeWriter(DialogueKey dialogueKey)
         {
             var keyString = dialogueKey.ToString();
-            
-            if (_dialogues.TryGetValue(keyString, out var dialogue))
+            if (!_dialogues.TryGetValue(keyString, out _currentLines) || _currentLines.Count == 0)
             {
-                _currentLines = dialogue;
-                StartCoroutine(WriteTextByLine());
+                LogError($"❌ Dialogue key '{dialogueKey}' not found or has no lines.");
+                return;
             }
-            else
-            {
-                Debug.LogError($"Dialogue key '{keyString}' not found in JSON.");
-            }
+
+            StartCoroutine(WriteTextByLine());
         }
 
         private IEnumerator WriteTextByLine()
         {
-            _complete = false;
             messageText.text = "";
 
-            foreach (var line in _currentLines)
+            foreach (var (text, sound) in _currentLines)
             {
-                messageText.text = ""; // Clear text for the new line
-                var words = line.Split(' ');
-                
-                // Play dialogue sound when a new line appears
-                if (audioSource is not null && dialogueSound is not null)
+                messageText.text = "";
+                PlayDialogueSound(sound);
+
+                var currentText = "";
+                foreach (var word in text.Split(' '))
                 {
-                    audioSource.clip = dialogueSound;
-                    audioSource.loop = true; // Loop the sound while typing
-                    audioSource.Play();
+                    currentText += (string.IsNullOrEmpty(currentText) ? "" : " ") + word;
+                    messageText.text = currentText;
+                    yield return new WaitForSeconds(wordDelay);
                 }
 
-                for (var i = 0; i < words.Length; i++)
-                {
-                    if (i > 0)
-                        _currentText += " ";
-
-                    _currentText += words[i];
-                    messageText.text = _currentText;
-                    yield return new WaitForSeconds(0.3f); // Adjust delay per word
-                }
-                
-                // Stop sound once the line is fully displayed
-                if (audioSource is not null && audioSource.isPlaying)
-                    audioSource.Stop();
-
-                _currentText = ""; // Reset for the next line
-                yield return new WaitForSeconds(1f); // Pause before next line
+                yield return new WaitForSeconds(lineDelay);
             }
 
-            _complete = true;
-            yield return new WaitForSeconds(1f);
             StartCoroutine(FadeOutText());
         }
-        
+
+        #endregion
+
+        #region Audio
+
+        private void PlayDialogueSound(string soundName)
+        {
+            if (string.IsNullOrEmpty(soundName)) return;
+
+            var clip = Resources.Load<AudioClip>($"dialogue/{soundName}");
+            if (clip)
+            {
+                audioSource.clip = clip;
+                audioSource.Play();
+            }
+            else
+            {
+                LogWarning($"⚠ Sound file '{soundName}' not found in Resources/Sounds/");
+            }
+        }
+
+        #endregion
+
+        #region UI Effects
+
         private IEnumerator FadeOutText()
         {
             var elapsedTime = 0f;
@@ -131,8 +155,29 @@ namespace _Scripts.UI.Dialogue
                 yield return null;
             }
 
-            messageText.color = new Color(textColor.r, textColor.g, textColor.b, 0f); 
+            messageText.color = new Color(textColor.r, textColor.g, textColor.b, 0f);
             messageText.text = "";
         }
+
+        #endregion
+
+        #region Debug Logging
+
+        private void LogDebug(string message)
+        {
+            if (enableDebugLogs) Debug.Log(message);
+        }
+
+        private void LogError(string message)
+        {
+            Debug.LogError(message);
+        }
+
+        private void LogWarning(string message)
+        {
+            if (enableDebugLogs) Debug.LogWarning(message);
+        }
+
+        #endregion
     }
 }

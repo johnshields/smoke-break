@@ -1,17 +1,16 @@
 ﻿{
   "dialogues": [
-    { "key": "Opening", "lines": 
+    { "key": "Opening", "lines":
     [
-      "Report to anyone listening... This is Kanta Fujimoto.",
-      "I’ve crash-landed on Inari. A barren, unforgiving rock adrift in the cosmos.",
-      "Icarus is battered beyond hope, and my only chance is to scavenge what I can from the wreckage.",
-      "Time to figure out how to survive, fight through the darkness... and maybe find a smoke."
+      { "text": "Report to anyone listening... This is Kanta Fujimoto.", "sound": "opening_1" },
+      { "text": "I’ve crash-landed on Inari. A barren, unforgiving rock adrift in the cosmos.", "sound": "opening_2" },
+      { "text": "Icarus is battered beyond hope, and my only chance is to scavenge what I can from the wreckage.", "sound": "opening_3" },
+      { "text": "Time to figure out how to survive, fight through the darkness... and maybe find a smoke.", "sound": "opening_4" }
     ]
     },
     { "key": "Closing", "lines": [
-      "This is Kanta Fujimoto, last survivor of the starship Icarus.",
-      "If I make it to the frontier, maybe this will all be worth it..."
-    ]
-    }
+      { "text": "This is Kanta Fujimoto, last survivor of the starship Icarus.", "sound": "closing_1" },
+      { "text": "If I make it to the frontier, maybe this will all be worth it...", "sound": "closing_2" }
+    ]}
   ]
 }

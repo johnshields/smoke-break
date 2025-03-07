@@ -1,9 +1,11 @@
-﻿namespace _Scripts.UI.Dialogue
+﻿using System.Collections.Generic;
+
+namespace _Scripts.UI.Dialogue
 {
     [System.Serializable]
     public class DialogueEntry
     {
         public string key;
-        public string[] lines;
+        public List<DialogueLine> lines;
     }
 }

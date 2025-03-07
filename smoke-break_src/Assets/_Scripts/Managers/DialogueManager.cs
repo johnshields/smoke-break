@@ -48,7 +48,7 @@ namespace _Scripts.Managers
         {
             if (typer != null)
             {
-                typer.WriteDialogue(key);
+                typer.InitDialogue(key);
             }
             else
             {
