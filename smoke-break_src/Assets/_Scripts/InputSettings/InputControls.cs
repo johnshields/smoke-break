@@ -534,6 +534,15 @@ public partial class @InputControls: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""ViewObjective"",
+                    ""type"": ""Button"",
+                    ""id"": ""84783f9e-5514-4985-8269-bb2b5b586cf6"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -657,6 +666,28 @@ public partial class @InputControls: IInputActionCollection2, IDisposable
                     ""action"": ""Navigate"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""ecc90e5e-cc84-44c2-97ac-d3dc2ca2ee7d"",
+                    ""path"": ""<Keyboard>/o"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""ViewObjective"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""3985a585-b80f-4dc7-b29f-76984d2a3eb5"",
+                    ""path"": ""<Gamepad>/select"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""ViewObjective"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -697,6 +728,7 @@ public partial class @InputControls: IInputActionCollection2, IDisposable
         m_UI_Pause = m_UI.FindAction("Pause", throwIfNotFound: true);
         m_UI_Navigate = m_UI.FindAction("Navigate", throwIfNotFound: true);
         m_UI_Submit = m_UI.FindAction("Submit", throwIfNotFound: true);
+        m_UI_ViewObjective = m_UI.FindAction("ViewObjective", throwIfNotFound: true);
     }
 
     ~@InputControls()
@@ -976,6 +1008,7 @@ public partial class @InputControls: IInputActionCollection2, IDisposable
     private readonly InputAction m_UI_Pause;
     private readonly InputAction m_UI_Navigate;
     private readonly InputAction m_UI_Submit;
+    private readonly InputAction m_UI_ViewObjective;
     /// <summary>
     /// Provides access to input actions defined in input action map "UI".
     /// </summary>
@@ -999,6 +1032,10 @@ public partial class @InputControls: IInputActionCollection2, IDisposable
         /// Provides access to the underlying input action "UI/Submit".
         /// </summary>
         public InputAction @Submit => m_Wrapper.m_UI_Submit;
+        /// <summary>
+        /// Provides access to the underlying input action "UI/ViewObjective".
+        /// </summary>
+        public InputAction @ViewObjective => m_Wrapper.m_UI_ViewObjective;
         /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
@@ -1034,6 +1071,9 @@ public partial class @InputControls: IInputActionCollection2, IDisposable
             @Submit.started += instance.OnSubmit;
             @Submit.performed += instance.OnSubmit;
             @Submit.canceled += instance.OnSubmit;
+            @ViewObjective.started += instance.OnViewObjective;
+            @ViewObjective.performed += instance.OnViewObjective;
+            @ViewObjective.canceled += instance.OnViewObjective;
         }
 
         /// <summary>
@@ -1054,6 +1094,9 @@ public partial class @InputControls: IInputActionCollection2, IDisposable
             @Submit.started -= instance.OnSubmit;
             @Submit.performed -= instance.OnSubmit;
             @Submit.canceled -= instance.OnSubmit;
+            @ViewObjective.started -= instance.OnViewObjective;
+            @ViewObjective.performed -= instance.OnViewObjective;
+            @ViewObjective.canceled -= instance.OnViewObjective;
         }
 
         /// <summary>
@@ -1206,5 +1249,12 @@ public partial class @InputControls: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnSubmit(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "ViewObjective" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnViewObjective(InputAction.CallbackContext context);
     }
 }

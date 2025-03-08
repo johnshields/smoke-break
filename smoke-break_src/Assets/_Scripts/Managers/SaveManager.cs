@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using _Scripts.Managers.Objectives;
 using _Scripts.Player;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -47,13 +48,15 @@ namespace _Scripts.Managers
                 playerHealth = health.GetCurrentHealth(),
                 clipAmmo = pistol.GetCurrentClip(),
                 storedAmmo = pistol.GetStoredAmmo(),
-                savedLevel = SceneManager.GetActiveScene().name
+                savedLevel = SceneManager.GetActiveScene().name,
+                lastObjective = ObjectiveManager.Instance.GetLastObjective(),
             };
 
             var savePath = Path.Combine(SaveDirectory, $"savegame_{playerId}.json");
             File.WriteAllText(savePath, JsonUtility.ToJson(data, true));
 
             Debug.Log($"Game saved... \n Player Object: {data}");
+            Debug.Log(savePath);
         }
 
         public static void LoadGame(PlayerProfiler player, PlayerHealth health, PistolProfiler pistol)
@@ -71,6 +74,11 @@ namespace _Scripts.Managers
 
             Debug.Log($"Game Loading... \n Player Object: {data}");
             SceneManager.LoadScene(data.savedLevel);
+            
+            if (ObjectiveManager.Instance != null)
+            {
+                ObjectiveManager.Instance.SetObjective(data.lastObjective);
+            }
         }
 
         public static void ResetGame()

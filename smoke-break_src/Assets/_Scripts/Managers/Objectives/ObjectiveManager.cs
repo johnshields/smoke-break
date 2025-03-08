@@ -1,6 +1,10 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
+using System.IO;
+using _Scripts.Player;
 using TMPro;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 namespace _Scripts.Managers.Objectives
 {
@@ -20,6 +24,9 @@ namespace _Scripts.Managers.Objectives
         [SerializeField] private float objectiveDisplayTime = 3f;
 
         private Coroutine _currentObjectiveRoutine;
+        private string _currentObjective;
+        private string _savePath;
+        private InputControls _input;
 
         #endregion
 
@@ -28,10 +35,14 @@ namespace _Scripts.Managers.Objectives
         private void Awake()
         {
             if (Instance == null) Instance = this;
+            _savePath = SaveManager.GetSaveFilePath();
+            _input = new InputControls();
         }
 
         private void Start()
         {
+            ObjectiveData.LoadObjectivesFromJson();
+            
             if (objectiveText == null)
             {
                 Debug.LogError("❌ ObjectiveManager: ObjectiveText is not assigned in the Inspector.");
@@ -40,10 +51,67 @@ namespace _Scripts.Managers.Objectives
 
             objectiveText.alpha = 0;
         }
+        
+        private void OnEnable()
+        {
+            _input.UI.ViewObjective.performed += ShowLastObjective;
+            _input.Enable();
+        }
+
+        private void OnDisable()
+        {
+            _input.UI.ViewObjective.performed -= ShowLastObjective;
+            _input.Disable();
+        }
 
         #endregion
 
         #region Objective System
+        
+        public string GetLastObjective() => _currentObjective;
+        
+        public void SetObjective(string objective)
+        {
+            _currentObjective = objective;
+            SaveObjective();
+        }
+        
+        private void SaveObjective()
+        {
+            if (File.Exists(_savePath))
+            {
+                var json = File.ReadAllText(_savePath);
+                var data = JsonUtility.FromJson<SaveData>(json);
+                data.lastObjective = _currentObjective;
+                File.WriteAllText(_savePath, JsonUtility.ToJson(data, true));
+            }
+        }
+
+        private string LoadObjective()
+        {
+            string objective;
+            
+            if (File.Exists(_savePath))
+            {
+
+                var json = File.ReadAllText(_savePath);
+                var data = JsonUtility.FromJson<SaveData>(json);
+                objective = data.lastObjective;
+            }
+            else
+            {
+                objective = objectiveText.text;
+            }
+
+            return objective;
+        }
+        
+        private void ShowLastObjective(InputAction.CallbackContext context)
+        {
+            StartCoroutine(!string.IsNullOrEmpty(LoadObjective())
+                ? DisplayObjective(LoadObjective())
+                : DisplayObjective(objectiveText.text));
+        }
 
         public void ShowObjective(string objectiveMessage)
         {

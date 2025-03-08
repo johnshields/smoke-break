@@ -27,8 +27,6 @@ namespace _Scripts.Managers
 
         private void Start()
         {
-            ObjectiveData.LoadObjectivesFromJson();
-
             if (!File.Exists(_savePath) || new FileInfo(_savePath).Length == 0)
             {
                 Invoke(nameof(OpeningDialogue), 2.5f);
@@ -68,11 +66,16 @@ namespace _Scripts.Managers
 
             var keyString = objectiveKey.ToString();
             var objective = ObjectiveData.GetObjective(keyString);
-
+            
             if (objective != null)
+            {
+                ObjectiveManager.Instance.SetObjective(objective.message);
                 StartCoroutine(WaitForDialogueToEnd(objective.delay, objective.key));
+            }
             else
+            {
                 Debug.LogError($"❌ Objective '{objectiveKey}' not found in objectives.json");
+            }
         }
 
         private IEnumerator WaitForDialogueToEnd(float delay, string objectiveKey)

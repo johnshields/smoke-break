@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 
 namespace _Scripts.Player
 {
@@ -15,11 +14,6 @@ namespace _Scripts.Player
         public int clipAmmo;
         public int storedAmmo;
         public string savedLevel;
-    }
-
-    [Serializable]
-    public class SaveList
-    {
-        public List<SaveData> Saves = new List<SaveData>();
+        public string lastObjective;
     }
 }
