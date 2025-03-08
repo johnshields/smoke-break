@@ -91,9 +91,8 @@ namespace _Scripts.Player
             _playerHealth = GetComponent<PlayerHealth>();
             _actions = new InputControls();
             _mainCamera = Camera.main;
-
-            if (_pauseMenu != null)
-                _pauseMenu = FindFirstObjectByType<PauseMenu>();
+            
+            _pauseMenu = FindFirstObjectByType<PauseMenu>();
 
             currentStamina = maxStamina;
             _moveKeys = _actions.Profiler.Movement;

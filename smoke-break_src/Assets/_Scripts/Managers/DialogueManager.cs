@@ -9,8 +9,7 @@ namespace _Scripts.Managers
     public class DialogueManager : MonoBehaviour
     {
         #region Singleton
-        private static DialogueManager _instance;
-        public static DialogueManager Instance => _instance ?? throw new System.Exception("DialogueManager instance not found in the scene.");
+        public static DialogueManager Instance { get; private set; }
         #endregion
 
         #region Fields
@@ -22,17 +21,8 @@ namespace _Scripts.Managers
         #region Unity Methods
         private void Awake()
         {
+            if (Instance == null) Instance = this;
             _savePath = SaveManager.GetSaveFilePath();
-
-            if (_instance == null)
-            {
-                _instance = this;
-                DontDestroyOnLoad(gameObject); // Persist across scenes
-            }
-            else
-            {
-                Destroy(gameObject); // Prevent duplicate instances
-            }
         }
 
         private void Start()
