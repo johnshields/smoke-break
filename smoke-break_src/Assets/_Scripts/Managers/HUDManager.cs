@@ -19,12 +19,14 @@ namespace _Scripts.Managers
         private Color _originalHealthColor;
         [SerializeField] private Image injuryOverlay;
         [SerializeField] private GameObject deathText;
+        [SerializeField] private Image heartIcon;
 
         [Header("Stamina HUD Elements")] [SerializeField]
         private Slider staminaBar;
 
         [SerializeField] private Image staminaFill;
         [SerializeField] private Color lowStaminaColor = Color.red;
+        [SerializeField] private Image staminaIcon;
         private Color _originalStaminaColor;
 
         [Header("Boost Pack HUD Elements")] [SerializeField]
@@ -61,7 +63,9 @@ namespace _Scripts.Managers
         {
             UpdateAmmo();
             UpdateHealth();
+            UpdateHeartIcon();
             UpdateStamina();
+            UpdateStaminaIcon();
         }
 
         private void UpdateAmmo()
@@ -77,15 +81,40 @@ namespace _Scripts.Managers
             healthBar.fillRect.gameObject.SetActive(_playerHealth.GetCurrentHealth() > 0);
 
             if (healthFill is not null)
-                healthFill.color = _playerHealth.GetCurrentHealth() < _playerHealth.GetCurrentHealth() * 0.2f
-                    ? lowHealthColor
-                    : _originalHealthColor;
+            {
+                var healthPercentage = (float)_playerHealth.GetCurrentHealth() / (float)_playerHealth.GetMaxHealth();
+                healthFill.color = Color.Lerp(healthFill.color, healthPercentage < 0.3f ? lowHealthColor : _originalHealthColor, Time.deltaTime * 5f);
+            }
 
             var isLowHealth = _playerHealth.GetCurrentHealth() <= 10;
             var targetAlpha = isLowHealth ? 0.5f : 0f;
 
             injuryOverlay.color = new Color(lowHealthColor.r, lowHealthColor.g, lowHealthColor.b,
                 Mathf.Lerp(injuryOverlay.color.a, targetAlpha, Time.deltaTime * 5f));
+        }
+
+        private void UpdateHeartIcon()
+        {
+            var healthPercentage = (float)_playerHealth.GetCurrentHealth() / (float)_playerHealth.GetMaxHealth();
+            
+            float currentHealth = _playerHealth.GetCurrentHealth();
+
+            if (currentHealth <= 0)
+            {
+                var popEffect = 1.0f + Mathf.Sin(Time.time * 15f) * 0.2f; 
+                heartIcon.transform.localScale = Vector3.one * popEffect;
+                return;
+            }
+    
+            if (healthPercentage <= 0.3f)
+            {
+                var pulse = 1.0f + Mathf.Sin(Time.time * 5f) * 0.1f; 
+                heartIcon.transform.localScale = Vector3.one * pulse;
+            }
+            else
+            {
+                heartIcon.transform.localScale = Vector3.one;
+            }
         }
 
         private void UpdateStamina()
@@ -97,10 +126,24 @@ namespace _Scripts.Managers
             staminaBar.value = currentStamina / maxStamina;
             staminaBar.fillRect.gameObject.SetActive(currentStamina >= 0);
 
-            if (staminaFill is not null)
-                staminaFill.color = currentStamina < maxStamina * 0.1f
-                    ? lowStaminaColor
-                    : _originalStaminaColor;
+            if (staminaFill is null) return;
+            var staminaPercentage = (float)currentStamina / (float)maxStamina;
+            staminaFill.color = Color.Lerp(staminaFill.color, staminaPercentage < 0.2f ? lowStaminaColor : _originalStaminaColor, Time.deltaTime * 5f);
+        }
+        
+        private void UpdateStaminaIcon()
+        {
+            var staminaPercentage = (float)_player.GetCurrentStamina() / (float)_player.GetMaxStamina();
+    
+            if (staminaPercentage < 0.2f)
+            {
+                var pulse = 1.0f + Mathf.Sin(Time.time * 5f) * 0.1f; 
+                staminaIcon.transform.localScale = Vector3.one * pulse;
+            }
+            else
+            {
+                staminaIcon.transform.localScale = Vector3.one;
+            }
         }
 
         public IEnumerator UpdateBoostBar()
