@@ -38,6 +38,22 @@ namespace _Scripts.Managers
             var playerId = GetOrCreatePlayerId();
             _timestamp = DateTime.UtcNow.ToString("o").Replace(':', '-');
 
+            var lastObjective = ObjectiveManager.Instance != null ? ObjectiveManager.Instance.GetLastObjective() : "";
+
+            var savePath = Path.Combine(SaveDirectory, $"savegame_{playerId}.json");
+
+            // Retrieve existing data if it exists to prevent overwriting lastObjective with an empty string
+            if (File.Exists(savePath))
+            {
+                var json = File.ReadAllText(savePath);
+                var existingData = JsonUtility.FromJson<SaveData>(json);
+                if (string.IsNullOrEmpty(lastObjective)) // Preserve last objective if new one is empty
+                {
+                    lastObjective = existingData.lastObjective;
+                }
+            }
+
+            // Now create the save data after ensuring lastObjective is properly set
             var data = new SaveData
             {
                 playerId = playerId,
@@ -49,14 +65,10 @@ namespace _Scripts.Managers
                 clipAmmo = pistol.GetCurrentClip(),
                 storedAmmo = pistol.GetStoredAmmo(),
                 savedLevel = SceneManager.GetActiveScene().name,
-                lastObjective = ObjectiveManager.Instance.GetLastObjective(),
+                lastObjective = lastObjective // Assign the last known valid objective
             };
 
-            var savePath = Path.Combine(SaveDirectory, $"savegame_{playerId}.json");
             File.WriteAllText(savePath, JsonUtility.ToJson(data, true));
-
-            Debug.Log($"Game saved... \n Player Object: {data}");
-            Debug.Log(savePath);
         }
 
         public static void LoadGame(PlayerProfiler player, PlayerHealth health, PistolProfiler pistol)
@@ -75,9 +87,10 @@ namespace _Scripts.Managers
             Debug.Log($"Game Loading... \n Player Object: {data}");
             SceneManager.LoadScene(data.savedLevel);
             
-            if (ObjectiveManager.Instance != null)
+            if (!string.IsNullOrEmpty(data.lastObjective) && ObjectiveManager.Instance != null)
             {
-                ObjectiveManager.Instance.SetObjective(data.lastObjective);
+                Debug.Log($"✅ Restoring Last Objective: {data.lastObjective}");
+                ObjectiveManager.Instance.RestoreLastObjective(data.lastObjective);
             }
         }
 

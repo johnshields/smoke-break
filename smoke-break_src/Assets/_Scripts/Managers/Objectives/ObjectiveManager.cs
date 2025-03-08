@@ -68,7 +68,11 @@ namespace _Scripts.Managers.Objectives
 
         #region Objective System
         
-        public string GetLastObjective() => _currentObjective;
+        public string GetLastObjective()
+        {
+            return _currentObjective;
+        }
+
         
         public void SetObjective(string objective)
         {
@@ -76,35 +80,46 @@ namespace _Scripts.Managers.Objectives
             SaveObjective();
         }
         
+        public void RestoreLastObjective(string objectiveMessage)
+        {
+            if (string.IsNullOrEmpty(objectiveMessage))
+            {
+                Debug.Log("⚠ No last objective to restore.");
+                return;
+            }
+
+            _currentObjective = objectiveMessage; // Ensure `_currentObjective` is set before saving
+        }
+        
         private void SaveObjective()
         {
-            if (File.Exists(_savePath))
+            if (!File.Exists(_savePath)) return;
+
+            var json = File.ReadAllText(_savePath);
+            var data = JsonUtility.FromJson<SaveData>(json);
+
+            if (!string.IsNullOrEmpty(_currentObjective)) // Only save if valid
             {
-                var json = File.ReadAllText(_savePath);
-                var data = JsonUtility.FromJson<SaveData>(json);
                 data.lastObjective = _currentObjective;
-                File.WriteAllText(_savePath, JsonUtility.ToJson(data, true));
             }
+            else
+            {
+                Debug.LogWarning("⚠ Skipping lastObjective save: No valid objective found.");
+            }
+
+            File.WriteAllText(_savePath, JsonUtility.ToJson(data, true));
         }
 
         private string LoadObjective()
         {
-            string objective;
+            if (!File.Exists(_savePath)) return objectiveText.text;
+
+            var json = File.ReadAllText(_savePath);
+            var data = JsonUtility.FromJson<SaveData>(json);
             
-            if (File.Exists(_savePath))
-            {
-
-                var json = File.ReadAllText(_savePath);
-                var data = JsonUtility.FromJson<SaveData>(json);
-                objective = data.lastObjective;
-            }
-            else
-            {
-                objective = objectiveText.text;
-            }
-
-            return objective;
+            return !string.IsNullOrEmpty(data.lastObjective) ? data.lastObjective : null;
         }
+
         
         private void ShowLastObjective(InputAction.CallbackContext context)
         {

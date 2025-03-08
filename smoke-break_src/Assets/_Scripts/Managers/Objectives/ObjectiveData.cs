@@ -11,6 +11,11 @@ namespace _Scripts.Managers.Objectives
 
         public static void LoadObjectivesFromJson()
         {
+            if (!File.Exists(SavePath))
+            {
+                Debug.LogWarning("⚠ No saved objectives found. Loading default objectives.");
+            }
+
             var jsonFile = Resources.Load<TextAsset>("objectives");
             if (jsonFile == null)
             {
@@ -25,12 +30,15 @@ namespace _Scripts.Managers.Objectives
                 return;
             }
 
-            Objectives.Clear();
+            if (Objectives.Count == 0) // Prevent clearing if objectives already exist
+            {
+                Objectives.Clear();
+            }
 
             foreach (var obj in data.objectives)
             {
                 if (string.IsNullOrEmpty(obj.key)) continue;
-                Objectives[obj.key] = obj;
+                Objectives.TryAdd(obj.key, obj); // Avoid overwriting existing objectives
             }
         }
 

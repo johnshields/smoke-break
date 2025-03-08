@@ -1569,7 +1569,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: FIND STARSHIP ICARUS!
+  m_text: 
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: aa883d692c584c447b5938cf1d3740df, type: 2}
   m_sharedMaterial: {fileID: 2900056354549878862, guid: aa883d692c584c447b5938cf1d3740df, type: 2}
