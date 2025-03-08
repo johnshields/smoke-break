@@ -128,7 +128,7 @@ namespace _Scripts.UI.Dialogue
                         StartCoroutine(FadeOutText());
                         yield break; // Immediately exit the coroutine
                     }
-                    
+
                     currentText += (string.IsNullOrEmpty(currentText) ? "" : " ") + word;
                     messageText.text = currentText;
                     yield return new WaitForSeconds(wordDelay);

@@ -1571,7 +1571,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 
+  m_text: FIND STARSHIP ICARUS!
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: aa883d692c584c447b5938cf1d3740df, type: 2}
   m_sharedMaterial: {fileID: 2900056354549878862, guid: aa883d692c584c447b5938cf1d3740df, type: 2}
@@ -12223,7 +12223,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1098351669}
   serializedVersion: 2
-  m_LocalRotation: {x: -0.15802334, y: 0.005661688, z: 0.00052304077, w: 0.987419}
+  m_LocalRotation: {x: -0.15802336, y: 0.005662791, z: 0.0005231563, w: 0.987419}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
