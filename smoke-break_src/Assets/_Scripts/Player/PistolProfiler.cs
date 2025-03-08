@@ -227,12 +227,20 @@ namespace _Scripts.Player
 
                     if (!_worldCrosshair.activeSelf)
                         _worldCrosshair.SetActive(true);
+                    
+                    // Apply pulse effect when aiming at an enemy
+                    const float pulseSpeed = 5f;
+                    const float pulseAmount = 1.2f;
+                    var size = 1.0f + Mathf.Sin(Time.time * pulseSpeed) * 0.05f;
+                    _worldCrosshair.transform.localScale = 
+                        Vector3.one * Mathf.Lerp(_worldCrosshair.transform.localScale.x, pulseAmount * size, Time.deltaTime * 10f);
                 }
             }
             else
             {
                 _aimTarget = Vector3.zero;
                 _worldCrosshair.SetActive(false);
+                _worldCrosshair.transform.localScale = Vector3.one;
             }
         }
 
