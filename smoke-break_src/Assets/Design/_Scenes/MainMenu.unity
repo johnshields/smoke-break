@@ -859,9 +859,11 @@ MonoBehaviour:
   lowHealthColor: {r: 1, g: 0, b: 0, a: 1}
   injuryOverlay: {fileID: 0}
   deathText: {fileID: 0}
+  heartIcon: {fileID: 0}
   staminaBar: {fileID: 0}
   staminaFill: {fileID: 0}
   lowStaminaColor: {r: 1, g: 0, b: 0, a: 1}
+  staminaIcon: {fileID: 0}
   boostBar: {fileID: 0}
   boostFill: {fileID: 0}
   lowBoostColor: {r: 1, g: 0, b: 0, a: 1}

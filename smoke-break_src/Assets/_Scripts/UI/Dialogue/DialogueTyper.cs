@@ -113,7 +113,6 @@ namespace _Scripts.UI.Dialogue
         private IEnumerator WriteTextByLine()
         {
             messageText.text = "";
-            var isSkipping = false;
 
             foreach (var (text, sound) in _currentLines)
             {
@@ -125,19 +124,14 @@ namespace _Scripts.UI.Dialogue
                 {
                     if (skipAction.WasPressedThisFrame())
                     {
-                        isSkipping = true;
-                        break;
+                        audioSource.Stop();
+                        StartCoroutine(FadeOutText());
+                        yield break; // Immediately exit the coroutine
                     }
-
+                    
                     currentText += (string.IsNullOrEmpty(currentText) ? "" : " ") + word;
                     messageText.text = currentText;
                     yield return new WaitForSeconds(wordDelay);
-                }
-
-                if (isSkipping)
-                {
-                    messageText.text = text;
-                    break;
                 }
 
                 yield return new WaitForSeconds(lineDelay);
