@@ -4189,6 +4189,31 @@ MonoBehaviour:
   lineDelay: 5
   fadeDuration: 1
   enableDebugLogs: 0
+  skipAction:
+    m_Name: Skip
+    m_Type: 0
+    m_ExpectedControlType: 
+    m_Id: 476622a7-9d3c-45cc-be4d-a52403369234
+    m_Processors: 
+    m_Interactions: 
+    m_SingletonActionBindings:
+    - m_Name: 
+      m_Id: 2a15fcee-141d-4b9c-ba7b-4aeaa23f3212
+      m_Path: <Gamepad>/leftStickPress
+      m_Interactions: 
+      m_Processors: 
+      m_Groups: 
+      m_Action: Skip
+      m_Flags: 0
+    - m_Name: 
+      m_Id: 8464f5f1-7640-4ff9-9b54-80586834c954
+      m_Path: <Keyboard>/backspace
+      m_Interactions: 
+      m_Processors: 
+      m_Groups: 
+      m_Action: Skip
+      m_Flags: 0
+    m_Flags: 0
 --- !u!1 &632641125
 GameObject:
   m_ObjectHideFlags: 0
@@ -12198,7 +12223,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1098351669}
   serializedVersion: 2
-  m_LocalRotation: {x: -0.15802336, y: 0.0056601632, z: 0.0005229163, w: 0.987419}
+  m_LocalRotation: {x: -0.15802336, y: 0.005662791, z: 0.0005231563, w: 0.987419}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -23029,6 +23054,31 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6a5c8a3f47acc5e498917abd82f90f53, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  skipAction:
+    m_Name: Skip
+    m_Type: 0
+    m_ExpectedControlType: 
+    m_Id: 61198294-d1a7-49f8-8708-35952c36544f
+    m_Processors: 
+    m_Interactions: 
+    m_SingletonActionBindings:
+    - m_Name: 
+      m_Id: fc6d4575-fd7d-4568-a6cb-140f424a3445
+      m_Path: <Gamepad>/leftStickPress
+      m_Interactions: 
+      m_Processors: 
+      m_Groups: 
+      m_Action: Skip
+      m_Flags: 0
+    - m_Name: 
+      m_Id: 6cd45e7c-9273-4023-a745-06a64d53d4ca
+      m_Path: <Keyboard>/backspace
+      m_Interactions: 
+      m_Processors: 
+      m_Groups: 
+      m_Action: Skip
+      m_Flags: 0
+    m_Flags: 0
   typer: {fileID: 627383480}
 --- !u!114 &1993753728
 MonoBehaviour:

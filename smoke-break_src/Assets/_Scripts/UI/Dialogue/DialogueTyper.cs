@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 namespace _Scripts.UI.Dialogue
 {
@@ -9,24 +10,37 @@ namespace _Scripts.UI.Dialogue
     {
         #region Variables
 
-        [Header("UI References")]
-        [SerializeField] private TextMeshProUGUI messageText;
+        [Header("UI References")] [SerializeField]
+        private TextMeshProUGUI messageText;
+
         [SerializeField] private AudioSource audioSource;
 
-        [Header("Dialogue Settings")]
-        [SerializeField] private float wordDelay = 0.05f;
+        [Header("Dialogue Settings")] [SerializeField]
+        private float wordDelay = 0.05f;
+
         [SerializeField] private float lineDelay = 1.5f;
         [SerializeField] private float fadeDuration = 1.5f;
 
-        [Header("Debug Settings")]
-        [SerializeField] private bool enableDebugLogs;
+        [Header("Debug Settings")] [SerializeField]
+        private bool enableDebugLogs;
 
         private readonly Dictionary<string, List<(string text, string sound)>> _dialogues = new();
         private List<(string text, string sound)> _currentLines;
-        
+        public InputAction skipAction;
+
         #endregion
 
         #region Initialization
+
+        private void OnEnable()
+        {
+            skipAction.Enable();
+        }
+
+        private void OnDisable()
+        {
+            skipAction.Disable();
+        }
 
         public void InitDialogue(DialogueKey dialogueKey)
         {
@@ -73,6 +87,7 @@ namespace _Scripts.UI.Dialogue
                 {
                     lines.Add((line.text, line.sound));
                 }
+
                 _dialogues[entry.key] = lines;
             }
 
@@ -98,6 +113,7 @@ namespace _Scripts.UI.Dialogue
         private IEnumerator WriteTextByLine()
         {
             messageText.text = "";
+            var isSkipping = false;
 
             foreach (var (text, sound) in _currentLines)
             {
@@ -107,9 +123,21 @@ namespace _Scripts.UI.Dialogue
                 var currentText = "";
                 foreach (var word in text.Split(' '))
                 {
+                    if (skipAction.WasPressedThisFrame())
+                    {
+                        isSkipping = true;
+                        break;
+                    }
+
                     currentText += (string.IsNullOrEmpty(currentText) ? "" : " ") + word;
                     messageText.text = currentText;
                     yield return new WaitForSeconds(wordDelay);
+                }
+
+                if (isSkipping)
+                {
+                    messageText.text = text;
+                    break;
                 }
 
                 yield return new WaitForSeconds(lineDelay);
