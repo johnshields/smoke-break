@@ -131,7 +131,6 @@ namespace _Scripts.Managers.Objectives
             yield return new WaitForSeconds(objectiveDisplayTime);
 
             yield return FadeObjective(false);
-            objectiveText.text = "";
         }
 
         private IEnumerator FadeObjective(bool fadeIn)
