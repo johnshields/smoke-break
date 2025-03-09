@@ -1,4 +1,4 @@
-﻿namespace _Scripts.UI.Dialogue
+﻿namespace _Scripts.enums
 {
     public enum DialogueKey
     {

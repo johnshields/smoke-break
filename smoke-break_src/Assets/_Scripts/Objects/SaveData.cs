@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace _Scripts.Player
+namespace _Scripts.Objects
 {
     [Serializable]
     public class SaveData

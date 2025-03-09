@@ -1,6 +1,7 @@
 using System.Collections;
 using System.IO;
 using _Scripts.Managers;
+using _Scripts.Objects;
 using UnityEngine;
 
 namespace _Scripts.Player

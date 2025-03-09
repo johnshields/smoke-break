@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.IO;
+using _Scripts.Objects;
 using UnityEngine;
 
 namespace _Scripts.Managers.Objectives

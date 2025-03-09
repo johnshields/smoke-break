@@ -9,6 +9,7 @@ using UnityEngine.EventSystems;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using _Scripts.enums;
 using _Scripts.Managers;
 
 namespace _Scripts.UI

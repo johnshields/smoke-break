@@ -1,4 +1,4 @@
-﻿namespace _Scripts.Managers.Objectives
+﻿namespace _Scripts.enums
 {
     public enum ObjectiveKey
     {

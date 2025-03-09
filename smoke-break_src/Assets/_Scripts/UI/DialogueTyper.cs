@@ -1,10 +1,12 @@
 using System.Collections;
 using System.Collections.Generic;
+using _Scripts.enums;
+using _Scripts.Objects;
 using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-namespace _Scripts.UI.Dialogue
+namespace _Scripts.UI
 {
     public class DialogueTyper : MonoBehaviour
     {

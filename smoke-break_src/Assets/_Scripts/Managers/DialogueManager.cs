@@ -1,7 +1,8 @@
 using System.Collections;
 using System.IO;
+using _Scripts.enums;
 using _Scripts.Managers.Objectives;
-using _Scripts.UI.Dialogue;
+using _Scripts.UI;
 using UnityEngine;
 using UnityEngine.InputSystem;
 

@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using _Scripts.Managers.Objectives;
+using _Scripts.Objects;
 using _Scripts.Player;
 using UnityEngine;
 using UnityEngine.SceneManagement;

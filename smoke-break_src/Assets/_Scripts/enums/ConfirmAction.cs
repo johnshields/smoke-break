@@ -1,4 +1,4 @@
-﻿namespace _Scripts.UI
+﻿namespace _Scripts.enums
 {
     public enum ConfirmAction
     {

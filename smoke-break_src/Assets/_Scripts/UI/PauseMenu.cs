@@ -6,6 +6,7 @@ using UnityEngine.UI;
 using TMPro;
 using System.Collections;
 using System.Collections.Generic;
+using _Scripts.enums;
 using _Scripts.Managers;
 using _Scripts.Player;
 using UnityEngine.EventSystems;

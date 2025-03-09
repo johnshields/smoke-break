@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace _Scripts.Managers.Objectives
+namespace _Scripts.Objects
 {
     [System.Serializable]
     public class ObjectiveList

@@ -1,4 +1,4 @@
-﻿namespace _Scripts
+﻿namespace _Scripts.enums
 {
     public enum ItemType
     {
