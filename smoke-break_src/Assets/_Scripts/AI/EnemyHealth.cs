@@ -6,32 +6,42 @@ namespace _Scripts.AI
 {
     public class EnemyHealth : MonoBehaviour
     {
+        #region Health Settings
+
         [Header("Health Settings")] [SerializeField]
         private int health = 100;
 
-        [Header("Hit Effect Settings")] [SerializeField]
-        private bool isDroid;
+        #endregion
 
-        [SerializeField] private Color hitColor = Color.red;
+        #region Hit Effect Settings
+
+        [Header("Hit Effect Settings")] [SerializeField]
+        private Color hitColor = Color.red;
 
         [SerializeField] private float hitEffectDuration = 0.2f;
 
-        [Header("Knockback Settings")] [SerializeField]
-        private float knockbackForce = 5f;
+        #endregion
 
-        [SerializeField] private float knockbackDuration = 0.2f;
-
-        public Renderer enemyRenderer;
-        private Color _originalColor;
-        private Rigidbody _rigidbody;
-        private bool _isKnockedBack;
+        #region Audio Settings
 
         [Header("Audio Settings")] [SerializeField]
         private AudioSource audioSource;
 
         [SerializeField] private AudioClip audioClip;
+
+        #endregion
+
+        #region Components
+
         private NavMeshAgent _agent;
         private EnemyAI _enemyAI;
+        private Rigidbody _rigidbody;
+        public Renderer enemyRenderer;
+        private Color _originalColor;
+
+        #endregion
+
+        #region Unity Callbacks
 
         private void Start()
         {
@@ -44,7 +54,11 @@ namespace _Scripts.AI
                 _originalColor = enemyRenderer.material.color;
         }
 
-        public void TakeDamage(int damage, Vector3 hitDirection)
+        #endregion
+
+        #region Damage Handling
+
+        public void TakeDamage(int damage)
         {
             if (damage <= 0) return;
 
@@ -54,11 +68,24 @@ namespace _Scripts.AI
             if (enemyRenderer is not null)
                 StartCoroutine(FlashEffect());
 
-            if (_rigidbody is not null && !isDroid) StartCoroutine(ApplyKnockback(hitDirection));
+            if (_rigidbody is not null)
+                StartCoroutine(StaggerEnemy(0.5f));
 
             if (health <= 0)
                 Die();
         }
+
+        private void Die()
+        {
+            if (audioSource is not null && audioClip is not null)
+                audioSource.PlayOneShot(audioClip, 0.5f);
+
+            Destroy(gameObject);
+        }
+
+        #endregion
+
+        #region Visual Effects
 
         private IEnumerator FlashEffect()
         {
@@ -69,27 +96,19 @@ namespace _Scripts.AI
             enemyRenderer.material.color = _originalColor;
         }
 
-        private IEnumerator ApplyKnockback(Vector3 direction)
+        #endregion
+
+        #region Knockback Handling
+
+        private IEnumerator StaggerEnemy(float duration)
         {
-            if (_rigidbody is null || _isKnockedBack) yield break;
+            if (_agent is null) yield break;
 
-            _isKnockedBack = true;
-            if (_agent) _agent.enabled = false;
-
-            _rigidbody.linearVelocity = direction.normalized * knockbackForce;
-
-            yield return new WaitForSeconds(knockbackDuration);
-
-            if (_agent) _agent.enabled = true;
-            _isKnockedBack = false;
+            _agent.isStopped = true;
+            yield return new WaitForSeconds(duration);
+            _agent.isStopped = false;
         }
 
-        private void Die()
-        {
-            print($"{gameObject.name} has been destroyed!");
-            if (audioSource is not null && audioClip is not null)
-                audioSource.PlayOneShot(audioClip, .5f);
-            Destroy(gameObject);
-        }
+        #endregion
     }
 }

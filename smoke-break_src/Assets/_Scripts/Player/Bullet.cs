@@ -18,8 +18,7 @@ namespace _Scripts.Player
             EnemyHealth enemy = other.GetComponent<EnemyHealth>();
             if (enemy != null)
             {
-                Vector3 hitDirection = (other.transform.position - transform.position).normalized;
-                enemy.TakeDamage(damage, hitDirection);
+                enemy.TakeDamage(damage);
                 Destroy(gameObject); // Destroy bullet on impact
             }
         }

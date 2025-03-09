@@ -1015,7 +1015,7 @@ Rigidbody:
   m_ImplicitCom: 1
   m_ImplicitTensor: 1
   m_UseGravity: 0
-  m_IsKinematic: 1
+  m_IsKinematic: 0
   m_Interpolate: 0
   m_Constraints: 116
   m_CollisionDetection: 0
@@ -1053,14 +1053,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   health: 100
-  isDroid: 1
   hitColor: {r: 0.53333336, g: 0, b: 0, a: 1}
   hitEffectDuration: 0.2
   knockbackForce: 5
   knockbackDuration: 0.2
-  enemyRenderer: {fileID: 1627842512}
   audioSource: {fileID: 554631511}
   audioClip: {fileID: 8300000, guid: 72e4114552af6f744b5d20e8136e205f, type: 3}
+  enemyRenderer: {fileID: 1627842512}
 --- !u!114 &187244085
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3669,7 +3668,7 @@ Rigidbody:
   m_ImplicitCom: 1
   m_ImplicitTensor: 1
   m_UseGravity: 0
-  m_IsKinematic: 1
+  m_IsKinematic: 0
   m_Interpolate: 0
   m_Constraints: 116
   m_CollisionDetection: 0
@@ -3707,14 +3706,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   health: 100
-  isDroid: 1
   hitColor: {r: 0.53333336, g: 0, b: 0, a: 1}
   hitEffectDuration: 0.2
   knockbackForce: 5
   knockbackDuration: 0.2
-  enemyRenderer: {fileID: 2053723975}
   audioSource: {fileID: 554631511}
   audioClip: {fileID: 8300000, guid: 72e4114552af6f744b5d20e8136e205f, type: 3}
+  enemyRenderer: {fileID: 2053723975}
 --- !u!114 &574626575
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4103,14 +4101,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   health: 100
-  isDroid: 0
   hitColor: {r: 0.53333336, g: 0, b: 0, a: 1}
   hitEffectDuration: 0.2
   knockbackForce: 5
   knockbackDuration: 0.2
-  enemyRenderer: {fileID: 616964406}
   audioSource: {fileID: 554631511}
   audioClip: {fileID: 8300000, guid: 72e4114552af6f744b5d20e8136e205f, type: 3}
+  enemyRenderer: {fileID: 616964406}
 --- !u!1 &627383477
 GameObject:
   m_ObjectHideFlags: 0
@@ -9267,7 +9264,7 @@ Rigidbody:
   m_ImplicitCom: 1
   m_ImplicitTensor: 1
   m_UseGravity: 0
-  m_IsKinematic: 1
+  m_IsKinematic: 0
   m_Interpolate: 0
   m_Constraints: 116
   m_CollisionDetection: 0
@@ -9305,14 +9302,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   health: 100
-  isDroid: 1
   hitColor: {r: 0.53333336, g: 0, b: 0, a: 1}
   hitEffectDuration: 0.2
   knockbackForce: 5
   knockbackDuration: 0.2
-  enemyRenderer: {fileID: 1846759386}
   audioSource: {fileID: 554631511}
   audioClip: {fileID: 8300000, guid: 72e4114552af6f744b5d20e8136e205f, type: 3}
+  enemyRenderer: {fileID: 1846759386}
 --- !u!114 &654796649
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -9682,7 +9678,7 @@ Rigidbody:
   m_ImplicitCom: 1
   m_ImplicitTensor: 1
   m_UseGravity: 0
-  m_IsKinematic: 1
+  m_IsKinematic: 0
   m_Interpolate: 0
   m_Constraints: 116
   m_CollisionDetection: 0
@@ -9720,14 +9716,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   health: 100
-  isDroid: 1
   hitColor: {r: 0.53333336, g: 0, b: 0, a: 1}
   hitEffectDuration: 0.2
   knockbackForce: 5
   knockbackDuration: 0.2
-  enemyRenderer: {fileID: 1939215568}
   audioSource: {fileID: 554631511}
   audioClip: {fileID: 8300000, guid: 72e4114552af6f744b5d20e8136e205f, type: 3}
+  enemyRenderer: {fileID: 1939215568}
 --- !u!114 &716541231
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -10809,7 +10804,7 @@ Rigidbody:
   m_ImplicitCom: 1
   m_ImplicitTensor: 1
   m_UseGravity: 0
-  m_IsKinematic: 1
+  m_IsKinematic: 0
   m_Interpolate: 0
   m_Constraints: 116
   m_CollisionDetection: 0
@@ -10847,14 +10842,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   health: 100
-  isDroid: 1
   hitColor: {r: 0.53333336, g: 0, b: 0, a: 1}
   hitEffectDuration: 0.2
   knockbackForce: 5
   knockbackDuration: 0.2
-  enemyRenderer: {fileID: 391163522}
   audioSource: {fileID: 554631511}
   audioClip: {fileID: 8300000, guid: 72e4114552af6f744b5d20e8136e205f, type: 3}
+  enemyRenderer: {fileID: 391163522}
 --- !u!114 &914637235
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -11972,7 +11966,7 @@ Rigidbody:
   m_ImplicitCom: 1
   m_ImplicitTensor: 1
   m_UseGravity: 0
-  m_IsKinematic: 1
+  m_IsKinematic: 0
   m_Interpolate: 0
   m_Constraints: 116
   m_CollisionDetection: 0
@@ -12010,14 +12004,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   health: 100
-  isDroid: 1
   hitColor: {r: 0.53333336, g: 0, b: 0, a: 1}
   hitEffectDuration: 0.2
   knockbackForce: 5
   knockbackDuration: 0.2
-  enemyRenderer: {fileID: 1412902274}
   audioSource: {fileID: 554631511}
   audioClip: {fileID: 8300000, guid: 72e4114552af6f744b5d20e8136e205f, type: 3}
+  enemyRenderer: {fileID: 1412902274}
 --- !u!114 &1067042319
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -13017,14 +13010,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   health: 100
-  isDroid: 1
   hitColor: {r: 0.53333336, g: 0, b: 0, a: 1}
   hitEffectDuration: 0.2
   knockbackForce: 5
   knockbackDuration: 0.2
-  enemyRenderer: {fileID: 296218155}
   audioSource: {fileID: 554631511}
   audioClip: {fileID: 8300000, guid: 72e4114552af6f744b5d20e8136e205f, type: 3}
+  enemyRenderer: {fileID: 296218155}
 --- !u!114 &1206829584
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -18867,14 +18859,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   health: 100
-  isDroid: 0
   hitColor: {r: 0.53333336, g: 0, b: 0, a: 1}
   hitEffectDuration: 0.2
   knockbackForce: 5
   knockbackDuration: 0.2
-  enemyRenderer: {fileID: 1433292133}
   audioSource: {fileID: 554631511}
   audioClip: {fileID: 8300000, guid: 72e4114552af6f744b5d20e8136e205f, type: 3}
+  enemyRenderer: {fileID: 1433292133}
 --- !u!4 &1433292136
 Transform:
   m_ObjectHideFlags: 0
@@ -19203,7 +19194,7 @@ Rigidbody:
   m_ImplicitCom: 1
   m_ImplicitTensor: 1
   m_UseGravity: 0
-  m_IsKinematic: 1
+  m_IsKinematic: 0
   m_Interpolate: 0
   m_Constraints: 116
   m_CollisionDetection: 0
@@ -19241,14 +19232,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   health: 100
-  isDroid: 1
   hitColor: {r: 0.53333336, g: 0, b: 0, a: 1}
   hitEffectDuration: 0.2
   knockbackForce: 5
   knockbackDuration: 0.2
-  enemyRenderer: {fileID: 2097044869}
   audioSource: {fileID: 554631511}
   audioClip: {fileID: 8300000, guid: 72e4114552af6f744b5d20e8136e205f, type: 3}
+  enemyRenderer: {fileID: 2097044869}
 --- !u!114 &1457867145
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -20592,7 +20582,7 @@ Rigidbody:
   m_ImplicitCom: 1
   m_ImplicitTensor: 1
   m_UseGravity: 0
-  m_IsKinematic: 1
+  m_IsKinematic: 0
   m_Interpolate: 0
   m_Constraints: 116
   m_CollisionDetection: 0
@@ -20630,14 +20620,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   health: 100
-  isDroid: 1
   hitColor: {r: 0.53333336, g: 0, b: 0, a: 1}
   hitEffectDuration: 0.2
   knockbackForce: 5
   knockbackDuration: 0.2
-  enemyRenderer: {fileID: 1501179446}
   audioSource: {fileID: 554631511}
   audioClip: {fileID: 8300000, guid: 72e4114552af6f744b5d20e8136e205f, type: 3}
+  enemyRenderer: {fileID: 1501179446}
 --- !u!114 &1599079640
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -22534,14 +22523,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   health: 100
-  isDroid: 0
   hitColor: {r: 0.53333336, g: 0, b: 0, a: 1}
   hitEffectDuration: 0.2
   knockbackForce: 5
   knockbackDuration: 0.2
-  enemyRenderer: {fileID: 1911977014}
   audioSource: {fileID: 554631511}
   audioClip: {fileID: 8300000, guid: 72e4114552af6f744b5d20e8136e205f, type: 3}
+  enemyRenderer: {fileID: 1911977014}
 --- !u!4 &1911977017
 Transform:
   m_ObjectHideFlags: 0
@@ -22829,7 +22817,7 @@ Rigidbody:
   m_ImplicitCom: 1
   m_ImplicitTensor: 1
   m_UseGravity: 0
-  m_IsKinematic: 1
+  m_IsKinematic: 0
   m_Interpolate: 0
   m_Constraints: 116
   m_CollisionDetection: 0
@@ -22867,14 +22855,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   health: 100
-  isDroid: 1
   hitColor: {r: 0.53333336, g: 0, b: 0, a: 1}
   hitEffectDuration: 0.2
   knockbackForce: 5
   knockbackDuration: 0.2
-  enemyRenderer: {fileID: 1259312347}
   audioSource: {fileID: 554631511}
   audioClip: {fileID: 8300000, guid: 72e4114552af6f744b5d20e8136e205f, type: 3}
+  enemyRenderer: {fileID: 1259312347}
 --- !u!114 &1951135581
 MonoBehaviour:
   m_ObjectHideFlags: 0

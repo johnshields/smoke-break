@@ -76,8 +76,7 @@ namespace _Scripts.Player
             Collider[] hitEnemies = Physics.OverlapSphere(attackPoint.position, attackRange, enemyLayers);
             foreach (var enemy in hitEnemies)
             {
-                var knockbackDirection = (enemy.transform.position - transform.position).normalized;
-                enemy.GetComponent<EnemyHealth>()?.TakeDamage(attackDamage, knockbackDirection);
+                enemy.GetComponent<EnemyHealth>()?.TakeDamage(attackDamage);
             }
 
             yield return new WaitForSeconds(AttackCooldown);
