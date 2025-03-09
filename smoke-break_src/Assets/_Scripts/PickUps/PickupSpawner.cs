@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-namespace _Scripts.Managers
+namespace _Scripts.PickUps
 {
     public class PickupSpawner : MonoBehaviour
     {

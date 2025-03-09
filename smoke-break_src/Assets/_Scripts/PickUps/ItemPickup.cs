@@ -2,7 +2,7 @@ using _Scripts.enums;
 using _Scripts.Player;
 using UnityEngine;
 
-namespace _Scripts
+namespace _Scripts.PickUps
 {
     public class ItemPickup : MonoBehaviour
     {

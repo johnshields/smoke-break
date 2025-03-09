@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace _Scripts
+namespace _Scripts.PickUps
 {
     public class GlowEffect : MonoBehaviour
     {
@@ -13,8 +13,8 @@ namespace _Scripts
 
         private void Awake()
         {
-            var renderer = GetComponent<Renderer>();
-            _material = renderer.material;
+            var component = GetComponent<Renderer>();
+            _material = component.material;
             _material.EnableKeyword("_EMISSION");
         }
 
