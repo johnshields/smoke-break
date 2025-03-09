@@ -14,6 +14,7 @@ namespace _Scripts.Player
         [SerializeField] private float boostCooldown = 1f;
         [SerializeField] private float fallMultiplier = 2.5f;
         [SerializeField] private float doubleJumpTimeLimit = 0.3f;
+        [SerializeField] private float maxHeight = 10f;
         public bool canBoost;
         private bool _jumpPressedOnce;
         private float _lastJumpTime;
@@ -63,9 +64,11 @@ namespace _Scripts.Player
         private void Update()
         {
             if (!_player.grounded && _rigidbody.linearVelocity.y < 0)
-            {
                 _rigidbody.linearVelocity += Vector3.down * (fallMultiplier * Time.deltaTime);
-            }
+            
+            var pos = transform.position;
+            pos.y = Mathf.Min(pos.y, maxHeight);
+            transform.position = pos;
         }
 
         private void OnCollisionEnter(Collision collision)

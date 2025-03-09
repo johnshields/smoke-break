@@ -83,7 +83,8 @@ namespace _Scripts.Managers
             if (healthFill is not null)
             {
                 var healthPercentage = (float)_playerHealth.GetCurrentHealth() / (float)_playerHealth.GetMaxHealth();
-                healthFill.color = Color.Lerp(healthFill.color, healthPercentage < 0.3f ? lowHealthColor : _originalHealthColor, Time.deltaTime * 5f);
+                healthFill.color = Color.Lerp(healthFill.color,
+                    healthPercentage < 0.3f ? lowHealthColor : _originalHealthColor, Time.deltaTime * 5f);
             }
 
             var isLowHealth = _playerHealth.GetCurrentHealth() <= 10;
@@ -96,19 +97,19 @@ namespace _Scripts.Managers
         private void UpdateHeartIcon()
         {
             var healthPercentage = (float)_playerHealth.GetCurrentHealth() / (float)_playerHealth.GetMaxHealth();
-            
+
             float currentHealth = _playerHealth.GetCurrentHealth();
 
             if (currentHealth <= 0)
             {
-                var popEffect = 1.0f + Mathf.Sin(Time.time * 15f) * 0.2f; 
+                var popEffect = 1.0f + Mathf.Sin(Time.time * 15f) * 0.2f;
                 heartIcon.transform.localScale = Vector3.one * popEffect;
                 return;
             }
-    
+
             if (healthPercentage <= 0.3f)
             {
-                var pulse = 1.0f + Mathf.Sin(Time.time * 5f) * 0.1f; 
+                var pulse = 1.0f + Mathf.Sin(Time.time * 5f) * 0.1f;
                 heartIcon.transform.localScale = Vector3.one * pulse;
             }
             else
@@ -128,16 +129,17 @@ namespace _Scripts.Managers
 
             if (staminaFill is null) return;
             var staminaPercentage = (float)currentStamina / (float)maxStamina;
-            staminaFill.color = Color.Lerp(staminaFill.color, staminaPercentage < 0.2f ? lowStaminaColor : _originalStaminaColor, Time.deltaTime * 5f);
+            staminaFill.color = Color.Lerp(staminaFill.color,
+                staminaPercentage < 0.2f ? lowStaminaColor : _originalStaminaColor, Time.deltaTime * 5f);
         }
-        
+
         private void UpdateStaminaIcon()
         {
             var staminaPercentage = (float)_player.GetCurrentStamina() / (float)_player.GetMaxStamina();
-    
+
             if (staminaPercentage < 0.2f)
             {
-                var pulse = 1.0f + Mathf.Sin(Time.time * 5f) * 0.1f; 
+                var pulse = 1.0f + Mathf.Sin(Time.time * 5f) * 0.1f;
                 staminaIcon.transform.localScale = Vector3.one * pulse;
             }
             else
@@ -150,72 +152,58 @@ namespace _Scripts.Managers
         {
             if (boostBar is null || boostFill is null) yield break;
 
+            StartCoroutine(FadeBoostBar(1f));
+            
+            yield return DrainBoostBar();
+            yield return new WaitForSeconds(0.25f);
+            
+            _boostPack.canBoost = true;
+            boostBar.value = 1f;
+        }
+
+        private IEnumerator DrainBoostBar()
+        {
             var originalColor = boostFill.color;
             var isFlashing = false;
 
-            StartCoroutine(FadeBoostBar(1f));
-
-            // First phase: Draining the boost bar over the cooldown period.
             for (float elapsedTime = 0; elapsedTime < _boostCooldown; elapsedTime += Time.deltaTime)
             {
-                // Calculate the fill amount based on elapsed time and cooldown duration.
-                var fillAmount = Mathf.Clamp01(1f - elapsedTime / _boostCooldown);
-
-                // Update the boost bar's fill value.
+                var fillAmount = 1f - (elapsedTime / _boostCooldown);
                 boostBar.value = fillAmount;
 
-                // If the fill amount is below 15% and the flashing effect hasn't started, trigger it.
+                // Trigger flashing effect if below 15%
                 if (fillAmount <= 0.15f && !isFlashing)
                 {
                     isFlashing = true;
-                    StartCoroutine(FlashBoostBar());
+                    yield return StartCoroutine(FlashBoostBar(originalColor));
+                    StartCoroutine(FadeBoostBar(0f));
                 }
 
-                // Wait until the next frame before continuing the loop.
                 yield return null;
             }
 
-            // Small delay to visually indicate the boost bar is completely drained.
-            yield return new WaitForSeconds(0.5f);
-
-            // Restore the original color of the boost fill after flashing.
-            boostFill.color = originalColor;
-
-            // Allow the boost to be used again.
-            _boostPack.canBoost = true;
-
-            // Second phase: Refilling the boost bar over the cooldown duration.
-            for (float elapsedTime = 0; elapsedTime < _boostCooldown; elapsedTime += Time.deltaTime)
-            {
-                // Gradually increase the boost bar's fill value.
-                boostBar.value = Mathf.Clamp01(elapsedTime / _boostCooldown);
-
-                // Wait until the next frame before continuing the loop.
-                yield return null;
-            }
-
-            boostBar.value = 1f;
-
-            StartCoroutine(FadeBoostBar(0f));
+            boostBar.value = 0f;
         }
 
-        private IEnumerator FlashBoostBar()
+        private IEnumerator FlashBoostBar(Color originalColor)
         {
-            while (boostBar.value <= 0.15f)
-            {
-                boostFill.color = (boostFill.color == lowBoostColor) ? _originalBoostColor : lowBoostColor;
-                yield return new WaitForSeconds(0.1f);
-            }
+            var flashColor = lowBoostColor;
+            const int flashCount = 6;
+            const float flashDuration = 0.1f;
 
-            yield return new WaitForSeconds(0.1f);
-            boostFill.color = _originalBoostColor;
-            _boostPack.canBoost = true;
+            for (var i = 0; i < flashCount; i++)
+            {
+                boostFill.color = (boostFill.color == flashColor) ? originalColor : flashColor;
+                yield return new WaitForSeconds(flashDuration);
+            }
+            
+            boostFill.color = originalColor;
         }
 
         private IEnumerator FadeBoostBar(float targetAlpha)
         {
             var startAlpha = boostFill.color.a;
-            const float fadeDuration = 0.25f;
+            const float fadeDuration = 0.1f;
             var elapsedTime = 0f;
 
             while (elapsedTime < fadeDuration)
@@ -226,8 +214,12 @@ namespace _Scripts.Managers
                 boostFill.color = newColor;
                 yield return null;
             }
+            
+            var finalColor = boostFill.color;
+            finalColor.a = targetAlpha;
+            boostFill.color = finalColor;
         }
-
+        
         public void ShowDeathMessage()
         {
             if (deathText is null) return;

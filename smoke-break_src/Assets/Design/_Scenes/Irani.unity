@@ -23038,7 +23038,7 @@ MonoBehaviour:
   - {fileID: 3322584506940531710, guid: 88b7eb8024f5fbe439e2c8d15811a378, type: 3}
   - {fileID: 4004250823438797665, guid: 817eddc0086c5a7458716a94a428e87a, type: 3}
   pickupCounts: 6400000096000000
-  minSpawnDistance: 2
+  minSpawnDistance: 5
   heightOffset: 1
   maxPickupHeight: 10
   pickupParent: {fileID: 471108697}
@@ -31756,7 +31756,8 @@ MonoBehaviour:
   boostForce: 150
   boostCooldown: 1
   fallMultiplier: 15
-  doubleJumpTimeLimit: 0.5
+  doubleJumpTimeLimit: 1
+  maxHeight: 50
   canBoost: 1
   boostEffect: {fileID: 4047845140373060363}
   audioSource: {fileID: 1154103203}
