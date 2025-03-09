@@ -3,6 +3,7 @@ using System.Collections;
 using _Scripts.Player;
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.Serialization;
 using Random = UnityEngine.Random;
 
 namespace _Scripts.AI
@@ -11,6 +12,7 @@ namespace _Scripts.AI
     {
         private static readonly int IsAttacking = Animator.StringToHash("IsAttacking");
         private static readonly int Speed = Animator.StringToHash("Speed");
+        private int _idleStateHash;
 
         [Header("AI Settings")] [SerializeField]
         private float detectionRange = 15f;
@@ -30,15 +32,41 @@ namespace _Scripts.AI
         private bool _canAttack = true;
         private PlayerHealth _playerScript;
         private float _stuckTimer;
+        
+        [Header("Audio Settings")]
+        [SerializeField] private AudioClip attackSound;
+        [SerializeField] private AudioSource audioSource;
 
         private void Start()
         {
             _agent = GetComponent<NavMeshAgent>();
             _animator = GetComponent<Animator>();
-            _player = GameObject.FindGameObjectWithTag("Player").transform;
-            _playerScript = _player.GetComponent<PlayerHealth>();
+            
+            var playerObject = GameObject.FindGameObjectWithTag("Player");
+            if (playerObject == null)
+            {
+                enabled = false;
+                return;
+            }
 
+            _player = playerObject.transform;
+            _playerScript = _player.GetComponent<PlayerHealth>();
+            
+           
+            DetectIdleState();
             StartCoroutine(InitializeNavMeshAgent());
+        }
+        
+        private void DetectIdleState()
+        {
+            if (_animator.runtimeAnimatorController == null)
+            {
+                Debug.LogError($"❌ {gameObject.name} has no Animator Controller assigned!");
+                return;
+            }
+            
+            var stateInfo = _animator.GetCurrentAnimatorStateInfo(0);
+            _idleStateHash = stateInfo.fullPathHash;
         }
 
         private void Update()
@@ -197,7 +225,11 @@ namespace _Scripts.AI
                 _agent.isStopped = true;
                 _agent.velocity = Vector3.zero;
                 _animator.SetFloat(Speed, 0f);
-                _animator.Play("droidIdle");
+                
+                if (_idleStateHash != 0 && _animator.GetCurrentAnimatorStateInfo(0).fullPathHash != _idleStateHash)
+                {
+                    _animator.Play(_idleStateHash);
+                }
 
                 yield return new WaitForSeconds(1.5f);
                 
@@ -217,10 +249,15 @@ namespace _Scripts.AI
         {
             _canAttack = false;
             _animator.SetBool(IsAttacking, true);
+            
+            if (attackSound is not null && audioSource is not null)
+            {
+                audioSource.PlayOneShot(attackSound);
+            }
 
             while (Vector3.Distance(transform.position, _player.position) <= attackRange)
             {
-                RotateTowards(_player.position); // Ensure AI faces player before attacking
+                RotateTowards(_player.position);
                 yield return new WaitForSeconds(0.5f);
 
                 if (Vector3.Distance(transform.position, _player.position) <= attackRange)
