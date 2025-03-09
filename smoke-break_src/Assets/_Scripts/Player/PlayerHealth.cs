@@ -79,7 +79,6 @@ namespace _Scripts.Player
             if (_invulnerable) return;
 
             if (_respawner.isRespawning) return;
-            print($"🔥 Kanta took {damage} damage!");
             currentHealth -= damage;
 
             StartCoroutine(_player.StaggerEffect());

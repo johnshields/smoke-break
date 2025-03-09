@@ -181,7 +181,6 @@ namespace _Scripts.Player
         public void RefillAmmo(int amount)
         {
             storedAmmo = Mathf.Min(storedAmmo + amount, maxStoredAmmo);
-            Debug.Log($"Ammo refilled! Stored Ammo: {storedAmmo}");
         }
 
         #endregion

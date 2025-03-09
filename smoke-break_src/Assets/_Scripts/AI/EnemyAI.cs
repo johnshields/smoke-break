@@ -1,7 +1,9 @@
+using System;
 using System.Collections;
 using _Scripts.Player;
 using UnityEngine;
 using UnityEngine.AI;
+using Random = UnityEngine.Random;
 
 namespace _Scripts.AI
 {
@@ -36,7 +38,7 @@ namespace _Scripts.AI
             _player = GameObject.FindGameObjectWithTag("Player").transform;
             _playerScript = _player.GetComponent<PlayerHealth>();
 
-            StartCoroutine(InitializeNavMeshAgent()); // Initialize agent safely
+            StartCoroutine(InitializeNavMeshAgent());
         }
 
         private void Update()
@@ -48,9 +50,8 @@ namespace _Scripts.AI
                 return;
             }
 
-            if (!_agent.isOnNavMesh)
+            if (!_agent.isOnNavMesh && _agent.enabled)
             {
-                // Try to re-warp the agent to a valid NavMesh position
                 var newPosition = GetRandomNavMeshPosition(transform.position, 10f, 5);
                 if (newPosition != Vector3.zero)
                 {
@@ -93,17 +94,17 @@ namespace _Scripts.AI
             }
 
             _agent.enabled = false; // Disable before adjusting position
-            yield return new WaitForSeconds(0.1f); // Small delay to let Unity process
+            yield return new WaitForSeconds(0.1f);
 
             // Try to find a valid NavMesh position up to 5 times
-            Vector3 spawnPosition = GetRandomNavMeshPosition(transform.position, 10f, 5);
+            var spawnPosition = GetRandomNavMeshPosition(transform.position, 10f, 5);
 
             if (spawnPosition != Vector3.zero)
             {
                 transform.position = spawnPosition;
                 _agent.enabled = true;
                 _agent.Warp(spawnPosition);
-                _agent.ResetPath(); // Ensure it's on the NavMesh
+                _agent.ResetPath();
             }
             else
             {
@@ -114,9 +115,9 @@ namespace _Scripts.AI
 
         private Vector3 GetRandomNavMeshPosition(Vector3 origin, float range, int maxAttempts)
         {
-            for (int i = 0; i < maxAttempts; i++)
+            for (var i = 0; i < maxAttempts; i++)
             {
-                Vector3 randomPoint = origin + new Vector3(Random.Range(-range, range), 0, Random.Range(-range, range));
+                var randomPoint = origin + new Vector3(Random.Range(-range, range), 0, Random.Range(-range, range));
 
                 if (NavMesh.SamplePosition(randomPoint, out NavMeshHit hit, range, NavMesh.AllAreas))
                 {
@@ -129,27 +130,26 @@ namespace _Scripts.AI
 
         private void Patrol()
         {
-            if (_agent == null || !_agent.isOnNavMesh)
+            if (_agent is null || !_agent.isOnNavMesh)
             {
-                Debug.Log($"⚠️ {gameObject.name} cannot patrol - not on a NavMesh!");
                 return;
             }
 
-            // Check if the agent has no path OR has reached its destination
             if (!_agent.hasPath || _agent.remainingDistance <= waypointTolerance)
             {
-                // Generate a random point and check if it's valid
                 Vector3 patrolTarget = GetRandomNavMeshPosition(transform.position, 15f, 5);
 
                 if (patrolTarget != Vector3.zero)
+                {
                     _agent.SetDestination(patrolTarget);
+                    _stuckTimer = 0; // Reset timer when a new path is set
+                }
             }
 
-            // Detect if the enemy is stuck (not moving for 2 seconds)
             if (_agent.velocity.magnitude < 0.1f)
             {
                 _stuckTimer += Time.deltaTime;
-                if (_stuckTimer >= 2f) // If stuck for more than 2 seconds
+                if (_stuckTimer >= 2f)
                 {
                     Debug.Log($"⚠️ {gameObject.name} is stuck! Forcing new patrol path.");
                     _agent.ResetPath();
@@ -158,7 +158,7 @@ namespace _Scripts.AI
             }
             else
             {
-                _stuckTimer = 0; // Reset timer when moving
+                _stuckTimer = 0;
             }
         }
 
@@ -191,12 +191,22 @@ namespace _Scripts.AI
         {
             yield return new WaitForSeconds(3f);
 
-            if (_currentState == AIState.Chasing)
+            if (_currentState == AIState.Chasing && Vector3.Distance(transform.position, _player.position) > detectionRange)
             {
+                // Stop AI movement
+                _agent.isStopped = true;
+                _agent.velocity = Vector3.zero;
+                _animator.SetFloat(Speed, 0f);
+                _animator.Play("droidIdle");
+
+                yield return new WaitForSeconds(1.5f);
+                
                 _currentState = AIState.Patrolling;
+                _agent.isStopped = false;
                 Patrol();
             }
         }
+
 
         public void EnterChaseState()
         {
@@ -210,7 +220,8 @@ namespace _Scripts.AI
 
             while (Vector3.Distance(transform.position, _player.position) <= attackRange)
             {
-                yield return new WaitForSeconds(.5f);
+                RotateTowards(_player.position); // Ensure AI faces player before attacking
+                yield return new WaitForSeconds(0.5f);
 
                 if (Vector3.Distance(transform.position, _player.position) <= attackRange)
                 {
