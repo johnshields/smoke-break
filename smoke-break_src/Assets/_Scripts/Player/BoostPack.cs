@@ -6,7 +6,13 @@ namespace _Scripts.Player
 {
     public class BoostPack : MonoBehaviour
     {
+        #region Animation Hash
+
         private static readonly int Boost = Animator.StringToHash("Boost");
+
+        #endregion
+
+        #region Boost Settings
 
         [Header("Boost Settings")] [SerializeField]
         private float boostForce = 15f;
@@ -16,8 +22,13 @@ namespace _Scripts.Player
         [SerializeField] private float doubleJumpTimeLimit = 0.3f;
         [SerializeField] private float maxHeight = 10f;
         public bool canBoost;
+
         private bool _jumpPressedOnce;
         private float _lastJumpTime;
+
+        #endregion
+
+        #region Visual & Audio Effects
 
         [Header("Visual Effects")] [SerializeField]
         private ParticleSystem boostEffect;
@@ -28,6 +39,10 @@ namespace _Scripts.Player
         [SerializeField] private AudioClip boostSound;
         [SerializeField] private float vol = 0.2f;
 
+        #endregion
+
+        #region Dependencies
+
         [Header("Dependencies")] private Rigidbody _rigidbody;
         private PlayerProfiler _player;
         private InputControls _actions;
@@ -36,6 +51,9 @@ namespace _Scripts.Player
         private Camera _mainCamera;
         private HUDManager _hud;
 
+        #endregion
+
+        #region Unity Callbacks
 
         private void Awake()
         {
@@ -63,12 +81,8 @@ namespace _Scripts.Player
 
         private void Update()
         {
-            if (!_player.grounded && _rigidbody.linearVelocity.y < 0)
-                _rigidbody.linearVelocity += Vector3.down * (fallMultiplier * Time.deltaTime);
-            
-            var pos = transform.position;
-            pos.y = Mathf.Min(pos.y, maxHeight);
-            transform.position = pos;
+            HandleFall();
+            ClampMaxHeight();
         }
 
         private void OnCollisionEnter(Collision collision)
@@ -76,14 +90,15 @@ namespace _Scripts.Player
             if (collision.gameObject.layer == LayerMask.NameToLayer("Ground"))
             {
                 _jumpPressedOnce = false;
-                Invoke(nameof(EnableBoost), .2f);
+                Invoke(nameof(EnableBoost), 0.2f);
             }
         }
 
-        public float GetBoostCooldown()
-        {
-            return boostCooldown;
-        }
+        #endregion
+
+        #region Boost Mechanics
+
+        public float GetBoostCooldown() => boostCooldown;
 
         private void EnableBoost()
         {
@@ -107,7 +122,6 @@ namespace _Scripts.Player
             }
         }
 
-
         private void PerformBoost()
         {
             _animator.SetTrigger(Boost);
@@ -118,14 +132,10 @@ namespace _Scripts.Player
             _rigidbody.linearVelocity = Vector3.zero;
             _rigidbody.AddForce(boostDirection.normalized * boostForce, ForceMode.Impulse);
 
-            if (boostEffect != null)
-                boostEffect.Play();
+            PlayBoostEffects();
 
-            if (audioSource != null && boostSound != null)
-                audioSource.PlayOneShot(boostSound, vol);
-
-            if (_hud is null) return;
-            StartCoroutine(_hud.UpdateBoostBar());
+            if (_hud != null)
+                StartCoroutine(_hud.UpdateBoostBar());
 
             Invoke(nameof(ApplyFastFall), 0.3f);
             Invoke(nameof(DisableEffects), 0.3f);
@@ -141,7 +151,26 @@ namespace _Scripts.Player
 
             var movementDirection = (right * input.x + forward * input.y).normalized;
 
-            return movementDirection == Vector3.zero ? transform.forward + Vector3.up : movementDirection + Vector3.up;
+            return movementDirection == Vector3.zero
+                ? transform.forward + Vector3.up
+                : movementDirection + Vector3.up;
+        }
+
+        #endregion
+
+        #region Fall & Height Management
+
+        private void HandleFall()
+        {
+            if (!_player.grounded && _rigidbody.linearVelocity.y < 0)
+                _rigidbody.linearVelocity += Vector3.down * (fallMultiplier * Time.deltaTime);
+        }
+
+        private void ClampMaxHeight()
+        {
+            var pos = transform.position;
+            pos.y = Mathf.Min(pos.y, maxHeight);
+            transform.position = pos;
         }
 
         private void ApplyFastFall()
@@ -150,10 +179,25 @@ namespace _Scripts.Player
                 new Vector3(_rigidbody.linearVelocity.x, -fallMultiplier, _rigidbody.linearVelocity.z);
         }
 
+        #endregion
+
+        #region Visual & Audio Effects
+
+        private void PlayBoostEffects()
+        {
+            if (boostEffect != null)
+                boostEffect.Play();
+
+            if (audioSource != null && boostSound != null)
+                audioSource.PlayOneShot(boostSound, vol);
+        }
+
         private void DisableEffects()
         {
             if (boostEffect != null)
                 boostEffect.Stop();
         }
+
+        #endregion
     }
 }

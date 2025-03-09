@@ -8,12 +8,19 @@ namespace _Scripts.Managers
 {
     public class HUDManager : MonoBehaviour
     {
-        [Header("Pistol HUD Elements")] [SerializeField]
-        private TextMeshProUGUI bulletCounter;
+        #region Fields
 
-        [Header("Health HUD Elements")] [SerializeField]
-        private Slider healthBar;
+        #region Pistol HUD
 
+        [Header("Pistol HUD Elements")]
+        [SerializeField] private TextMeshProUGUI bulletCounter;
+
+        #endregion
+
+        #region Health HUD
+
+        [Header("Health HUD Elements")]
+        [SerializeField] private Slider healthBar;
         [SerializeField] private Image healthFill;
         [SerializeField] private Color lowHealthColor = Color.red;
         private Color _originalHealthColor;
@@ -21,26 +28,42 @@ namespace _Scripts.Managers
         [SerializeField] private GameObject deathText;
         [SerializeField] private Image heartIcon;
 
-        [Header("Stamina HUD Elements")] [SerializeField]
-        private Slider staminaBar;
+        #endregion
 
+        #region Stamina HUD
+
+        [Header("Stamina HUD Elements")]
+        [SerializeField] private Slider staminaBar;
         [SerializeField] private Image staminaFill;
         [SerializeField] private Color lowStaminaColor = Color.red;
         [SerializeField] private Image staminaIcon;
         private Color _originalStaminaColor;
 
-        [Header("Boost Pack HUD Elements")] [SerializeField]
-        private Slider boostBar;
+        #endregion
 
+        #region Boost HUD
+
+        [Header("Boost Pack HUD Elements")]
+        [SerializeField] private Slider boostBar;
         [SerializeField] private Image boostFill;
         [SerializeField] private Color lowBoostColor = Color.red;
         private Color _originalBoostColor;
         private float _boostCooldown;
 
+        #endregion
+
+        #region Player References
+
         private PistolProfiler _pistol;
         private PlayerProfiler _player;
         private PlayerHealth _playerHealth;
         private BoostPack _boostPack;
+
+        #endregion
+
+        #endregion
+
+        #region Unity Callbacks
 
         private void Start()
         {
@@ -68,11 +91,19 @@ namespace _Scripts.Managers
             UpdateStaminaIcon();
         }
 
+        #endregion
+
+        #region Ammo System
+
         private void UpdateAmmo()
         {
             if (bulletCounter is null) return;
             bulletCounter.text = $"{_pistol.currentClip}/{_pistol.storedAmmo}";
         }
+
+        #endregion
+
+        #region Health System
 
         private void UpdateHealth()
         {
@@ -82,7 +113,7 @@ namespace _Scripts.Managers
 
             if (healthFill is not null)
             {
-                var healthPercentage = (float)_playerHealth.GetCurrentHealth() / (float)_playerHealth.GetMaxHealth();
+                var healthPercentage = (float)_playerHealth.GetCurrentHealth() / _playerHealth.GetMaxHealth();
                 healthFill.color = Color.Lerp(healthFill.color,
                     healthPercentage < 0.3f ? lowHealthColor : _originalHealthColor, Time.deltaTime * 5f);
             }
@@ -96,27 +127,23 @@ namespace _Scripts.Managers
 
         private void UpdateHeartIcon()
         {
-            var healthPercentage = (float)_playerHealth.GetCurrentHealth() / (float)_playerHealth.GetMaxHealth();
+            var healthPercentage = (float)_playerHealth.GetCurrentHealth() / _playerHealth.GetMaxHealth();
 
-            float currentHealth = _playerHealth.GetCurrentHealth();
-
-            if (currentHealth <= 0)
+            if (_playerHealth.GetCurrentHealth() <= 0)
             {
                 var popEffect = 1.0f + Mathf.Sin(Time.time * 15f) * 0.2f;
                 heartIcon.transform.localScale = Vector3.one * popEffect;
                 return;
             }
 
-            if (healthPercentage <= 0.3f)
-            {
-                var pulse = 1.0f + Mathf.Sin(Time.time * 5f) * 0.1f;
-                heartIcon.transform.localScale = Vector3.one * pulse;
-            }
-            else
-            {
-                heartIcon.transform.localScale = Vector3.one;
-            }
+            heartIcon.transform.localScale = healthPercentage <= 0.3f
+                ? Vector3.one * (1.0f + Mathf.Sin(Time.time * 5f) * 0.1f)
+                : Vector3.one;
         }
+
+        #endregion
+
+        #region Stamina System
 
         private void UpdateStamina()
         {
@@ -128,35 +155,33 @@ namespace _Scripts.Managers
             staminaBar.fillRect.gameObject.SetActive(currentStamina >= 0);
 
             if (staminaFill is null) return;
-            var staminaPercentage = (float)currentStamina / (float)maxStamina;
+            var staminaPercentage = (float)currentStamina / maxStamina;
             staminaFill.color = Color.Lerp(staminaFill.color,
                 staminaPercentage < 0.2f ? lowStaminaColor : _originalStaminaColor, Time.deltaTime * 5f);
         }
 
         private void UpdateStaminaIcon()
         {
-            var staminaPercentage = (float)_player.GetCurrentStamina() / (float)_player.GetMaxStamina();
+            var staminaPercentage = (float)_player.GetCurrentStamina() / _player.GetMaxStamina();
 
-            if (staminaPercentage < 0.2f)
-            {
-                var pulse = 1.0f + Mathf.Sin(Time.time * 5f) * 0.1f;
-                staminaIcon.transform.localScale = Vector3.one * pulse;
-            }
-            else
-            {
-                staminaIcon.transform.localScale = Vector3.one;
-            }
+            staminaIcon.transform.localScale = staminaPercentage < 0.2f
+                ? Vector3.one * (1.0f + Mathf.Sin(Time.time * 5f) * 0.1f)
+                : Vector3.one;
         }
+
+        #endregion
+
+        #region Boost System
 
         public IEnumerator UpdateBoostBar()
         {
             if (boostBar is null || boostFill is null) yield break;
 
             StartCoroutine(FadeBoostBar(1f));
-            
+
             yield return DrainBoostBar();
             yield return new WaitForSeconds(0.25f);
-            
+
             _boostPack.canBoost = true;
             boostBar.value = 1f;
         }
@@ -171,7 +196,6 @@ namespace _Scripts.Managers
                 var fillAmount = 1f - (elapsedTime / _boostCooldown);
                 boostBar.value = fillAmount;
 
-                // Trigger flashing effect if below 15%
                 if (fillAmount <= 0.15f && !isFlashing)
                 {
                     isFlashing = true;
@@ -196,7 +220,7 @@ namespace _Scripts.Managers
                 boostFill.color = (boostFill.color == flashColor) ? originalColor : flashColor;
                 yield return new WaitForSeconds(flashDuration);
             }
-            
+
             boostFill.color = originalColor;
         }
 
@@ -214,12 +238,14 @@ namespace _Scripts.Managers
                 boostFill.color = newColor;
                 yield return null;
             }
-            
-            var finalColor = boostFill.color;
-            finalColor.a = targetAlpha;
-            boostFill.color = finalColor;
+
+            boostFill.color = new Color(boostFill.color.r, boostFill.color.g, boostFill.color.b, targetAlpha);
         }
-        
+
+        #endregion
+
+        #region Death Message
+
         public void ShowDeathMessage()
         {
             if (deathText is null) return;
@@ -232,5 +258,7 @@ namespace _Scripts.Managers
             yield return new WaitForSeconds(4.5f);
             deathText.SetActive(false);
         }
+
+        #endregion
     }
 }

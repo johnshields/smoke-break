@@ -1055,8 +1055,6 @@ MonoBehaviour:
   health: 100
   hitColor: {r: 0.53333336, g: 0, b: 0, a: 1}
   hitEffectDuration: 0.2
-  knockbackForce: 5
-  knockbackDuration: 0.2
   audioSource: {fileID: 554631511}
   audioClip: {fileID: 8300000, guid: 72e4114552af6f744b5d20e8136e205f, type: 3}
   enemyRenderer: {fileID: 1627842512}
@@ -1088,7 +1086,7 @@ NavMeshAgent:
   m_GameObject: {fileID: 187244078}
   m_Enabled: 1
   m_AgentTypeID: 0
-  m_Radius: 4
+  m_Radius: 5
   m_Speed: 3.5
   m_Acceleration: 8
   avoidancePriority: 50
@@ -3708,8 +3706,6 @@ MonoBehaviour:
   health: 100
   hitColor: {r: 0.53333336, g: 0, b: 0, a: 1}
   hitEffectDuration: 0.2
-  knockbackForce: 5
-  knockbackDuration: 0.2
   audioSource: {fileID: 554631511}
   audioClip: {fileID: 8300000, guid: 72e4114552af6f744b5d20e8136e205f, type: 3}
   enemyRenderer: {fileID: 2053723975}
@@ -3741,7 +3737,7 @@ NavMeshAgent:
   m_GameObject: {fileID: 574626568}
   m_Enabled: 1
   m_AgentTypeID: 0
-  m_Radius: 4
+  m_Radius: 5
   m_Speed: 3.5
   m_Acceleration: 8
   avoidancePriority: 50
@@ -4103,8 +4099,6 @@ MonoBehaviour:
   health: 100
   hitColor: {r: 0.53333336, g: 0, b: 0, a: 1}
   hitEffectDuration: 0.2
-  knockbackForce: 5
-  knockbackDuration: 0.2
   audioSource: {fileID: 554631511}
   audioClip: {fileID: 8300000, guid: 72e4114552af6f744b5d20e8136e205f, type: 3}
   enemyRenderer: {fileID: 616964406}
@@ -9304,8 +9298,6 @@ MonoBehaviour:
   health: 100
   hitColor: {r: 0.53333336, g: 0, b: 0, a: 1}
   hitEffectDuration: 0.2
-  knockbackForce: 5
-  knockbackDuration: 0.2
   audioSource: {fileID: 554631511}
   audioClip: {fileID: 8300000, guid: 72e4114552af6f744b5d20e8136e205f, type: 3}
   enemyRenderer: {fileID: 1846759386}
@@ -9337,7 +9329,7 @@ NavMeshAgent:
   m_GameObject: {fileID: 654796642}
   m_Enabled: 1
   m_AgentTypeID: 0
-  m_Radius: 4
+  m_Radius: 5
   m_Speed: 3.5
   m_Acceleration: 8
   avoidancePriority: 50
@@ -9718,8 +9710,6 @@ MonoBehaviour:
   health: 100
   hitColor: {r: 0.53333336, g: 0, b: 0, a: 1}
   hitEffectDuration: 0.2
-  knockbackForce: 5
-  knockbackDuration: 0.2
   audioSource: {fileID: 554631511}
   audioClip: {fileID: 8300000, guid: 72e4114552af6f744b5d20e8136e205f, type: 3}
   enemyRenderer: {fileID: 1939215568}
@@ -9751,7 +9741,7 @@ NavMeshAgent:
   m_GameObject: {fileID: 716541224}
   m_Enabled: 1
   m_AgentTypeID: 0
-  m_Radius: 4
+  m_Radius: 5
   m_Speed: 3.5
   m_Acceleration: 8
   avoidancePriority: 50
@@ -10844,8 +10834,6 @@ MonoBehaviour:
   health: 100
   hitColor: {r: 0.53333336, g: 0, b: 0, a: 1}
   hitEffectDuration: 0.2
-  knockbackForce: 5
-  knockbackDuration: 0.2
   audioSource: {fileID: 554631511}
   audioClip: {fileID: 8300000, guid: 72e4114552af6f744b5d20e8136e205f, type: 3}
   enemyRenderer: {fileID: 391163522}
@@ -10877,7 +10865,7 @@ NavMeshAgent:
   m_GameObject: {fileID: 914637228}
   m_Enabled: 1
   m_AgentTypeID: 0
-  m_Radius: 4
+  m_Radius: 5
   m_Speed: 3.5
   m_Acceleration: 8
   avoidancePriority: 50
@@ -12006,8 +11994,6 @@ MonoBehaviour:
   health: 100
   hitColor: {r: 0.53333336, g: 0, b: 0, a: 1}
   hitEffectDuration: 0.2
-  knockbackForce: 5
-  knockbackDuration: 0.2
   audioSource: {fileID: 554631511}
   audioClip: {fileID: 8300000, guid: 72e4114552af6f744b5d20e8136e205f, type: 3}
   enemyRenderer: {fileID: 1412902274}
@@ -12039,7 +12025,7 @@ NavMeshAgent:
   m_GameObject: {fileID: 1067042312}
   m_Enabled: 1
   m_AgentTypeID: 0
-  m_Radius: 4
+  m_Radius: 5
   m_Speed: 3.5
   m_Acceleration: 8
   avoidancePriority: 50
@@ -13012,8 +12998,6 @@ MonoBehaviour:
   health: 100
   hitColor: {r: 0.53333336, g: 0, b: 0, a: 1}
   hitEffectDuration: 0.2
-  knockbackForce: 5
-  knockbackDuration: 0.2
   audioSource: {fileID: 554631511}
   audioClip: {fileID: 8300000, guid: 72e4114552af6f744b5d20e8136e205f, type: 3}
   enemyRenderer: {fileID: 296218155}
@@ -18861,8 +18845,6 @@ MonoBehaviour:
   health: 100
   hitColor: {r: 0.53333336, g: 0, b: 0, a: 1}
   hitEffectDuration: 0.2
-  knockbackForce: 5
-  knockbackDuration: 0.2
   audioSource: {fileID: 554631511}
   audioClip: {fileID: 8300000, guid: 72e4114552af6f744b5d20e8136e205f, type: 3}
   enemyRenderer: {fileID: 1433292133}
@@ -19234,8 +19216,6 @@ MonoBehaviour:
   health: 100
   hitColor: {r: 0.53333336, g: 0, b: 0, a: 1}
   hitEffectDuration: 0.2
-  knockbackForce: 5
-  knockbackDuration: 0.2
   audioSource: {fileID: 554631511}
   audioClip: {fileID: 8300000, guid: 72e4114552af6f744b5d20e8136e205f, type: 3}
   enemyRenderer: {fileID: 2097044869}
@@ -19267,7 +19247,7 @@ NavMeshAgent:
   m_GameObject: {fileID: 1457867138}
   m_Enabled: 1
   m_AgentTypeID: 0
-  m_Radius: 4
+  m_Radius: 5
   m_Speed: 3.5
   m_Acceleration: 8
   avoidancePriority: 50
@@ -20622,8 +20602,6 @@ MonoBehaviour:
   health: 100
   hitColor: {r: 0.53333336, g: 0, b: 0, a: 1}
   hitEffectDuration: 0.2
-  knockbackForce: 5
-  knockbackDuration: 0.2
   audioSource: {fileID: 554631511}
   audioClip: {fileID: 8300000, guid: 72e4114552af6f744b5d20e8136e205f, type: 3}
   enemyRenderer: {fileID: 1501179446}
@@ -20655,7 +20633,7 @@ NavMeshAgent:
   m_GameObject: {fileID: 1599079633}
   m_Enabled: 1
   m_AgentTypeID: 0
-  m_Radius: 4
+  m_Radius: 5
   m_Speed: 3.5
   m_Acceleration: 8
   avoidancePriority: 50
@@ -22525,8 +22503,6 @@ MonoBehaviour:
   health: 100
   hitColor: {r: 0.53333336, g: 0, b: 0, a: 1}
   hitEffectDuration: 0.2
-  knockbackForce: 5
-  knockbackDuration: 0.2
   audioSource: {fileID: 554631511}
   audioClip: {fileID: 8300000, guid: 72e4114552af6f744b5d20e8136e205f, type: 3}
   enemyRenderer: {fileID: 1911977014}
@@ -22857,8 +22833,6 @@ MonoBehaviour:
   health: 100
   hitColor: {r: 0.53333336, g: 0, b: 0, a: 1}
   hitEffectDuration: 0.2
-  knockbackForce: 5
-  knockbackDuration: 0.2
   audioSource: {fileID: 554631511}
   audioClip: {fileID: 8300000, guid: 72e4114552af6f744b5d20e8136e205f, type: 3}
   enemyRenderer: {fileID: 1259312347}
@@ -22890,7 +22864,7 @@ NavMeshAgent:
   m_GameObject: {fileID: 1951135574}
   m_Enabled: 1
   m_AgentTypeID: 0
-  m_Radius: 4
+  m_Radius: 5
   m_Speed: 3.5
   m_Acceleration: 8
   avoidancePriority: 50
