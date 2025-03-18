@@ -7,7 +7,7 @@ namespace _Scripts.Managers.Objectives
 {
     public static class ObjectiveData
     {
-        public static readonly Dictionary<string, Objective> Objectives = new();
+        private static readonly Dictionary<string, Objective> Objectives = new();
         public static readonly string SavePath = Application.persistentDataPath + "/objectives.json";
 
         public static ObjectiveList LoadObjectivesFromJson()

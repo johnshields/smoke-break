@@ -1,6 +1,7 @@
 using System.IO;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using _Scripts.enums;
 using _Scripts.Objects;
 using _Scripts.Player;
@@ -24,6 +25,7 @@ namespace _Scripts.Managers.Objectives
         private PistolProfiler _pistolProfiler;
 
         #region Initialization
+
         private void Start()
         {
             _playerProfiler = FindFirstObjectByType<PlayerProfiler>();
@@ -34,9 +36,11 @@ namespace _Scripts.Managers.Objectives
 
             RestoreRepairProgress();
         }
+
         #endregion
 
         #region Trigger Logic
+
         private void OnTriggerEnter(Collider other)
         {
             if (other.CompareTag(PlayerTag) && !_isRepairing)
@@ -66,9 +70,11 @@ namespace _Scripts.Managers.Objectives
 
             return null; // No parts available
         }
+
         #endregion
 
         #region Repair Process
+
         private void StartRepairProcess(PodPartType part)
         {
             _isRepairing = true;
@@ -113,14 +119,15 @@ namespace _Scripts.Managers.Objectives
             // Save the game as a checkpoint after the repair is complete
             SaveCheckpoint();
 
-            // Mark "FoundJack" as complete
             MarkObjectiveAsComplete();
 
             Debug.Log("✅ Repair Complete!");
         }
+
         #endregion
 
         #region Save/Checkpoint Logic
+
         private void SaveCheckpoint()
         {
             if (!File.Exists(_savePath))
@@ -134,16 +141,18 @@ namespace _Scripts.Managers.Objectives
                 SaveManager.SaveGame(_playerProfiler, _playerHealth, _pistolProfiler);
             }
         }
+
         #endregion
 
         #region Objective Management
+
         private void MarkObjectiveAsComplete()
         {
             // Load the current objectives from the JSON
-            ObjectiveList loadedObjectives = ObjectiveData.LoadObjectivesFromJson();
+            var loadedObjectives = ObjectiveData.LoadObjectivesFromJson();
 
             // Retrieve the last objective key from SaveData
-            string lastObjectiveKey = GetLastObjectiveKeyFromSaveData();
+            var lastObjectiveKey = GetLastObjectiveKeyFromSaveData();
 
             if (string.IsNullOrEmpty(lastObjectiveKey))
             {
@@ -151,77 +160,75 @@ namespace _Scripts.Managers.Objectives
                 return;
             }
 
-            bool foundObjective = false;
+            var foundObjective = false;
+            Objective completedObjective = null;
 
-            // Loop through the objectives to find the one matching the last objective key
-            foreach (var objective in loadedObjectives.objectives)
+            // Loop through the objectives to find the current completed objective
+            foreach (var objective in loadedObjectives.objectives.Where(objective => objective.key == lastObjectiveKey))
             {
-                if (objective.key == lastObjectiveKey && !objective.completed)
-                {
-                    // Mark this objective as complete
-                    objective.completed = true;
-                    foundObjective = true;
-
-                    // Save the updated objective list back to JSON
-                    string updatedJson = JsonUtility.ToJson(loadedObjectives, true);
-                    File.WriteAllText(ObjectiveData.SavePath, updatedJson);
-
-                    Debug.Log($"✅ '{objective.key}' objective marked as complete.");
-                    break; // Exit the loop after marking the objective as complete
-                }
+                // Mark the current objective as completed
+                objective.completed = true;
+                completedObjective = objective;
+                foundObjective = true;
+                Debug.Log($"✅ '{objective.key}' objective marked as complete.");
+                break; // Exit after finding the current objective
             }
 
-            // If the objective was not found or completed, log a warning
-            if (!foundObjective)
+            // If the objective was found and updated, proceed to save only that completed objective
+            if (foundObjective)
             {
-                Debug.LogWarning(
-                    $"⚠ The objective with key '{lastObjectiveKey}' was either already completed or not found.");
+                // Create a new objective list with only the current completed objective
+                var updatedObjectives = new ObjectiveList
+                {
+                    objectives = new List<Objective> { completedObjective }
+                };
+
+                // Serialize the updated objective list back to JSON
+                var updatedJson = JsonUtility.ToJson(updatedObjectives, true);
+                File.WriteAllText(ObjectiveData.SavePath, updatedJson);
+
+                Debug.Log($"✅ Updated objectives list saved with only the completed objective: {completedObjective.key}");
+            }
+            else
+            {
+                Debug.LogWarning($"⚠ The objective with key '{lastObjectiveKey}' was either already completed or not found.");
             }
         }
 
         private string GetLastObjectiveKeyFromSaveData()
         {
-            // Load the save data from the file
+            // Load the save data from the file to get the last completed objective's key
             string saveDataJson = File.ReadAllText(_savePath);
             SaveData saveData = JsonUtility.FromJson<SaveData>(saveDataJson);
 
             // Return the last objective key
             return saveData.lastObjective;
         }
+
         #endregion
 
+
         #region Repair Progress Restoration
+
         private void RestoreRepairProgress()
         {
             int completedRepairs = 0;
             ObjectiveList loadedObjectives = ObjectiveData.LoadObjectivesFromJson();
 
-            foreach (PodPartType part in requiredParts)
+            // Iterate over the objectives in the loaded JSON
+            foreach (var objective in loadedObjectives.objectives)
             {
-                bool partFound = ComponentTrigger.Inventory.Exists(item => item.name == part.ToString());
-
-                // Check if the objective associated with this part is completed
-                Objective objective = loadedObjectives.objectives.Find(o => o.key == part.ToString());
-                if (objective is { completed: true } && !partFound)
+                // Check if the objective is marked as completed
+                if (objective.completed)
                 {
-                    // Restore the missing part in inventory
-                    GameObject restoredPart = new GameObject(part.ToString()); // Replace with actual prefab if needed
-                    restoredPart.name = part.ToString();
-                    ComponentTrigger.Inventory.Add(restoredPart);
-                    Debug.Log($"🔄 Restored {part} to inventory from saved progress.");
+                    completedRepairs++;
                 }
-
-                if (!partFound)
-                {
-                    break; // Stop at the first missing part
-                }
-
-                completedRepairs++;
             }
 
-            _partsRepaired = completedRepairs;
+            _partsRepaired = completedRepairs; // Update parts repaired count
             Debug.Log($"🔄 Restored repair progress: {_partsRepaired}/{requiredParts.Count} parts repaired.");
         }
+
         #endregion
     }
 }
