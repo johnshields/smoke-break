@@ -1,7 +1,7 @@
 ﻿{
   "objectives": [
     { "key": "FindIcarus", "message": "FIND STARSHIP ICARUS!", "delay": 28.0, "completed": false },
-    { "key": "FoundJack", "message": "YOU'VE FOUND A STABLE JACK—THIS MIGHT BE USEFUL.", "delay": 1.5, "completed": false },
+    { "key": "FoundJack", "message": "YOU'VE FOUND A JACK—THIS MIGHT BE USEFUL.", "delay": 1.5, "completed": false },
     { "key": "LiftPod", "message": "LIFT AMATERASU FROM THE CRATER!", "delay": 2.0, "completed": false },
     { "key": "FindWinch", "message": "FIND A WINCH AND CABLES!", "delay": 1.5, "completed": false },
     { "key": "FindCrank", "message": "FIND A MANUAL CRANK OR THRUSTER ASSIST!", "delay": 1.5, "completed": false },

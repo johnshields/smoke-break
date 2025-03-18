@@ -8,6 +8,8 @@ namespace _Scripts.Managers.Objectives
 {
     public class ComponentTrigger : MonoBehaviour
     {
+        #region Fields
+
         private const string PlayerTag = "Player";
         private string _savePath;
 
@@ -17,17 +19,21 @@ namespace _Scripts.Managers.Objectives
 
         [SerializeField] private string objectiveKey; // The key of the objective in JSON
 
-        // ✅ Static inventory list to track collected objects
-        private static readonly List<GameObject> Inventory = new();
+        // Static inventory list to track collected objects
+        public static readonly List<GameObject> Inventory = new();
+
+        #endregion
+
+        #region Unity Callbacks
 
         private void Start()
         {
-            // ✅ Initialize references using FindFirstObjectByType
+            // Initialize references using FindFirstObjectByType
             _playerProfiler = FindFirstObjectByType<PlayerProfiler>();
             _playerHealth = FindFirstObjectByType<PlayerHealth>();
             _pistolProfiler = FindFirstObjectByType<PistolProfiler>();
 
-            // ✅ Get the save file path
+            // Get the save file path
             _savePath = SaveManager.GetSaveFilePath();
         }
 
@@ -45,6 +51,10 @@ namespace _Scripts.Managers.Objectives
             }
         }
 
+        #endregion
+
+        #region Inventory Management
+
         private void AddToInventory(GameObject item)
         {
             if (!Inventory.Contains(item))
@@ -58,34 +68,29 @@ namespace _Scripts.Managers.Objectives
             }
         }
 
+        #endregion
+
+        #region Objective Management
+
         private void UpdateObjectiveFromJson(string key)
         {
-            if (string.IsNullOrEmpty(key))
+            if (string.IsNullOrEmpty(key) || ObjectiveManager.Instance == null)
             {
-                Debug.LogError("❌ objectiveKey is empty! Make sure it's assigned in the Inspector.");
+                Debug.LogError("❌ objectiveKey is empty or ObjectiveManager not found!");
                 return;
             }
 
-            if (ObjectiveManager.Instance == null)
-            {
-                Debug.LogError("❌ ObjectiveManager instance not found!");
-                return;
-            }
-
-            // Ensure save file exists before updating objectives
             bool isFirstSave = !File.Exists(_savePath);
             if (isFirstSave)
             {
                 Debug.LogWarning($"⚠ Save file not found at {_savePath}. Creating a new checkpoint save...");
                 SaveManager.SaveGame(_playerProfiler, _playerHealth, _pistolProfiler);
-                Debug.Log("✅ Checkpoint save created using SaveManager.");
+                Debug.Log("✅ Checkpoint save created.");
             }
 
-            // Load (or create) save file using SaveManager
             string json = File.ReadAllText(_savePath);
             SaveData saveData = JsonUtility.FromJson<SaveData>(json);
 
-            // Load objectives from JSON
             ObjectiveList loadedObjectives = ObjectiveData.LoadObjectivesFromJson();
             if (loadedObjectives == null || loadedObjectives.objectives == null)
             {
@@ -93,34 +98,56 @@ namespace _Scripts.Managers.Objectives
                 return;
             }
 
-            // ✅ Use dictionary lookup for efficiency
-            if (ObjectiveData.Objectives.TryGetValue(key, out Objective obj))
+            int currentIndex = loadedObjectives.objectives.FindIndex(o => o.key == key);
+            if (currentIndex > 0)
             {
-                Debug.Log($"✅ Objective found in JSON: {obj.message}");
-
-                // ✅ Mark the objective as completed
-                obj.completed = true;
-
-                // ✅ Update player's last objective
-                saveData.lastObjective = obj.message;
-
-                // ✅ Save progress **only once**, instead of calling `SaveGame()` twice
-                File.WriteAllText(_savePath, JsonUtility.ToJson(saveData, true));
-
-                // ✅ Save updated objectives (to mark completion)
-                string updatedJson = JsonUtility.ToJson(loadedObjectives, true);
-                File.WriteAllText(ObjectiveData.SavePath, updatedJson);
-
-                // ✅ Update the UI with the new objective
-                ObjectiveManager.Instance.SetObjective(obj.message);
-                ObjectiveManager.Instance.ShowObjective(obj.message);
-
-                Debug.Log($"✅ Objective Updated & Marked as Completed: {obj.message}");
+                MarkPreviousObjectiveComplete(loadedObjectives, currentIndex, saveData);
             }
             else
             {
-                Debug.LogWarning($"⚠ Objective with key '{key}' not found in JSON.");
+                Debug.LogWarning($"⚠ No previous objective found for {key}");
+            }
+
+            SetNextObjective(loadedObjectives);
+        }
+
+        private void MarkPreviousObjectiveComplete(ObjectiveList loadedObjectives, int currentIndex, SaveData saveData)
+        {
+            Objective previousObjective = loadedObjectives.objectives[currentIndex - 1];
+            previousObjective.completed = true;
+
+            string updatedJson = JsonUtility.ToJson(loadedObjectives, true);
+            File.WriteAllText(ObjectiveData.SavePath, updatedJson);
+
+            saveData.lastObjective = previousObjective.message;
+            File.WriteAllText(_savePath, JsonUtility.ToJson(saveData, true));
+
+            ObjectiveManager.Instance.SetObjective(previousObjective.message);
+            ObjectiveManager.Instance.ShowObjective(previousObjective.message);
+
+            Debug.Log($"✅ Objective Updated & Marked as Completed: {previousObjective.key}");
+        }
+
+        private void SetNextObjective(ObjectiveList loadedObjectives)
+        {
+            Objective nextObjective = loadedObjectives.objectives.Find(o => !o.completed);
+
+            if (nextObjective != null)
+            {
+                ObjectiveManager.Instance.SetObjective(nextObjective.key);
+                ObjectiveManager.Instance.ShowObjective(nextObjective.message);
+
+                string updatedJson = JsonUtility.ToJson(loadedObjectives, true);
+                File.WriteAllText(ObjectiveData.SavePath, updatedJson);
+
+                Debug.Log($"🎯 Next Objective Set: {nextObjective.message}");
+            }
+            else
+            {
+                Debug.Log("⚠ No more objectives available.");
             }
         }
+
+        #endregion
     }
 }
