@@ -7,10 +7,10 @@ namespace _Scripts.Managers.Objectives
 {
     public static class ObjectiveData
     {
-        private static readonly Dictionary<string, Objective> Objectives = new();
-        private static readonly string SavePath = Application.persistentDataPath + "/objectives.json";
+        public static readonly Dictionary<string, Objective> Objectives = new();
+        public static readonly string SavePath = Application.persistentDataPath + "/objectives.json";
 
-        public static void LoadObjectivesFromJson()
+        public static ObjectiveList LoadObjectivesFromJson()
         {
             if (!File.Exists(SavePath))
             {
@@ -21,14 +21,14 @@ namespace _Scripts.Managers.Objectives
             if (jsonFile == null)
             {
                 Debug.LogError("❌ objectives.json not found in Resources/");
-                return;
+                return null; // Return null if file is missing
             }
 
             var data = JsonUtility.FromJson<ObjectiveList>(jsonFile.text);
             if (data?.objectives == null)
             {
                 Debug.LogError("❌ Failed to parse objectives.json");
-                return;
+                return null; // Return null if parsing failed
             }
 
             if (Objectives.Count == 0) // Prevent clearing if objectives already exist
@@ -41,6 +41,8 @@ namespace _Scripts.Managers.Objectives
                 if (string.IsNullOrEmpty(obj.key)) continue;
                 Objectives.TryAdd(obj.key, obj); // Avoid overwriting existing objectives
             }
+
+            return data; // ✅ Return the parsed ObjectiveList
         }
 
         public static Objective GetObjective(string key)

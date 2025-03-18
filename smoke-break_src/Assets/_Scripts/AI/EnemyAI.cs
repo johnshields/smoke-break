@@ -125,7 +125,6 @@ namespace _Scripts.AI
                 _stuckTimer += Time.deltaTime;
                 if (_stuckTimer >= 2f)
                 {
-                    Debug.LogWarning($"⚠️ {gameObject.name} is stuck! Resetting path.");
                     _agent.ResetPath();
                     _stuckTimer = 0;
                 }

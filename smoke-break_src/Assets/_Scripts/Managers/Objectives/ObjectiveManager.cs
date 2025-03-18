@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.IO;
 using _Scripts.Objects;
-using _Scripts.Player;
 using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
