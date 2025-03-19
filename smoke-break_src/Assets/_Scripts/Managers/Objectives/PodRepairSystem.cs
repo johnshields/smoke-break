@@ -33,8 +33,6 @@ namespace _Scripts.Managers.Objectives
             _pistolProfiler = FindFirstObjectByType<PistolProfiler>();
 
             _savePath = SaveManager.GetSaveFilePath();
-
-            RestoreRepairProgress();
         }
 
         #endregion
@@ -45,7 +43,7 @@ namespace _Scripts.Managers.Objectives
         {
             if (other.CompareTag(PlayerTag) && !_isRepairing)
             {
-                PodPartType? nextPart = GetNextRequiredPart();
+                var nextPart = GetNextRequiredPart();
                 if (nextPart.HasValue)
                 {
                     Debug.Log($"🔧 Player has {nextPart}! Starting repair...");
@@ -60,7 +58,7 @@ namespace _Scripts.Managers.Objectives
 
         private PodPartType? GetNextRequiredPart()
         {
-            foreach (PodPartType part in requiredParts)
+            foreach (var part in requiredParts)
             {
                 if (ComponentTrigger.Inventory.Exists(item => item.name == part.ToString()))
                 {
@@ -78,7 +76,7 @@ namespace _Scripts.Managers.Objectives
         private void StartRepairProcess(PodPartType part)
         {
             _isRepairing = true;
-            string partName = part.ToString();
+            var partName = part.ToString();
             ObjectiveManager.Instance.ShowObjective($"Repairing with {partName}...");
 
             StartCoroutine(RepairRoutine(part));
@@ -88,7 +86,7 @@ namespace _Scripts.Managers.Objectives
         {
             yield return new WaitForSeconds(repairDuration);
 
-            GameObject partToUse = ComponentTrigger.Inventory.Find(item => item.name == part.ToString());
+            var partToUse = ComponentTrigger.Inventory.Find(item => item.name == part.ToString());
             if (partToUse != null)
             {
                 ComponentTrigger.Inventory.Remove(partToUse);
@@ -121,6 +119,8 @@ namespace _Scripts.Managers.Objectives
 
             MarkObjectiveAsComplete();
 
+            SetNextObjective();
+
             Debug.Log("✅ Repair Complete!");
         }
 
@@ -148,10 +148,7 @@ namespace _Scripts.Managers.Objectives
 
         private void MarkObjectiveAsComplete()
         {
-            // Load the current objectives from the JSON
             var loadedObjectives = ObjectiveData.LoadObjectivesFromJson();
-
-            // Retrieve the last objective key from SaveData
             var lastObjectiveKey = GetLastObjectiveKeyFromSaveData();
 
             if (string.IsNullOrEmpty(lastObjectiveKey))
@@ -177,58 +174,113 @@ namespace _Scripts.Managers.Objectives
             // If the objective was found and updated, proceed to save only that completed objective
             if (foundObjective)
             {
-                // Create a new objective list with only the current completed objective
                 var updatedObjectives = new ObjectiveList
                 {
                     objectives = new List<Objective> { completedObjective }
                 };
 
-                // Serialize the updated objective list back to JSON
                 var updatedJson = JsonUtility.ToJson(updatedObjectives, true);
                 File.WriteAllText(ObjectiveData.SavePath, updatedJson);
 
-                Debug.Log($"✅ Updated objectives list saved with only the completed objective: {completedObjective.key}");
+                Debug.Log(
+                    $"✅ Updated objectives list saved with only the completed objective: {completedObjective.key}");
             }
             else
             {
-                Debug.LogWarning($"⚠ The objective with key '{lastObjectiveKey}' was either already completed or not found.");
+                Debug.LogWarning(
+                    $"⚠ The objective with key '{lastObjectiveKey}' was either already completed or not found.");
             }
+        }
+
+        private void SetNextObjective()
+        {
+            var json = File.ReadAllText("Assets/Resources/objectives.json");
+            var loadedObjectives = JsonUtility.FromJson<ObjectiveList>(json);
+
+            if (loadedObjectives?.objectives == null)
+            {
+                Debug.LogError("❌ Failed to load objectives from JSON.");
+                return;
+            }
+
+            var lastObjectiveKey = GetLastObjectiveKeyFromSaveData();
+
+            if (string.IsNullOrEmpty(lastObjectiveKey))
+            {
+                Debug.LogError("❌ Last objective key is not set in save data!");
+                return;
+            }
+
+            var currentObjectiveIndex = loadedObjectives.objectives.FindIndex(o => o.key == lastObjectiveKey);
+
+            if (currentObjectiveIndex == -1)
+            {
+                Debug.LogError($"❌ Objective with key '{lastObjectiveKey}' not found in JSON.");
+                return;
+            }
+
+            // Find the next objective (if any) and save it as the new lastObjectiveKey
+            var nextObjective = GetNextObjective(loadedObjectives, currentObjectiveIndex);
+            if (nextObjective != null)
+            {
+                SaveNextObjectiveKey(nextObjective.key);
+                Debug.Log($"✅ Next objective '{nextObjective.key}' is now active.");
+            }
+
+            SaveUpdatedObjective(nextObjective);
+            ObjectiveManager.Instance.SetObjective(nextObjective?.key);
+            ObjectiveManager.Instance.ShowObjective(nextObjective?.message);
+        }
+
+        private Objective GetNextObjective(ObjectiveList loadedObjectives, int currentObjectiveIndex)
+        {
+            // Find the next uncompleted objective
+            if (currentObjectiveIndex + 1 < loadedObjectives.objectives.Count)
+            {
+                return loadedObjectives.objectives[currentObjectiveIndex + 1];
+            }
+
+            return null;
+        }
+
+        private void SaveUpdatedObjective(Objective currentObjective)
+        {
+            var updatedObjectives = new ObjectiveList
+            {
+                objectives = new List<Objective> { currentObjective }
+            };
+
+            // Serialize and save the updated objectives back to JSON
+            var updatedJson = JsonUtility.ToJson(updatedObjectives, true);
+            File.WriteAllText(ObjectiveData.SavePath, updatedJson);
+
+            Debug.Log("✅ Updated objectives list saved.");
+        }
+
+        private void SaveNextObjectiveKey(string key)
+        {
+            // Load the save data from the file
+            var saveDataJson = File.ReadAllText(_savePath);
+            var saveData = JsonUtility.FromJson<SaveData>(saveDataJson);
+
+            // Update the last objective key
+            saveData.lastObjective = key;
+
+            // Save the updated save data
+            File.WriteAllText(_savePath, JsonUtility.ToJson(saveData, true));
+            Debug.Log($"✅ Last objective key '{key}' saved in save data.");
         }
 
         private string GetLastObjectiveKeyFromSaveData()
         {
-            // Load the save data from the file to get the last completed objective's key
-            string saveDataJson = File.ReadAllText(_savePath);
-            SaveData saveData = JsonUtility.FromJson<SaveData>(saveDataJson);
+            // Load the save data from the file
+            var saveDataJson = File.ReadAllText(_savePath);
+            var saveData = JsonUtility.FromJson<SaveData>(saveDataJson);
 
             // Return the last objective key
             return saveData.lastObjective;
         }
-
-        #endregion
-
-
-        #region Repair Progress Restoration
-
-        private void RestoreRepairProgress()
-        {
-            int completedRepairs = 0;
-            ObjectiveList loadedObjectives = ObjectiveData.LoadObjectivesFromJson();
-
-            // Iterate over the objectives in the loaded JSON
-            foreach (var objective in loadedObjectives.objectives)
-            {
-                // Check if the objective is marked as completed
-                if (objective.completed)
-                {
-                    completedRepairs++;
-                }
-            }
-
-            _partsRepaired = completedRepairs; // Update parts repaired count
-            Debug.Log($"🔄 Restored repair progress: {_partsRepaired}/{requiredParts.Count} parts repaired.");
-        }
-
-        #endregion
     }
+
+    #endregion
 }
