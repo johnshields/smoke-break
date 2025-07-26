@@ -1,6 +1,3 @@
-using System.Collections;
-using System.IO;
-using _Scripts.enums;
 using _Scripts.UI;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -11,7 +8,7 @@ namespace _Scripts.Managers
     {
         #region Singleton
 
-        public static DialogueManager Instance { get; private set; }
+        private static DialogueManager Instance { get; set; }
 
         #endregion
 
@@ -32,14 +29,6 @@ namespace _Scripts.Managers
             _savePath = SaveManager.GetSaveFilePath();
         }
 
-        private void Start()
-        {
-            if (!File.Exists(_savePath) || new FileInfo(_savePath).Length == 0)
-            {
-                Invoke(nameof(OpeningDialogue), 2.5f);
-            }
-        }
-
         private void OnEnable()
         {
             skipAction.Enable();
@@ -48,28 +37,6 @@ namespace _Scripts.Managers
         private void OnDisable()
         {
             skipAction.Disable();
-        }
-
-        #endregion
-
-        #region Dialogue Handling
-
-        private void OpeningDialogue()
-        {
-            PlayDialogue(DialogueKey.Opening, ObjectiveKey.FindIcarus);
-        }
-
-        public void PlayDialogue(DialogueKey key, ObjectiveKey objectiveKey = ObjectiveKey.None)
-        {
-            Debug.Log($"🎬 Playing Dialogue: {key} | Objective: {objectiveKey}");
-
-            if (typer == null)
-            {
-                Debug.LogError("❌ DialogueTyper reference is missing in DialogueManager.");
-                return;
-            }
-
-            typer.InitDialogue(key);
         }
 
         #endregion
