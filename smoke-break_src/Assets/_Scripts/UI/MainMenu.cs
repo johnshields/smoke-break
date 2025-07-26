@@ -187,7 +187,7 @@ namespace _Scripts.UI
             EventSystem.current.SetSelectedGameObject(_currentButtons[_currentButtonIndex].gameObject);
             var selectedButton = _currentButtons[_currentButtonIndex];
 
-            Debug.Log($"🎯 Selected: {selectedButton.name}");
+            Debug.Log($"Selected: {selectedButton.name}");
 
             // Dictionary mapping buttons to their respective actions
             var buttonActions = new Dictionary<Button, Action>
@@ -265,7 +265,7 @@ namespace _Scripts.UI
 
         private void ReturnToMainMenu()
         {
-            Debug.Log("↩️ Returning to Main Menu...");
+            Debug.Log("Returning to Main Menu...");
             controlsPanel.SetActive(false);
             menuPanel.SetActive(true);
 
@@ -287,7 +287,7 @@ namespace _Scripts.UI
 
         private void StartGame()
         {
-            Debug.Log("▶️ Starting New Game...");
+            Debug.Log("Starting New Game...");
 
             if (!File.Exists(_savePath))
             {
