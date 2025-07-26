@@ -117,7 +117,7 @@ namespace _Scripts.PickUps
                     break;
 
                 case ItemType.Other:
-                    Debug.Log($"📦 Collected {gameObject.name}, but no effect implemented yet!");
+                    Debug.Log($"Collected {gameObject.name}, but no effect implemented yet!");
                     PlayPickupSound();
                     Destroy(gameObject);
                     break;

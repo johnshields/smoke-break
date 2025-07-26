@@ -55,7 +55,7 @@ namespace _Scripts.AI
             var playerObject = GameObject.FindGameObjectWithTag("Player");
             if (playerObject == null)
             {
-                Debug.LogError($"❌ {gameObject.name} could not find Player! Disabling AI.");
+                Debug.LogError($"{gameObject.name} could not find Player! Disabling AI.");
                 enabled = false;
                 return;
             }
@@ -71,7 +71,7 @@ namespace _Scripts.AI
         {
             if (_agent == null)
             {
-                Debug.LogError($"❌ {gameObject.name} has NO NavMeshAgent! Destroying.");
+                Debug.LogError($"{gameObject.name} has NO NavMeshAgent! Destroying.");
                 Destroy(gameObject);
                 return;
             }
@@ -224,7 +224,7 @@ namespace _Scripts.AI
         {
             if (_animator.runtimeAnimatorController == null)
             {
-                Debug.LogError($"❌ {gameObject.name} has no Animator Controller assigned!");
+                Debug.LogError($"{gameObject.name} has no Animator Controller assigned!");
                 return;
             }
 
@@ -240,7 +240,7 @@ namespace _Scripts.AI
             }
             else
             {
-                Debug.LogError($"❌ {gameObject.name} could not recover a valid NavMesh position!");
+                Debug.LogError($"{gameObject.name} could not recover a valid NavMesh position!");
                 gameObject.SetActive(false);
             }
         }

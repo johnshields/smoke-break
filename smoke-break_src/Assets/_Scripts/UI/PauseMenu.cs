@@ -215,7 +215,7 @@ namespace _Scripts.UI
 
         private void ReturnToPauseMenu()
         {
-            Debug.Log("↩️ Returning to Pause Menu");
+            Debug.Log("↩Returning to Pause Menu");
             controlsPanel.SetActive(false);
             pausePanel.SetActive(true);
 
@@ -227,7 +227,7 @@ namespace _Scripts.UI
 
         private void QuitGame()
         {
-            Debug.Log("🚪 Returning to Main Menu...");
+            Debug.Log("Returning to Main Menu...");
             AudioListener.pause = false;
             Time.timeScale = 1f;
             SceneManager.LoadScene("MainMenu");
@@ -280,7 +280,7 @@ namespace _Scripts.UI
             EventSystem.current.SetSelectedGameObject(_currentButtons[_currentButtonIndex].gameObject);
             var selectedButton = _currentButtons[_currentButtonIndex];
 
-            Debug.Log($"🎯 Selected: {selectedButton.name}");
+            Debug.Log($"Selected: {selectedButton.name}");
 
             // Dictionary mapping buttons to their respective actions
             var buttonActions = new Dictionary<Button, Action>

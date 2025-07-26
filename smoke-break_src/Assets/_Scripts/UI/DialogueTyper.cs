@@ -48,7 +48,7 @@ namespace _Scripts.UI
         {
             if (!messageText || !audioSource)
             {
-                Debug.LogError("❌ UI components (messageText or audioSource) are not assigned.");
+                Debug.LogError("UI components (messageText or audioSource) are not assigned.");
                 return;
             }
 
@@ -70,14 +70,14 @@ namespace _Scripts.UI
             var jsonFile = Resources.Load<TextAsset>(filePath);
             if (jsonFile == null)
             {
-                LogError($"❌ JSON file not found at Resources/{filePath}.json");
+                LogError($"JSON file not found at Resources/{filePath}.json");
                 return;
             }
 
             var data = JsonUtility.FromJson<DialogueData>(jsonFile.text);
             if (data?.dialogues == null)
             {
-                LogError("❌ Dialogue JSON structure is incorrect or empty.");
+                LogError("Dialogue JSON structure is incorrect or empty.");
                 return;
             }
 
@@ -93,7 +93,7 @@ namespace _Scripts.UI
                 _dialogues[entry.key] = lines;
             }
 
-            LogDebug($"✅ Dialogue JSON Loaded Successfully! Keys: {string.Join(", ", _dialogues.Keys)}");
+            LogDebug($"Dialogue JSON Loaded Successfully! Keys: {string.Join(", ", _dialogues.Keys)}");
         }
 
         #endregion
@@ -105,7 +105,7 @@ namespace _Scripts.UI
             var keyString = dialogueKey.ToString();
             if (!_dialogues.TryGetValue(keyString, out _currentLines) || _currentLines.Count == 0)
             {
-                LogError($"❌ Dialogue key '{dialogueKey}' not found or has no lines.");
+                LogError($"Dialogue key '{dialogueKey}' not found or has no lines.");
                 return;
             }
 
@@ -158,7 +158,7 @@ namespace _Scripts.UI
             }
             else
             {
-                LogWarning($"⚠ Sound file '{soundName}' not found in Resources/Sounds/");
+                LogWarning($"Sound file '{soundName}' not found in Resources/Sounds/");
             }
         }
 

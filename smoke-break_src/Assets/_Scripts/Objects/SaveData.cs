@@ -14,6 +14,5 @@ namespace _Scripts.Objects
         public int clipAmmo;
         public int storedAmmo;
         public string savedLevel;
-        public string lastObjective;
     }
 }

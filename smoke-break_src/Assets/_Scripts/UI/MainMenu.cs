@@ -144,10 +144,8 @@ namespace _Scripts.UI
         private void AssignButtonActions()
         {
             startGameButton.onClick.AddListener(StartGame);
-            confirmNewGameButton.onClick.AddListener(() =>
-                HandleConfirm(ConfirmAction.Confirm, newGamePanel, _newGameButtons));
-            cancelNewGameButton.onClick.AddListener(() =>
-                HandleConfirm(ConfirmAction.Cancel, newGamePanel, _newGameButtons));
+            confirmNewGameButton.onClick.AddListener(() => HandleConfirm(ConfirmAction.Confirm, newGamePanel, _newGameButtons));
+            cancelNewGameButton.onClick.AddListener(() => HandleConfirm(ConfirmAction.Cancel, newGamePanel, _newGameButtons));
             loadButton.onClick.AddListener(LoadGame);
             controlsButton.onClick.AddListener(OpenControls);
             returnButton.onClick.AddListener(ReturnToMainMenu);
@@ -370,7 +368,7 @@ namespace _Scripts.UI
             switch (confirmType)
             {
                 case ConfirmType.Quit:
-                    Debug.Log("🚪 Quitting Game to desktop...");
+                    Debug.Log("Quitting Game to desktop...");
                     Application.Quit();
                     break;
 
