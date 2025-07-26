@@ -1,6 +1,5 @@
 using System;
 using System.IO;
-using _Scripts.Managers.Objectives;
 using _Scripts.Objects;
 using _Scripts.Player;
 using UnityEngine;
@@ -50,17 +49,6 @@ namespace _Scripts.Managers
             _timestamp = DateTime.UtcNow.ToString("o").Replace(':', '-');
             var savePath = Path.Combine(SaveDirectory, $"savegame_{playerId}.json");
 
-            // Retrieve last objective, ensuring no overwrite it with an empty value
-            var lastObjective = ObjectiveManager.Instance != null ? ObjectiveManager.Instance.GetLastObjective() : "";
-            if (File.Exists(savePath))
-            {
-                var existingData = JsonUtility.FromJson<SaveData>(File.ReadAllText(savePath));
-                if (string.IsNullOrEmpty(lastObjective))
-                {
-                    lastObjective = existingData.lastObjective; // Preserve last known objective
-                }
-            }
-
             // Create and save the data
             var data = new SaveData
             {
@@ -72,8 +60,7 @@ namespace _Scripts.Managers
                 playerHealth = health.GetCurrentHealth(),
                 clipAmmo = pistol.GetCurrentClip(),
                 storedAmmo = pistol.GetStoredAmmo(),
-                savedLevel = SceneManager.GetActiveScene().name,
-                lastObjective = lastObjective
+                savedLevel = SceneManager.GetActiveScene().name
             };
 
             File.WriteAllText(savePath, JsonUtility.ToJson(data, true));
@@ -100,13 +87,6 @@ namespace _Scripts.Managers
 
             Debug.Log($"Game Loading... \n Player Object: {data}");
             SceneManager.LoadScene(data.savedLevel);
-
-            // Restore last objective if available
-            if (!string.IsNullOrEmpty(data.lastObjective) && ObjectiveManager.Instance != null)
-            {
-                Debug.Log($"✅ Restoring Last Objective: {data.lastObjective}");
-                ObjectiveManager.Instance.RestoreLastObjective(data.lastObjective);
-            }
         }
 
         #endregion

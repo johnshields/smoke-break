@@ -1,7 +1,6 @@
 using System.Collections;
 using System.IO;
 using _Scripts.enums;
-using _Scripts.Managers.Objectives;
 using _Scripts.UI;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -71,54 +70,6 @@ namespace _Scripts.Managers
             }
 
             typer.InitDialogue(key);
-
-            if (objectiveKey != ObjectiveKey.None)
-            {
-                HandleObjective(objectiveKey);
-            }
-        }
-
-        #endregion
-
-        #region Objective Handling
-
-        private void HandleObjective(ObjectiveKey objectiveKey)
-        {
-            if (objectiveKey == ObjectiveKey.None) return;
-
-            var keyString = objectiveKey.ToString();
-            var objective = ObjectiveData.GetObjective(keyString);
-
-            if (objective != null)
-            {
-                ObjectiveManager.Instance.SetObjective(objective.message);
-                StartCoroutine(WaitForDialogueToEnd(objective.delay, objective.key));
-            }
-            else
-            {
-                Debug.LogError($"❌ Objective '{objectiveKey}' not found in objectives.json");
-            }
-        }
-
-        private IEnumerator WaitForDialogueToEnd(float delay, string objectiveKey)
-        {
-            var timer = 0f;
-
-            while (timer < delay)
-            {
-                if (skipAction.WasPressedThisFrame())
-                    break;
-
-                timer += Time.deltaTime;
-                yield return null;
-            }
-
-            var objective = ObjectiveData.GetObjective(objectiveKey);
-            if (objective is { completed: false })
-            {
-                ObjectiveManager.Instance.ShowObjective(objective.message);
-                ObjectiveData.CompleteObjective(objectiveKey);
-            }
         }
 
         #endregion
