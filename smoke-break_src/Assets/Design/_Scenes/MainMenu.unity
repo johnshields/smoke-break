@@ -552,15 +552,15 @@ MonoBehaviour:
       m_Calls: []
   m_text: SMOKE BREAK
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: aa883d692c584c447b5938cf1d3740df, type: 2}
-  m_sharedMaterial: {fileID: 2900056354549878862, guid: aa883d692c584c447b5938cf1d3740df, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 052ebf53ee14e5a40bc4d7fe15835dc3, type: 2}
+  m_sharedMaterial: {fileID: -6280009495346961855, guid: 052ebf53ee14e5a40bc4d7fe15835dc3, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4278978568
-  m_fontColor: {r: 0.03137255, g: 0.03137255, b: 0.04705883, a: 1}
+    rgba: 4291218906
+  m_fontColor: {r: 0.85490197, g: 0.8039216, b: 0.7764706, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -583,7 +583,7 @@ MonoBehaviour:
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
   m_fontSizeMax: 72
-  m_fontStyle: 17
+  m_fontStyle: 16
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 256
   m_textAlignment: 65535
@@ -3427,10 +3427,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7b01146d43e76324595ef884536bea50, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isRespawning: 0
   respawnDelay: 5
   respawnPoint: {fileID: 0}
   hudManager: {fileID: 627383481}
-  isRespawning: 0
   audioSource: {fileID: 0}
   wilhelm: {fileID: 0}
 --- !u!4 &1150940985561946641
@@ -3795,6 +3795,7 @@ MonoBehaviour:
   boostCooldown: 1
   fallMultiplier: 15
   doubleJumpTimeLimit: 0.5
+  maxHeight: 10
   canBoost: 1
   boostEffect: {fileID: 5347176430255127499}
   audioSource: {fileID: 1881246792}
