@@ -53,4 +53,6 @@ Open the project in Unity Hub.
 
 - Explore and survive a strange and hostile planet
 
+[More info](works/story-outline.md)
+
 ---
