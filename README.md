@@ -4,7 +4,7 @@ A stylised survival game where **Kanta Fujimoto**, a stranded space traveller, s
 
 Built in **Unity** using **C#** with assets crafted in **Blender** and **Photoshop**.
 
-![sb_art](works/art/covers/wide_capsule_v03.jpg)
+![sb_art](works/art/covers/wide_capsule_v04.jpg)
 
 ---
 
