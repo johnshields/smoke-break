@@ -36,4 +36,38 @@ A stylised survival game where **Kanta Fujimoto**, a stranded space traveller, s
 - Focus on exploration and story-driven moments over crafting or grindy systems
 - Keep scope small but impactful for solo development
 
+## 🧭 Planned Structure
+
+**Phase 1: The Fall & First Need**
+- Kanta awakens post-crash with depleted resources
+- Recover boost pack and pistol
+- Learn basic survival mechanics
+
+**Phase 2: The Crater and the Smoke**
+- Explore nearby wreckage
+- Optional discovery of *Twiggy Smokes*
+- Reveal that 42 years have passed since the crash
+
+**Phase 3: Escape Preparation**
+- Explore small, handcrafted zones
+- Gather key parts to repair the escape pod (*Amaterasu*):
+  - Winch system
+  - Wings/Stabilizers
+  - Thrusters
+  - Engine core
+
+**Phase 4: Launch and Final Reflection**
+- Repair and power up *Amaterasu*
+- Choose whether to smoke or not
+- Launch with a final monologue, leaving his fate open-ended
+
+---
+
+## 🗣️ Sample Dialogues
+
+**Opening & Closing Monologue:**
+
+> "Report to anyone listening... This is Kanta Fujimoto. I’ve crash-landed on Inari—a barren, unforgiving rock adrift in the cosmos. *Icarus* is battered beyond hope, and my only chance is to scavenge what I can from the wreckage. Time to figure out how to survive, fight through the darkness... and maybe find a smoke."
+>
+> "This is Kanta Fujimoto, last survivor of starship Icarus. I should reach the frontier in 6 weeks. With a little luck, the satellites will pick me up. Man, I need a smoke. Signing off..."
 ___
