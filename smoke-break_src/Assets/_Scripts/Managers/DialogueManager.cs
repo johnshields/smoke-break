@@ -13,8 +13,7 @@ namespace _Scripts.Managers
         #endregion
 
         #region Fields
-
-        private string _savePath;
+        
         private bool _hasPlayedOpeningDialogue;
         public InputAction skipAction;
         [SerializeField] private DialogueTyper typer;
@@ -26,7 +25,6 @@ namespace _Scripts.Managers
         private void Awake()
         {
             if (Instance == null) Instance = this;
-            _savePath = SaveManager.GetSaveFilePath();
         }
 
         private void OnEnable()

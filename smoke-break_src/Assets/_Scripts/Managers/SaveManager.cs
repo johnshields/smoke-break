@@ -2,7 +2,7 @@ using System;
 using System.IO;
 using _Scripts.Objects;
 using _Scripts.Player;
-using Unity.VisualScripting.FullSerializer;
+using _Scripts.Services;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -41,7 +41,7 @@ namespace _Scripts.Managers
 
         #region Save System
 
-        public static void SaveGame(PlayerProfiler player, PlayerHealth health, PistolProfiler pistol)
+        public static async void SaveGame(PlayerProfiler player, PlayerHealth health, PistolProfiler pistol)
         {
             if (!Directory.Exists(SaveDirectory))
                 Directory.CreateDirectory(SaveDirectory);
@@ -53,8 +53,8 @@ namespace _Scripts.Managers
             // Create and save the data
             var data = new SaveData
             {
-                playerId = playerId,
-                timestamp = _timestamp,
+                player_id = playerId,
+                saved_at = _timestamp,
                 playerX = player.transform.position.x,
                 playerY = player.transform.position.y,
                 playerZ = player.transform.position.z,
@@ -64,7 +64,11 @@ namespace _Scripts.Managers
                 savedLevel = SceneManager.GetActiveScene().name
             };
 
-            File.WriteAllText(savePath, JsonUtility.ToJson(data, true));
+            await File.WriteAllTextAsync(savePath, JsonUtility.ToJson(data, true));
+
+            // Save online data
+            var success = await ApiService.UploadSaveAsync(data);
+            Debug.Log(success ? "[SaveManager] Cloud save uploaded." : "[SaveManager] Cloud save failed.");
         }
 
         #endregion
@@ -94,10 +98,13 @@ namespace _Scripts.Managers
 
         #region Reset System
 
-        public static void ResetGame()
+        public static async void ResetGame()
         {
-            if (Directory.Exists(SaveDirectory))
+            if (Directory.Exists(SaveDirectory) && PlayerPrefs.HasKey(PlayerIdKey))
             {
+                var id = PlayerPrefs.GetString(PlayerIdKey);
+                await ApiService.DeleteSaveAsync(id);
+
                 Directory.Delete(SaveDirectory, true);
                 PlayerPrefs.DeleteKey(PlayerIdKey);
                 Debug.Log("All Save Data Reset!");
