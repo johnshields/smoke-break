@@ -1,8 +1,9 @@
 # 🛰️ Smoke Break
 
 A stylised survival game where **Kanta Fujimoto**, a stranded space traveller, struggles to escape the alien planet **Inari**.
+Built in **Unity**, it features atmospheric exploration, scavenging, light combat, dynamic controls, enemy AI, progression systems, and a cloud save system. 
 
-Built in **Unity** using **C#** with assets crafted in **Blender** and **Photoshop**.
+****Currently in development with a prototype in place.***
 
 ![sb_art](works/art/covers/wide_capsule-indev.jpg)
 
