@@ -6,7 +6,7 @@ A simple FastAPI service for saving and loading player data.
 - Python 3.9+
 - pip
 
-## Setup & run
+## ⚙️ Setup & Run
 Clone the repository and install dependencies:
 
 ```bash
@@ -16,6 +16,7 @@ $ pip install -r requirements.txt
 $ python -m uvicorn main:app --host 127.0.0.1 --port 5000 --reload
 ```
 
-- http://127.0.0.1:5000/
-- http://127.0.0.1:5000/docs
-- http://127.0.0.1:5000/api
+### 📦 API Endpoints
+- [`/` - Root health check](http://127.0.0.1:5000/)
+- [`/docs` - API docs](http://127.0.0.1:5000/docs)
+- [`api/` - API info](http://127.0.0.1:5000/api)
