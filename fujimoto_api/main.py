@@ -20,6 +20,13 @@ def root():
     }
 
 
+# Print endpoints on startup
+@app.on_event("startup")
+def startup_event():
+    print("\nfujimoto API is live... access endpoints at:")
+    print("[/] - Root health check\n[/docs] - API docs\n[/api] - API info\n")
+
+
 # Include other routes
 app.include_router(routes.router)
 

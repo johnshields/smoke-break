@@ -1,4 +1,4 @@
-# 🛰️ Smoke Break
+# Smoke Break 🛰️ 
 
 A stylised survival game where **Kanta Fujimoto**, a stranded space traveller, struggles to escape the alien planet **Inari**.
 Built in **Unity**, it features atmospheric exploration, scavenging, light combat, dynamic controls, enemy AI, progression systems, and a cloud save system. 
