@@ -3,3 +3,17 @@
 .idea/
 works/models/**/*.blend1
 
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.db
+
+# Virtual environments
+.venv/
+env/
+venv/
+ENV/
+

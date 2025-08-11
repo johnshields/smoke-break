@@ -9,10 +9,8 @@ namespace _Scripts.Services
 {
     public static class ApiService
     {
-        private const string BaseUrl = "http://localhost:8000";
+        private const string BaseUrl = "http://localhost:5000";
         private static readonly HttpClient Client = new();
-
-        // Cache API pings
         private static DateTime _lastOnlineCheck = DateTime.MinValue;
         private static bool _lastOnlineStatus = false;
         private static readonly TimeSpan OnlineCheckCacheDuration = TimeSpan.FromSeconds(10);
@@ -57,9 +55,6 @@ namespace _Scripts.Services
                 var json = JsonUtility.ToJson(saveData, true);
                 var content = new StringContent(json, Encoding.UTF8, "application/json");
                 var response = await Client.PostAsync($"{BaseUrl}/api/saves", content);
-                
-                Debug.Log($"[ApiService] Uploading JSON:\n{json}");
-
                 
                 return response.IsSuccessStatusCode;
             }
