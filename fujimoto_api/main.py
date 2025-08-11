@@ -4,7 +4,7 @@ from datetime import datetime
 from routes import routes
 
 app = FastAPI(
-    title="Fujimoto API",
+    title="fujimoto API",
     version="1.0.0",
     description="API for saving and loading player data"
 )
