@@ -15,7 +15,7 @@
         Attacking
     }
     
-    public enum Enums
+    public enum ActionType
     {
         Quit,
         NewGame,

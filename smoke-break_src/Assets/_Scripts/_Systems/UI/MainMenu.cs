@@ -27,7 +27,7 @@ namespace _Scripts._Systems.UI
         private int _currentButtonIndex;
         private Button[] _currentButtons;
 
-        private readonly Dictionary<GameObject, Enums> _confirmTypeMap = new();
+        private readonly Dictionary<GameObject, ActionType> _confirmTypeMap = new();
 
         #endregion
 
@@ -137,8 +137,8 @@ namespace _Scripts._Systems.UI
 
         private void InitializeConfirmTypeMap()
         {
-            _confirmTypeMap[newGamePanel] = Enums.NewGame;
-            _confirmTypeMap[quitPanel] = Enums.Quit;
+            _confirmTypeMap[newGamePanel] = ActionType.NewGame;
+            _confirmTypeMap[quitPanel] = ActionType.Quit;
         }
 
         private void AssignButtonActions()
@@ -343,7 +343,7 @@ namespace _Scripts._Systems.UI
 
         private void HandleConfirm(ConfirmAction action, GameObject panel, Button[] buttons)
         {
-            var confirmType = _confirmTypeMap.GetValueOrDefault(panel, Enums.None);
+            var confirmType = _confirmTypeMap.GetValueOrDefault(panel, ActionType.None);
 
             switch (action)
             {
@@ -365,21 +365,21 @@ namespace _Scripts._Systems.UI
             }
         }
 
-        private void ConfirmActionHandler(Enums actionType)
+        private void ConfirmActionHandler(ActionType actionType)
         {
             switch (actionType)
             {
-                case Enums.Quit:
+                case ActionType.Quit:
                     Debug.Log("Quitting Game to desktop...");
                     Application.Quit();
                     break;
 
-                case Enums.NewGame:
+                case ActionType.NewGame:
                     SaveManager.ResetGame();
                     SceneManager.LoadScene("02_Irani");
                     break;
 
-                case Enums.None:
+                case ActionType.None:
                 default:
                     Debug.LogError("Unhandled or unknown confirmation type.");
                     break;
