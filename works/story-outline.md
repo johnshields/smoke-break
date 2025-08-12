@@ -1,6 +1,6 @@
 # 🛰️ Smoke Break
 
-A stylised survival game where **Kanta Fujimoto**, a stranded space traveller, struggles to escape the alien planet **Inari**.
+A stylised survival game inspired by the true story of Toyohiro Akiyama. Set in the 1990s, you play as Kanta Fujimoto, a stranded space traveller fighting to escape the alien planet Inari after a crash. Armed with a makeshift axe, a battered pistol, a boost pack, and sheer stubbornness, Kanta must navigate a hostile world, scavenge vital parts, and endure the strange encounters that follow.
 
 ---
 
@@ -9,7 +9,7 @@ A stylised survival game where **Kanta Fujimoto**, a stranded space traveller, s
 **Core Themes:**
 
 - Isolation and survival in an alien environment
-- Addiction and self-reflection (e.g., the search for *Twiggy Smokes*)
+- Addiction and self-reflection
 - Minimalist storytelling with emotional depth
 - Humor and absurdity in bleak circumstances
 
@@ -35,31 +35,6 @@ A stylised survival game where **Kanta Fujimoto**, a stranded space traveller, s
 - Maintain a 30 - 60 minute playtime loop
 - Focus on exploration and story-driven moments over crafting or grindy systems
 - Keep scope small but impactful for solo development
-
-## 🧭 Planned Structure
-
-**Phase 1: The Fall & First Need**
-- Kanta awakens post-crash with depleted resources
-- Recover boost pack and pistol
-- Learn basic survival mechanics
-
-**Phase 2: The Crater and the Smoke**
-- Explore nearby wreckage
-- Optional discovery of *Twiggy Smokes*
-- Reveal that 42 years have passed since the crash
-
-**Phase 3: Escape Preparation**
-- Explore small, handcrafted zones
-- Gather key parts to repair the escape pod (*Amaterasu*):
-  - Winch system
-  - Wings/Stabilizers
-  - Thrusters
-  - Engine core
-
-**Phase 4: Launch and Final Reflection**
-- Repair and power up *Amaterasu*
-- Choose whether to smoke or not
-- Launch with a final monologue, leaving his fate open-ended
 
 ---
 
