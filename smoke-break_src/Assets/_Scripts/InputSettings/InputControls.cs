@@ -570,6 +570,17 @@ public partial class @InputControls: IInputActionCollection2, IDisposable
                 },
                 {
                     ""name"": """",
+                    ""id"": ""9c2bf2ea-6aa9-43df-815e-00f65881d4ac"",
+                    ""path"": ""<Keyboard>/backspace"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Pause"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
                     ""id"": ""417418c5-9131-4156-b23a-9b93cdf74670"",
                     ""path"": ""<Gamepad>/rightStick"",
                     ""interactions"": """",

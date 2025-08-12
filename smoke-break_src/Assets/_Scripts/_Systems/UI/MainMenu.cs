@@ -144,8 +144,10 @@ namespace _Scripts._Systems.UI
         private void AssignButtonActions()
         {
             startGameButton.onClick.AddListener(StartGame);
-            confirmNewGameButton.onClick.AddListener(() => HandleConfirm(ConfirmAction.Confirm, newGamePanel, _newGameButtons));
-            cancelNewGameButton.onClick.AddListener(() => HandleConfirm(ConfirmAction.Cancel, newGamePanel, _newGameButtons));
+            confirmNewGameButton.onClick.AddListener(() =>
+                HandleConfirm(ConfirmAction.Confirm, newGamePanel, _newGameButtons));
+            cancelNewGameButton.onClick.AddListener(() =>
+                HandleConfirm(ConfirmAction.Cancel, newGamePanel, _newGameButtons));
             loadButton.onClick.AddListener(LoadGame);
             controlsButton.onClick.AddListener(OpenControls);
             returnButton.onClick.AddListener(ReturnToMainMenu);
@@ -374,7 +376,7 @@ namespace _Scripts._Systems.UI
 
                 case Enums.NewGame:
                     SaveManager.ResetGame();
-                    SceneManager.LoadScene("Irani");
+                    SceneManager.LoadScene("02_Irani");
                     break;
 
                 case Enums.None:

@@ -25,6 +25,10 @@ namespace _Scripts._Systems.UI
         private Button[] _quitButtons;
         private Button[] _currentButtons;
 
+        private Keyboard _kb;
+        private Mouse _mouse;
+        private Gamepad _pad;
+
         private PlayerProfiler _playerProfiler;
         private PlayerHealth _playerHealth;
         private PistolProfiler _pistolProfiler;
@@ -72,6 +76,10 @@ namespace _Scripts._Systems.UI
             InitializeDependencies();
             InitializeUI();
             InitializeButtonArrays();
+
+            _kb = Keyboard.current;
+            _mouse = Mouse.current;
+            _pad = Gamepad.current;
         }
 
         private void OnEnable()
@@ -147,9 +155,10 @@ namespace _Scripts._Systems.UI
         {
             _actions.Profiler.Disable();
             InputSystem.ResetHaptics();
-            InputSystem.DisableDevice(Keyboard.current);
-            InputSystem.DisableDevice(Gamepad.current);
-            InputSystem.DisableDevice(Mouse.current);
+
+            if (_kb != null) InputSystem.DisableDevice(_kb);
+            if (_mouse != null) InputSystem.DisableDevice(_mouse);
+            if (_pad != null) InputSystem.DisableDevice(_pad);
 
             StartCoroutine(EnableInputsAfterDelay());
         }
@@ -159,9 +168,10 @@ namespace _Scripts._Systems.UI
             yield return new WaitForSecondsRealtime(0.5f);
 
             _actions.Profiler.Enable();
-            InputSystem.EnableDevice(Keyboard.current);
-            InputSystem.EnableDevice(Gamepad.current);
-            InputSystem.EnableDevice(Mouse.current);
+
+            if (_kb != null) InputSystem.EnableDevice(_kb);
+            if (_mouse != null) InputSystem.EnableDevice(_mouse);
+            if (_pad != null) InputSystem.EnableDevice(_pad);
         }
 
         # endregion
@@ -227,7 +237,7 @@ namespace _Scripts._Systems.UI
 
         private void QuitGame()
         {
-            Debug.Log("Returning to Main Menu...");
+            Debug.Log("↩Returning to Main Menu...");
             AudioListener.pause = false;
             Time.timeScale = 1f;
             SceneManager.LoadScene("01_MainMenu");
@@ -309,8 +319,8 @@ namespace _Scripts._Systems.UI
 
         private void UpdateButtonSelection()
         {
-            if (SceneManager.GetActiveScene().buildIndex == 0) return; 
-            
+            if (SceneManager.GetActiveScene().buildIndex == 0) return;
+
             for (var i = 0; i < _currentButtons.Length; i++)
             {
                 var buttonImage = _currentButtons[i].GetComponent<Image>();
