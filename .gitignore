@@ -18,4 +18,4 @@ venv/
 ENV/
 
 # builds
-xbuild/
+xbuilds/
