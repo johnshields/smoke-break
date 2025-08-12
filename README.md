@@ -1,7 +1,7 @@
 # Smoke Break 🛰️ 
 
-A stylised survival game where **Kanta Fujimoto**, a stranded space traveller, struggles to escape the alien planet **Inari**.
-Built in **Unity**, it features atmospheric exploration, scavenging, light combat, dynamic controls, enemy AI, progression systems, and a cloud save system. 
+A stylised survival game inspired by the true story of Toyohiro Akiyama. Set in the 1990s, you play as Kanta Fujimoto, a stranded space traveller fighting to escape the alien planet Inari after a crash. 
+Armed with a makeshift axe, a battered pistol, a boost pack, and sheer stubbornness, Kanta must navigate a hostile world, scavenge vital parts, and endure the strange encounters that follow.
 
 ****Currently in development with a prototype in place.***
 
