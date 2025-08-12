@@ -17,3 +17,5 @@ env/
 venv/
 ENV/
 
+# builds
+xbuild/

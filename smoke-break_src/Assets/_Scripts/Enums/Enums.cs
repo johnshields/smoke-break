@@ -1,5 +1,20 @@
 ﻿namespace _Scripts.enums
 {
+    public enum ItemType
+    {
+        Ammo,
+        Coin,
+        Health,
+        Other
+    }
+    
+    public enum AIState
+    {
+        Patrolling,
+        Chasing,
+        Attacking
+    }
+    
     public enum Enums
     {
         Quit,
@@ -14,14 +29,6 @@
         Cancel
     }
 
-    public enum ItemType
-    {
-        Ammo,
-        Coin,
-        Health,
-        Other
-    }
-
     public enum DialogueKey
     {
         Opening,
@@ -30,7 +37,7 @@
         Warning,
         Victory
     }
-
+    
     public enum PodPartType
     {
         JackStand,
@@ -42,4 +49,5 @@
         EngineParts,
         LastComp
     }
+
 }
