@@ -19385,11 +19385,11 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   m_text: "LOOK:        mouse/arrow keys    right stick  \r\n\r\nMOVEMENT:    WASD               
-    left stick  \r\n\r\nSPRINT:      left shift          LB/L1  \r\n\r\nJUMP:       
-    spacebar            A/X \r\n\r\nBOOST:       spacebar (double)   A/X (double) 
-    \r\n\r\nDODGE:       C            \t      B/O  \r\n\r\nATTACK:      right click        
-    RT/R2  \r\n\r\nAIM:         Q            \t      RB/R1  \r\n\r\nSHOOT:      
-    left click/F        LT/L2 \n\nRELOAD:      R \r\t\t               X/\u2B1C\n"
+    left stick  \r\n\r\nSPRINT:      left shift          L1  \r\n\r\nJUMP:       
+    spacebar            Y \r\n\r\nBOOST:       spacebar (double)   Y (double)  \r\n\r\nDODGE:      
+    X                   B  \r\n\r\nATTACK:      right click         R2  \r\n\r\nAIM:        
+    Q                   R1  \r\n\r\nSHOOT:       left click/F        L2 \n\nRELOAD:     
+    R \r\t\t               X\n"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 66aa52c2d423a3f4cbff24ef2d7b0e14, type: 2}
   m_sharedMaterial: {fileID: 4483909513856558407, guid: 66aa52c2d423a3f4cbff24ef2d7b0e14, type: 2}
@@ -19438,7 +19438,7 @@ MonoBehaviour:
   m_linkedTextComponent: {fileID: 0}
   parentLinkedComponent: {fileID: 0}
   m_enableKerning: 1
-  m_ActiveFontFeatures: 00000000
+  m_ActiveFontFeatures: 6e72656b
   m_enableExtraPadding: 0
   checkPaddingRequired: 0
   m_isRichText: 1
@@ -21757,7 +21757,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1098351669}
   serializedVersion: 2
-  m_LocalRotation: {x: -0.14003852, y: 0.005011925, z: 0.00037122236, w: 0.99013335}
+  m_LocalRotation: {x: -0.14003885, y: 0.0045243916, z: 0.00033511026, w: 0.9901356}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -28965,7 +28965,7 @@ MonoBehaviour:
   m_linkedTextComponent: {fileID: 0}
   parentLinkedComponent: {fileID: 0}
   m_enableKerning: 1
-  m_ActiveFontFeatures: 00000000
+  m_ActiveFontFeatures: 6e72656b
   m_enableExtraPadding: 0
   checkPaddingRequired: 0
   m_isRichText: 1

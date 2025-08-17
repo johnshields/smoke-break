@@ -1036,11 +1036,11 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   m_text: "LOOK:        mouse/arrow keys    right stick  \r\n\r\nMOVEMENT:    WASD               
-    left stick  \r\n\r\nSPRINT:      left shift          LB/L1  \r\n\r\nJUMP:       
-    spacebar            A/X \r\n\r\nBOOST:       spacebar (double)   A/X (double) 
-    \r\n\r\nDODGE:       C            \t      B/O  \r\n\r\nATTACK:      right click        
-    RT/R2  \r\n\r\nAIM:         Q            \t      RB/R1  \r\n\r\nSHOOT:      
-    left click/F        LT/L2 \n\nRELOAD:      R \r\t\t               X/\u2B1C\n"
+    left stick  \r\n\r\nSPRINT:      left shift          L1  \r\n\r\nJUMP:       
+    spacebar            Y \r\n\r\nBOOST:       spacebar (double)   Y (double)  \r\n\r\nDODGE:      
+    X                   B  \r\n\r\nATTACK:      right click         R2  \r\n\r\nAIM:        
+    Q                   R1  \r\n\r\nSHOOT:       left click/F        L2 \n\nRELOAD:     
+    R \r\t\t               X\n"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 66aa52c2d423a3f4cbff24ef2d7b0e14, type: 2}
   m_sharedMaterial: {fileID: 4483909513856558407, guid: 66aa52c2d423a3f4cbff24ef2d7b0e14, type: 2}
