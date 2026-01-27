@@ -9,7 +9,7 @@ Armed with a makeshift axe, a battered pistol, a boost pack, and sheer stubbornn
 
 ---
 
-## 🧰 Development Environment
+## Development Environment
 
 - **Engine**: Unity
 - **Language**: C# (.NET)
@@ -18,7 +18,7 @@ Armed with a makeshift axe, a battered pistol, a boost pack, and sheer stubbornn
 
 ---
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 smoke-break_src/
@@ -33,7 +33,7 @@ smoke-break_src/
 
 ---
 
-## 🚀 How to Run
+## How to Run
 
 ### Requirements
 
