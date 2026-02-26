@@ -9,7 +9,7 @@ namespace _Scripts._Systems.Services
 {
     public static class ApiService
     {
-        private const string BaseUrl = "http://localhost:5000";
+        private static string BaseUrl => AppConfig.Load().apiBaseUrl;
         private static readonly HttpClient Client = new();
         private static DateTime _lastOnlineCheck = DateTime.MinValue;
         private static bool _lastOnlineStatus = false;

@@ -1,8 +1,21 @@
+# IDE
 .vs/
 .vscode/
 .idea/
-works/models/**/*.blend1
 
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
+Icon?
 
 # Python
 __pycache__/
@@ -17,7 +30,56 @@ env/
 venv/
 ENV/
 
-# misc
+# Unity
+smoke-break_src/[Ll]ibrary/
+smoke-break_src/[Tt]emp/
+smoke-break_src/[Oo]bj/
+smoke-break_src/[Bb]uild/
+smoke-break_src/[Bb]uilds/
+smoke-break_src/[Ll]ogs/
+smoke-break_src/[Uu]ser[Ss]ettings/
+smoke-break_src/[Mm]emoryCaptures/
+smoke-break_src/[Rr]ecordings/
+smoke-break_src/[Aa]ssets/Plugins/Editor/JetBrains*
+smoke-break_src/[Aa]ssets/[Aa]ddressable[Aa]ssets[Dd]ata/*/*.bin*
+smoke-break_src/[Aa]ssets/[Ss]treamingAssets/aa.meta
+smoke-break_src/[Aa]ssets/[Ss]treamingAssets/aa/*
+smoke-break_src/[Aa]ssets/[Ss]treamingAssets/config.json
+.gradle/
+ExportedObj/
+.consulo/
+*.csproj
+*.unityproj
+*.sln
+*.suo
+*.tmp
+*.user
+*.userprefs
+*.pidb
+*.booproj
+*.svd
+*.pdb
+*.mdb
+*.opendb
+*.VC.db
+*.pidb.meta
+*.pdb.meta
+*.mdb.meta
+sysinfo.txt
+*.apk
+*.aab
+*.unitypackage
+*.app
+crashlytics-build.properties
+smoke-break_src.slnx
+
+# Environment
+.env
+*.log
+
+# Misc
+temp/
 xbuilds/
+works/models/**/*.blend1
 works/story.txt
 works/save_path.txt
