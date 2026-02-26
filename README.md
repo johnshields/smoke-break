@@ -1,59 +1,10 @@
 # Smoke Break 🛰️ 
 
-A stylised survival game inspired by the true story of Toyohiro Akiyama. Set in the 1990s, you play as Kanta Fujimoto, a stranded space traveller fighting to escape the alien planet Inari after a crash. 
+A stylized survival game inspired by the true story of Toyohiro Akiyama. Set in the 1990s, you play as Kanta Fujimoto, a stranded space traveller fighting to escape the alien planet Inari after a crash. 
 Armed with a makeshift axe, a battered pistol, a boost pack, and sheer stubbornness, Kanta must navigate a hostile world, scavenge vital parts, and endure the strange encounters that follow.
-
-****Currently in development with a prototype in place.***
-
-![sb_art](works/art/covers/wide_capsule-indev.jpg)
-
----
-
-## Development Environment
-
-- **Engine**: Unity
-- **Language**: C# (.NET)
-- **3D Modeling**: Blender
-- **Texturing / UI Art**: Adobe Photoshop
-
----
-
-## Project Structure
-
-```
-smoke-break_src/
-├── Assets/
-│   ├── Scripts/               # C# game scripts
-│   ├── Art/                   # Textures, sprites, and 3D models
-│   ├── Scenes/                # Unity scene files
-│   ├── Prefabs/               # Reusable game objects
-│   └── UI/                    # UI components
-└─────────────────
-```
-
----
-
-## How to Run
-
-### Requirements
-
-- [Unity](https://unity.com/) (Recommended version: 2021.3+)
-- [Git](https://git-scm.com/)
-
-### Getting Started
-
-```bash
-git clone https://github.com/johnshields/smoke-break.git
-```
-
-Open the project in Unity Hub.
-
----
-
-## 🎮 Gameplay (In Development)
-
-- Explore and survive a strange and hostile planet
 
 [More info](works/story-outline.md)
 
----
+****Currently in development - in prototype phase.***
+
+![sb_art](works/art/covers/wide_capsule-indev.jpg)
