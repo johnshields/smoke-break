@@ -7,30 +7,45 @@ using Random = UnityEngine.Random;
 
 namespace _Scripts._Gameplay.AI
 {
+    [RequireComponent(typeof(NavMeshAgent), typeof(Animator))]
     public class EnemyAI : MonoBehaviour
     {
         #region Animation Hashes
 
-        private static readonly int IsAttacking = Animator.StringToHash("IsAttacking");
-        private static readonly int Speed = Animator.StringToHash("Speed");
+        private static readonly int IsAttacking = Animator.StringToHash("IsAttacking"),
+            SpeedAnim = Animator.StringToHash("Speed");
 
         #endregion
 
-        #region Serialized Fields
+        #region Constants
 
-        [Header("AI Settings")] [SerializeField]
-        private float detectionRange = 15f;
+        private const float PatrolRadius = 15f;
+        private const float StuckTimeout = 2f;
+        private const float VelocityThreshold = 0.1f;
+        private const float AttackWindUp = 0.5f;
+        private const float LosePlayerDelay = 3f;
+        private const float IdlePauseBeforePatrol = 1.5f;
+        private const float RotationSpeed = 5f;
+        private const float NavMeshSampleRange = 10f;
+        private const int NavMeshSampleAttempts = 5;
+        private const float NavMeshInitDelay = 0.1f;
+        private const float DodgeCooldown = 0.2f;
 
-        [SerializeField] private float attackRange = 2f;
+        #endregion
+
+        #region Serialised Fields
+
+        [Header("AI Settings")]
+        [SerializeField] private float detectionRange = 25f;
+        [SerializeField] private float attackRange = 5f;
         [SerializeField] private int attackDamage = 10;
         [SerializeField] private float attackCooldown = 1.5f;
 
-        [Header("Patrolling Settings")] [SerializeField]
-        private float waypointTolerance = 1.5f;
+        [Header("Patrolling Settings")]
+        [SerializeField] private float waypointTolerance = 1.5f;
 
-        [Header("Audio Settings")] [SerializeField]
-        private AudioClip attackSound;
-
+        [Header("Audio Settings")]
+        [SerializeField] private AudioClip attackSound;
         [SerializeField] private AudioSource audioSource;
 
         #endregion
@@ -44,7 +59,7 @@ namespace _Scripts._Gameplay.AI
         private PlayerHealth _playerHealth;
         private bool _canAttack = true;
         private float _stuckTimer;
-        private int _idleStateHash;
+        private Coroutine _losePlayerCoroutine;
 
         #endregion
 
@@ -66,18 +81,12 @@ namespace _Scripts._Gameplay.AI
             _player = playerObject.transform;
             _playerHealth = _player.GetComponent<PlayerHealth>();
 
-            DetectIdleState();
             StartCoroutine(InitializeNavMeshAgent());
         }
 
         private void Update()
         {
-            if (_agent == null)
-            {
-                Debug.LogError($"{gameObject.name} has NO NavMeshAgent! Destroying.");
-                Destroy(gameObject);
-                return;
-            }
+            if (_agent == null || _player == null) return;
 
             if (!_agent.isOnNavMesh && _agent.enabled)
             {
@@ -85,14 +94,14 @@ namespace _Scripts._Gameplay.AI
                 return;
             }
 
-            float distanceToPlayer = Vector3.Distance(transform.position, _player.position);
+            var distanceToPlayer = Vector3.Distance(transform.position, _player.position);
 
             switch (_currentState)
             {
                 case AIState.Patrolling:
                     Patrol();
                     if (distanceToPlayer <= detectionRange)
-                        _currentState = AIState.Chasing;
+                        SetState(AIState.Chasing);
                     break;
 
                 case AIState.Chasing:
@@ -100,41 +109,80 @@ namespace _Scripts._Gameplay.AI
                     break;
 
                 case AIState.Attacking:
-                    // Attack logic is handled within AttackPlayer coroutine.
                     break;
             }
         }
 
         #endregion
 
-        #region AI Behavior
+        #region State Management
+
+        private void SetState(AIState newState)
+        {
+            if (_currentState == newState) return;
+
+            _currentState = newState;
+
+            switch (newState)
+            {
+                case AIState.Patrolling:
+                    _animator.SetFloat(SpeedAnim, 0f);
+                    _animator.SetBool(IsAttacking, false);
+                    _agent.isStopped = false;
+                    CancelLosePlayerCoroutine();
+                    break;
+
+                case AIState.Chasing:
+                    _animator.SetBool(IsAttacking, false);
+                    _agent.isStopped = false;
+                    break;
+
+                case AIState.Attacking:
+                    _animator.SetFloat(SpeedAnim, 0f);
+                    _agent.isStopped = true;
+                    _agent.velocity = Vector3.zero;
+                    CancelLosePlayerCoroutine();
+                    StartCoroutine(AttackPlayer());
+                    break;
+            }
+        }
+
+        public void EnterChaseState()
+        {
+            CancelLosePlayerCoroutine();
+            SetState(AIState.Chasing);
+        }
+
+        #endregion
+
+        #region AI Behaviour
 
         private void Patrol()
         {
-            if (_agent == null || !_agent.isOnNavMesh) return;
+            if (!_agent.isOnNavMesh) return;
 
             if (!_agent.hasPath || _agent.remainingDistance <= waypointTolerance)
             {
-                Vector3 patrolTarget = GetRandomNavMeshPosition(transform.position, 15f, 5);
+                var patrolTarget = GetRandomNavMeshPosition(transform.position, PatrolRadius);
                 if (patrolTarget != Vector3.zero)
                 {
                     _agent.SetDestination(patrolTarget);
-                    _stuckTimer = 0; // Reset stuck timer
+                    _stuckTimer = 0f;
                 }
             }
 
-            if (_agent.velocity.magnitude < 0.1f)
+            if (_agent.velocity.magnitude < VelocityThreshold)
             {
                 _stuckTimer += Time.deltaTime;
-                if (_stuckTimer >= 2f)
+                if (_stuckTimer >= StuckTimeout)
                 {
                     _agent.ResetPath();
-                    _stuckTimer = 0;
+                    _stuckTimer = 0f;
                 }
             }
             else
             {
-                _stuckTimer = 0;
+                _stuckTimer = 0f;
             }
         }
 
@@ -142,48 +190,45 @@ namespace _Scripts._Gameplay.AI
         {
             if (distanceToPlayer <= attackRange && _canAttack)
             {
-                _agent.isStopped = true;
-                _agent.velocity = Vector3.zero;
-                _currentState = AIState.Attacking;
-                StartCoroutine(AttackPlayer());
+                SetState(AIState.Attacking);
+                return;
             }
-            else
-            {
-                if (_currentState != AIState.Attacking && _agent.isOnNavMesh)
-                {
-                    _agent.isStopped = false;
-                    _agent.ResetPath();
-                    _agent.SetDestination(_player.position);
-                    _animator.SetFloat(Speed, _agent.velocity.magnitude);
-                    RotateTowards(_player.position);
-                }
 
-                if (distanceToPlayer > detectionRange)
-                    StartCoroutine(LosePlayerAfterDelay());
+            if (_agent.isOnNavMesh)
+            {
+                _agent.SetDestination(_player.position);
+                _animator.SetFloat(SpeedAnim, _agent.velocity.magnitude);
+                RotateTowards(_player.position);
             }
+
+            if (distanceToPlayer > detectionRange && _losePlayerCoroutine == null)
+                _losePlayerCoroutine = StartCoroutine(LosePlayerAfterDelay());
         }
 
         private IEnumerator LosePlayerAfterDelay()
         {
-            yield return new WaitForSeconds(3f);
+            yield return new WaitForSeconds(LosePlayerDelay);
 
             if (_currentState == AIState.Chasing &&
                 Vector3.Distance(transform.position, _player.position) > detectionRange)
             {
                 _agent.isStopped = true;
                 _agent.velocity = Vector3.zero;
-                _animator.SetFloat(Speed, 0f);
+                _animator.SetFloat(SpeedAnim, 0f);
 
-                if (_idleStateHash != 0 && _animator.GetCurrentAnimatorStateInfo(0).fullPathHash != _idleStateHash)
-                {
-                    _animator.Play(_idleStateHash);
-                }
-
-                yield return new WaitForSeconds(1.5f);
-                _currentState = AIState.Patrolling;
-                _agent.isStopped = false;
-                Patrol();
+                yield return new WaitForSeconds(IdlePauseBeforePatrol);
+                SetState(AIState.Patrolling);
             }
+
+            _losePlayerCoroutine = null;
+        }
+
+        private void CancelLosePlayerCoroutine()
+        {
+            if (_losePlayerCoroutine == null) return;
+
+            StopCoroutine(_losePlayerCoroutine);
+            _losePlayerCoroutine = null;
         }
 
         private IEnumerator AttackPlayer()
@@ -191,53 +236,31 @@ namespace _Scripts._Gameplay.AI
             _canAttack = false;
             _animator.SetBool(IsAttacking, true);
 
-            if (attackSound != null && audioSource != null)
-            {
+            if (attackSound is not null && audioSource is not null)
                 audioSource.PlayOneShot(attackSound);
-            }
 
             while (Vector3.Distance(transform.position, _player.position) <= attackRange)
             {
                 RotateTowards(_player.position);
-                yield return new WaitForSeconds(0.5f);
+                yield return new WaitForSeconds(AttackWindUp);
 
                 if (Vector3.Distance(transform.position, _player.position) <= attackRange)
-                {
                     _playerHealth?.TakeDamage(attackDamage);
-                }
 
                 yield return new WaitForSeconds(attackCooldown);
             }
 
-            _animator.SetBool(IsAttacking, false);
             _canAttack = true;
-            _agent.isStopped = false;
-            _currentState = AIState.Chasing;
-        }
-
-        public void EnterChaseState()
-        {
-            _currentState = AIState.Chasing;
+            SetState(AIState.Chasing);
         }
 
         #endregion
 
-        #region Utility Functions
-
-        private void DetectIdleState()
-        {
-            if (_animator.runtimeAnimatorController == null)
-            {
-                Debug.LogError($"{gameObject.name} has no Animator Controller assigned!");
-                return;
-            }
-
-            _idleStateHash = _animator.GetCurrentAnimatorStateInfo(0).fullPathHash;
-        }
+        #region Utility
 
         private void HandleNavMeshRecovery()
         {
-            Vector3 newPosition = GetRandomNavMeshPosition(transform.position, 10f, 5);
+            var newPosition = GetRandomNavMeshPosition(transform.position, NavMeshSampleRange);
             if (newPosition != Vector3.zero)
             {
                 _agent.Warp(newPosition);
@@ -254,9 +277,9 @@ namespace _Scripts._Gameplay.AI
             if (_agent == null) yield break;
 
             _agent.enabled = false;
-            yield return new WaitForSeconds(0.1f);
+            yield return new WaitForSeconds(NavMeshInitDelay);
 
-            Vector3 spawnPosition = GetRandomNavMeshPosition(transform.position, 10f, 5);
+            var spawnPosition = GetRandomNavMeshPosition(transform.position, NavMeshSampleRange);
             if (spawnPosition != Vector3.zero)
             {
                 transform.position = spawnPosition;
@@ -270,16 +293,14 @@ namespace _Scripts._Gameplay.AI
             }
         }
 
-        private Vector3 GetRandomNavMeshPosition(Vector3 origin, float range, int maxAttempts)
+        private static Vector3 GetRandomNavMeshPosition(Vector3 origin, float range)
         {
-            for (int i = 0; i < maxAttempts; i++)
+            for (var i = 0; i < NavMeshSampleAttempts; i++)
             {
-                Vector3 randomPoint = origin + new Vector3(Random.Range(-range, range), 0, Random.Range(-range, range));
+                var randomPoint = origin + new Vector3(Random.Range(-range, range), 0, Random.Range(-range, range));
 
-                if (NavMesh.SamplePosition(randomPoint, out NavMeshHit hit, range, NavMesh.AllAreas))
-                {
+                if (NavMesh.SamplePosition(randomPoint, out var hit, range, NavMesh.AllAreas))
                     return hit.position;
-                }
             }
 
             return Vector3.zero;
@@ -287,10 +308,10 @@ namespace _Scripts._Gameplay.AI
 
         private void RotateTowards(Vector3 targetPosition)
         {
-            Vector3 direction = (targetPosition - transform.position).normalized;
+            var direction = (targetPosition - transform.position).normalized;
             direction.y = 0;
             transform.rotation =
-                Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(direction), Time.deltaTime * 5f);
+                Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(direction), Time.deltaTime * RotationSpeed);
         }
 
         #endregion
