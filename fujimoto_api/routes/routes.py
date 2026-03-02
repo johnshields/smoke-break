@@ -1,14 +1,29 @@
+"""
+System Routes
+API information and system status endpoints.
+"""
+
+from datetime import datetime, timezone
 from fastapi import APIRouter
-from datetime import datetime
+from app import config
 
 router = APIRouter()
 
+_started_at = datetime.now(timezone.utc)
 
-@router.get("/api", tags=["Info"])
+
+def _uptime_seconds() -> float:
+    return round((datetime.now(timezone.utc) - _started_at).total_seconds(), 1)
+
+
+@router.get("/api", tags=["System"])
 def api_info():
     return {
-        "name": "fujimoto API",
-        "version": "1.0.0",
-        "description": "API for saving and loading player data.",
-        "timestamp": datetime.utcnow().isoformat()
+        "status": "OK",
+        "service": config.API_NAME,
+        "description": config.DESCRIPTION,
+        "version": config.VERSION,
+        "uptime_seconds": _uptime_seconds(),
+        "message": f"{config.API_NAME} is live...",
+        "timestamp": datetime.now(timezone.utc).isoformat()
     }

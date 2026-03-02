@@ -15,6 +15,15 @@ namespace _Scripts._Systems.Services
         private static bool _lastOnlineStatus = false;
         private static readonly TimeSpan OnlineCheckCacheDuration = TimeSpan.FromSeconds(10);
 
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
+        private static async void WarmUp()
+        {
+            var online = await IsApiOnline();
+            Debug.Log(online
+                ? "[ApiService] API is online."
+                : "[ApiService] API unreachable — running offline.");
+        }
+
         private static async Task<bool> IsApiOnline()
         {
             if (DateTime.UtcNow - _lastOnlineCheck < OnlineCheckCacheDuration)

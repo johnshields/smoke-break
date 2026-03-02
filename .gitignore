@@ -78,9 +78,13 @@ smoke-break_src.slnx
 .env
 *.log
 
+# API data
+fujimoto_api/data/
+
 # Misc
 temp/
 xbuilds/
 works/models/**/*.blend1
 works/story.txt
 works/save_path.txt
+.claude/
