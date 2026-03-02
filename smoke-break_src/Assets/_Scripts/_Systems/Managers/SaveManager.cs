@@ -10,15 +10,10 @@ namespace _Scripts._Systems.Managers
 {
     public static class SaveManager
     {
-        #region Constants & Paths
-
         private static string SaveDirectory => Path.Combine(Application.persistentDataPath, "Saves");
         private const string PlayerIdKey = "PlayerId";
-        private static string _timestamp = DateTime.UtcNow.ToString("o").Replace(':', '-');
 
-        #endregion
-
-        #region Player ID Handling
+        #region Player ID
 
         private static string GetOrCreatePlayerId()
         {
@@ -39,75 +34,85 @@ namespace _Scripts._Systems.Managers
 
         #endregion
 
-        #region Save System
+        #region Save
 
         public static async void SaveGame(PlayerProfiler player, PlayerHealth health, PistolProfiler pistol)
         {
-            if (!Directory.Exists(SaveDirectory))
-                Directory.CreateDirectory(SaveDirectory);
-
-            var playerId = GetOrCreatePlayerId();
-            _timestamp = DateTime.UtcNow.ToString("o").Replace(':', '-');
-            var savePath = Path.Combine(SaveDirectory, $"savegame_{playerId}.json");
-
-            // Create and save the data
-            var data = new SaveData
+            try
             {
-                player_id = playerId,
-                saved_at = _timestamp,
-                playerX = player.transform.position.x,
-                playerY = player.transform.position.y,
-                playerZ = player.transform.position.z,
-                playerHealth = health.GetCurrentHealth(),
-                clipAmmo = pistol.GetCurrentClip(),
-                storedAmmo = pistol.GetStoredAmmo(),
-                savedLevel = SceneManager.GetActiveScene().name
-            };
+                if (!Directory.Exists(SaveDirectory))
+                    Directory.CreateDirectory(SaveDirectory);
 
-            await File.WriteAllTextAsync(savePath, JsonUtility.ToJson(data, true));
+                var data = new SaveData
+                {
+                    player_id = GetOrCreatePlayerId(),
+                    saved_at = DateTime.UtcNow.ToString("o"),
+                    playerX = player.transform.position.x,
+                    playerY = player.transform.position.y,
+                    playerZ = player.transform.position.z,
+                    playerHealth = health.GetCurrentHealth(),
+                    clipAmmo = pistol.GetCurrentClip(),
+                    storedAmmo = pistol.GetStoredAmmo(),
+                    savedLevel = SceneManager.GetActiveScene().name
+                };
 
-            // Save online data
-            var success = await ApiService.UploadSaveAsync(data);
-            Debug.Log(success ? "[SaveManager] Cloud save uploaded." : "[SaveManager] Cloud save failed.");
+                await File.WriteAllTextAsync(GetSaveFilePath(), JsonUtility.ToJson(data, true));
+
+                var success = await ApiService.UploadSaveAsync(data);
+                Debug.Log(success ? "[SaveManager] Cloud save uploaded." : "[SaveManager] Cloud save failed.");
+            }
+            catch (Exception e)
+            {
+                Debug.LogError($"[SaveManager] SaveGame failed: {e.Message}");
+            }
         }
 
         #endregion
 
-        #region Load System
+        #region Load
 
         public static void LoadGame(PlayerProfiler player, PlayerHealth health, PistolProfiler pistol)
         {
-            var playerId = GetOrCreatePlayerId();
-            var savePath = Path.Combine(SaveDirectory, $"savegame_{playerId}.json");
-
+            var savePath = GetSaveFilePath();
             if (!File.Exists(savePath)) return;
 
-            var json = File.ReadAllText(savePath);
-            var data = JsonUtility.FromJson<SaveData>(json);
+            try
+            {
+                var json = File.ReadAllText(savePath);
+                var data = JsonUtility.FromJson<SaveData>(json);
 
-            // Restore player state
-            player.transform.position = new Vector3(data.playerX, data.playerY, data.playerZ);
-            health.SetCurrentHealth(data.playerHealth);
-            pistol.SetAmmo(data.clipAmmo, data.storedAmmo);
+                health.SetCurrentHealth(data.playerHealth);
+                pistol.SetAmmo(data.clipAmmo, data.storedAmmo);
 
-            Debug.Log($"Game Loading... \n Player Object: {data}");
-            SceneManager.LoadScene(data.savedLevel);
+                Debug.Log($"[SaveManager] Loading level: {data.savedLevel}");
+                SceneManager.LoadScene(data.savedLevel);
+            }
+            catch (Exception e)
+            {
+                Debug.LogError($"[SaveManager] LoadGame failed: {e.Message}");
+            }
         }
 
         #endregion
 
-        #region Reset System
+        #region Reset
 
         public static async void ResetGame()
         {
-            if (Directory.Exists(SaveDirectory) && PlayerPrefs.HasKey(PlayerIdKey))
+            try
             {
+                if (!Directory.Exists(SaveDirectory) || !PlayerPrefs.HasKey(PlayerIdKey)) return;
+
                 var id = PlayerPrefs.GetString(PlayerIdKey);
                 await ApiService.DeleteSaveAsync(id);
 
                 Directory.Delete(SaveDirectory, true);
                 PlayerPrefs.DeleteKey(PlayerIdKey);
-                Debug.Log("All Save Data Reset!");
+                Debug.Log("[SaveManager] All save data reset.");
+            }
+            catch (Exception e)
+            {
+                Debug.LogError($"[SaveManager] ResetGame failed: {e.Message}");
             }
         }
 

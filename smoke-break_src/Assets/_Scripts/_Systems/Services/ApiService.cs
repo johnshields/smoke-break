@@ -93,12 +93,6 @@ namespace _Scripts._Systems.Services
         {
             if (await SkipIfOffline("Delete")) return false;
 
-            if (!await IsApiOnline())
-            {
-                Debug.LogWarning("[ApiService] API unreachable — Delete skipped.");
-                return false;
-            }
-
             try
             {
                 var response = await Client.DeleteAsync($"{BaseUrl}/api/saves/{playerId}");
