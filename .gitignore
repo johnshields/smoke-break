@@ -45,6 +45,7 @@ smoke-break_src/[Aa]ssets/[Aa]ddressable[Aa]ssets[Dd]ata/*/*.bin*
 smoke-break_src/[Aa]ssets/[Ss]treamingAssets/aa.meta
 smoke-break_src/[Aa]ssets/[Ss]treamingAssets/aa/*
 smoke-break_src/[Aa]ssets/[Ss]treamingAssets/config.json
+smoke-break_src/[Aa]ssets/[Ss]treamingAssets/config.json.meta
 .gradle/
 ExportedObj/
 .consulo/
