@@ -1,4 +1,4 @@
-namespace _Scripts._Systems.Utils
+namespace _Scripts.Utils
 {
     // Centralised tag and layer name constants to eliminate magic strings.
     public static class GameTags

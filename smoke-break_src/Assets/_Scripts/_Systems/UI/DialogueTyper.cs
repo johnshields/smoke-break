@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using _Scripts._Systems.Objects;
-using _Scripts.enums;
+using _Scripts.Enums;
 using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;

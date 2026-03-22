@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace _Scripts._Systems.Utils
+namespace _Scripts.Utils
 {
     // Centralised animator parameter hashes to avoid duplicate StringToHash calls.
     public static class AnimHashes

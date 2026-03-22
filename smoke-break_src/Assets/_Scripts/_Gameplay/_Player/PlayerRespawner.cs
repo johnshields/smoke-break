@@ -1,6 +1,6 @@
 using System.Collections;
 using _Scripts._Systems.Managers;
-using _Scripts._Systems.Utils;
+using _Scripts.Utils;
 using UnityEngine;
 
 namespace _Scripts._Gameplay._Player

@@ -1,6 +1,6 @@
 using _Scripts._Gameplay._Player;
-using _Scripts._Systems.Utils;
-using _Scripts.enums;
+using _Scripts.Utils;
+using _Scripts.Enums;
 using UnityEngine;
 
 namespace _Scripts._Gameplay.PickUps

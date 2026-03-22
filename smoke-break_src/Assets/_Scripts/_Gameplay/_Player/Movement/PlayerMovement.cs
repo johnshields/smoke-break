@@ -1,7 +1,7 @@
 using System.Collections;
 using _Scripts._Systems.Managers;
 using _Scripts._Systems.UI;
-using _Scripts._Systems.Utils;
+using _Scripts.Utils;
 using UnityEngine;
 using UnityEngine.InputSystem;
 

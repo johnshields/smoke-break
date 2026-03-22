@@ -1,4 +1,4 @@
-namespace _Scripts._Systems.Utils
+namespace _Scripts.Utils
 {
     // Shared InputControls instance to avoid 7+ duplicate allocations.
     public static class InputProvider

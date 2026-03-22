@@ -1,4 +1,4 @@
-using _Scripts._Systems.Utils;
+using _Scripts.Utils;
 using UnityEngine;
 using UnityEngine.UI;
 

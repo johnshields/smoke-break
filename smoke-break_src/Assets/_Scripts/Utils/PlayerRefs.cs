@@ -1,7 +1,7 @@
 using _Scripts._Gameplay._Player;
 using UnityEngine;
 
-namespace _Scripts._Systems.Utils
+namespace _Scripts.Utils
 {
     // Cached player component lookups shared across UI, managers, and debug tools.
     public static class PlayerRefs

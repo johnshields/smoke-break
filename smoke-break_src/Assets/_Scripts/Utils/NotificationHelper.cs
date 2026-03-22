@@ -2,7 +2,7 @@ using System.Collections;
 using TMPro;
 using UnityEngine;
 
-namespace _Scripts._Systems.Utils
+namespace _Scripts.Utils
 {
     // Shared notification fade coroutine used by PauseMenu and MainMenu.
     public static class NotificationHelper

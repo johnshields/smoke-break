@@ -1,7 +1,7 @@
 using System.Collections;
 using _Scripts._Gameplay._Player;
-using _Scripts._Systems.Utils;
-using _Scripts.enums;
+using _Scripts.Utils;
+using _Scripts.Enums;
 using UnityEngine;
 using UnityEngine.AI;
 using Random = UnityEngine.Random;

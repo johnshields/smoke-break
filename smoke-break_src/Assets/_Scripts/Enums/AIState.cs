@@ -1,4 +1,4 @@
-namespace _Scripts.enums
+namespace _Scripts.Enums
 {
     public enum AIState
     {
