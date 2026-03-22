@@ -1,3 +1,4 @@
+using _Scripts._Systems.Utils;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -40,7 +41,7 @@ namespace _Scripts._Gameplay._Player
         private void Awake()
         {
             _playerHealth = GetComponent<PlayerHealth>();
-            _actions = new InputControls();
+            _actions = InputProvider.Controls;
             currentStamina = maxStamina;
         }
 

@@ -1,24 +1,24 @@
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
 namespace _Scripts._Systems.Managers
 {
     public class RandomAudio : MonoBehaviour
     {
-        public List<AudioClip> clipList;
-        public AudioClip[] clipListArray;
+        [SerializeField] private AudioSource audioSource;
 
-        public AudioSource audioSource;
+        private readonly Dictionary<string, AudioClip[]> _clipCache = new();
 
         private AudioClip GetRandomClip(string path)
         {
-            clipListArray = Resources.LoadAll<AudioClip>(path);
+            if (!_clipCache.TryGetValue(path, out var clips))
+            {
+                clips = Resources.LoadAll<AudioClip>(path);
+                _clipCache[path] = clips;
+            }
 
-            clipList = clipListArray.ToList();
-            var clipToPlay = clipList[Random.Range(0, clipList.Count)];
-
-            return clipToPlay;
+            if (clips.Length == 0) return null;
+            return clips[Random.Range(0, clips.Length)];
         }
 
         public void PlayRandomSound(string path, float vol)

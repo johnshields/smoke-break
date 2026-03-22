@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using _Scripts._Gameplay._Player;
 using _Scripts._Systems.Managers;
+using _Scripts._Systems.Utils;
 using _Scripts.enums;
 using TMPro;
 using UnityEngine;
@@ -104,11 +105,11 @@ namespace _Scripts._Systems.UI
         private void InitializeDependencies()
         {
             _savePath = SaveManager.GetSaveFilePath();
-            _playerProfiler = FindFirstObjectByType<PlayerProfiler>();
-            _playerHealth = FindFirstObjectByType<PlayerHealth>();
-            _pistolProfiler = FindFirstObjectByType<PistolProfiler>();
+            _playerProfiler = PlayerRefs.Profiler;
+            _playerHealth = PlayerRefs.Health;
+            _pistolProfiler = PlayerRefs.Pistol;
 
-            _actions = new InputControls();
+            _actions = InputProvider.Controls;
             _actions.UI.Navigate.performed += NavigateMenu;
             _actions.UI.Submit.performed += SelectButton;
 
@@ -317,24 +318,7 @@ namespace _Scripts._Systems.UI
 
         private IEnumerator ShowSaveNotification()
         {
-            if (saveNotificationText is null) yield break;
-
-            saveNotificationText.gameObject.SetActive(true);
-            saveNotificationText.alpha = 1f;
-
-            yield return new WaitForSecondsRealtime(saveNotificationDuration);
-
-            const float fadeDuration = 1f;
-            var elapsedTime = 0f;
-
-            while (elapsedTime < fadeDuration)
-            {
-                elapsedTime += Time.unscaledDeltaTime;
-                saveNotificationText.alpha = Mathf.Lerp(1f, 0f, elapsedTime / fadeDuration);
-                yield return null;
-            }
-
-            saveNotificationText.gameObject.SetActive(false);
+            return NotificationHelper.ShowThenFade(saveNotificationText, saveNotificationDuration);
         }
 
         #endregion

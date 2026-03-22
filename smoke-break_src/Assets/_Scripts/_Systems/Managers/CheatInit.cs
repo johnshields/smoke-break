@@ -1,4 +1,5 @@
 using _Scripts._Gameplay._Player;
+using _Scripts._Systems.Utils;
 using UnityEngine;
 
 namespace _Scripts._Systems.Managers
@@ -16,9 +17,9 @@ namespace _Scripts._Systems.Managers
 
         private void Start()
         {
-            _pistolProfiler = FindFirstObjectByType<PistolProfiler>();
-            _playerProfiler = FindFirstObjectByType<PlayerProfiler>();
-            _playerHealth = FindFirstObjectByType<PlayerHealth>();
+            _pistolProfiler = PlayerRefs.Pistol;
+            _playerProfiler = PlayerRefs.Profiler;
+            _playerHealth = PlayerRefs.Health;
             _playerRespawner = FindFirstObjectByType<PlayerRespawner>();
         }
 

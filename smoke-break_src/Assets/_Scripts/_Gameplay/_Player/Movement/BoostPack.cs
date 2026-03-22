@@ -1,4 +1,5 @@
 using _Scripts._Systems.Managers;
+using _Scripts._Systems.Utils;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -6,11 +7,6 @@ namespace _Scripts._Gameplay._Player
 {
     public class BoostPack : MonoBehaviour
     {
-        #region Animation Hash
-
-        private static readonly int Boost = Animator.StringToHash("Boost");
-
-        #endregion
 
         #region Boost Settings
 
@@ -57,7 +53,7 @@ namespace _Scripts._Gameplay._Player
 
         private void Awake()
         {
-            _actions = new InputControls();
+            _actions = InputProvider.Controls;
             _player = GetComponent<PlayerProfiler>();
             _rigidbody = GetComponent<Rigidbody>();
             _animator = GetComponent<Animator>();
@@ -87,7 +83,7 @@ namespace _Scripts._Gameplay._Player
 
         private void OnCollisionEnter(Collision collision)
         {
-            if (collision.gameObject.layer == LayerMask.NameToLayer("Ground"))
+            if (collision.gameObject.layer == LayerMask.NameToLayer(GameTags.Ground))
             {
                 _jumpPressedOnce = false;
                 Invoke(nameof(EnableBoost), 0.2f);
@@ -124,7 +120,7 @@ namespace _Scripts._Gameplay._Player
 
         private void PerformBoost()
         {
-            _animator.SetTrigger(Boost);
+            _animator.SetTrigger(AnimHashes.Boost);
 
             var input = _moveInput.ReadValue<Vector2>();
             var boostDirection = GetBoostDirection(input);

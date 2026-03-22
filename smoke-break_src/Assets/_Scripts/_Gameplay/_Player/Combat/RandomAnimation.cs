@@ -1,10 +1,10 @@
+using _Scripts._Systems.Utils;
 using UnityEngine;
 
 namespace _Scripts._Gameplay._Player
 {
     public class RandomAnimation : MonoBehaviour
     {
-        private static readonly int Attack = Animator.StringToHash("Attack");
         [SerializeField] private Animator animator;
         [SerializeField] private AnimatorOverrideController overrideController;
 
@@ -23,7 +23,7 @@ namespace _Scripts._Gameplay._Player
 
             overrideController["Attack0"] = randomClip;
 
-            animator.SetTrigger(Attack);
+            animator.SetTrigger(AnimHashes.Attack);
         }
     }
 }

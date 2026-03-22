@@ -1,4 +1,5 @@
 using _Scripts._Gameplay._Player;
+using _Scripts._Systems.Utils;
 using _Scripts.enums;
 using UnityEngine;
 
@@ -27,7 +28,7 @@ namespace _Scripts._Gameplay.PickUps
 
         private void Start()
         {
-            _player = GameObject.FindGameObjectWithTag("Player")?.transform;
+            _player = GameObject.FindGameObjectWithTag(GameTags.Player)?.transform;
             if (_player is not null)
             {
                 _pistol = _player.GetComponentInParent<PistolProfiler>();
@@ -58,26 +59,16 @@ namespace _Scripts._Gameplay.PickUps
             switch (itemType)
             {
                 case ItemType.Health:
-                    if (_playerHealth is not null)
-                    {
-                        return _playerHealth.GetCurrentHealth() < _playerHealth.GetMaxHealth();
-                    }
-
-                    break;
+                    return _playerHealth is not null &&
+                           _playerHealth.GetCurrentHealth() < _playerHealth.GetMaxHealth();
 
                 case ItemType.Ammo:
-                    if (_pistol is not null)
-                    {
-                        return _pistol.storedAmmo < _pistol.maxStoredAmmo;
-                    }
-
-                    break;
+                    return _pistol is not null &&
+                           _pistol.GetStoredAmmo() < _pistol.GetMaxStoredAmmo();
 
                 default:
                     return true;
             }
-
-            return true;
         }
 
         private void OnTriggerEnter(Collider other)
@@ -97,7 +88,7 @@ namespace _Scripts._Gameplay.PickUps
 
                 case ItemType.Ammo:
                     if (other.TryGetComponent(out PistolProfiler pistol) &&
-                        pistol.storedAmmo < pistol.maxStoredAmmo)
+                        pistol.GetStoredAmmo() < pistol.GetMaxStoredAmmo())
                     {
                         pistol.RefillAmmo(itemValue);
                         PlayPickupSound();

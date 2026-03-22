@@ -34,6 +34,54 @@ namespace _Scripts._Systems.Managers
 
         #endregion
 
+        #region Load
+
+        private static SaveData _cachedData;
+        private static int _cacheFrame = -1;
+
+        // Single read from disk per frame. Multiple callers in the same frame share one read.
+        public static SaveData LoadFromDisk()
+        {
+            if (_cacheFrame == Time.frameCount)
+                return _cachedData;
+
+            _cacheFrame = Time.frameCount;
+
+            var savePath = GetSaveFilePath();
+            if (!File.Exists(savePath))
+            {
+                _cachedData = null;
+                return null;
+            }
+
+            try
+            {
+                var json = File.ReadAllText(savePath);
+                _cachedData = JsonUtility.FromJson<SaveData>(json);
+                return _cachedData;
+            }
+            catch (Exception e)
+            {
+                Debug.LogError($"[SaveManager] LoadFromDisk failed: {e.Message}");
+                _cachedData = null;
+                return null;
+            }
+        }
+
+        public static void LoadGame(PlayerProfiler player, PlayerHealth health, PistolProfiler pistol)
+        {
+            var data = LoadFromDisk();
+            if (data == null) return;
+
+            health.SetCurrentHealth(data.playerHealth);
+            pistol.SetAmmo(data.clipAmmo, data.storedAmmo);
+
+            Debug.Log($"[SaveManager] Loading level: {data.savedLevel}");
+            SceneManager.LoadScene(data.savedLevel);
+        }
+
+        #endregion
+
         #region Save
 
         public static async void SaveGame(PlayerProfiler player, PlayerHealth health, PistolProfiler pistol)
@@ -64,32 +112,6 @@ namespace _Scripts._Systems.Managers
             catch (Exception e)
             {
                 Debug.LogError($"[SaveManager] SaveGame failed: {e.Message}");
-            }
-        }
-
-        #endregion
-
-        #region Load
-
-        public static void LoadGame(PlayerProfiler player, PlayerHealth health, PistolProfiler pistol)
-        {
-            var savePath = GetSaveFilePath();
-            if (!File.Exists(savePath)) return;
-
-            try
-            {
-                var json = File.ReadAllText(savePath);
-                var data = JsonUtility.FromJson<SaveData>(json);
-
-                health.SetCurrentHealth(data.playerHealth);
-                pistol.SetAmmo(data.clipAmmo, data.storedAmmo);
-
-                Debug.Log($"[SaveManager] Loading level: {data.savedLevel}");
-                SceneManager.LoadScene(data.savedLevel);
-            }
-            catch (Exception e)
-            {
-                Debug.LogError($"[SaveManager] LoadGame failed: {e.Message}");
             }
         }
 

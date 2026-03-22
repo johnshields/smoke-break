@@ -1,3 +1,4 @@
+using _Scripts._Systems.Utils;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -13,8 +14,8 @@ namespace _Scripts._Systems.UI
 
         private void Start()
         {
-            _target = GameObject.FindGameObjectWithTag("Player").transform;
-            _northPoint = GameObject.FindGameObjectWithTag("NorthPoint").transform;
+            _target = GameObject.FindGameObjectWithTag(GameTags.Player)?.transform;
+            _northPoint = GameObject.FindGameObjectWithTag(GameTags.NorthPoint)?.transform;
             _compassImage = GetComponent<RawImage>();
         }
 

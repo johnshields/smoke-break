@@ -1,8 +1,7 @@
 using System.Collections;
-using System.IO;
 using _Scripts._Systems.Managers;
-using _Scripts._Systems.Objects;
 using _Scripts._Systems.UI;
+using _Scripts._Systems.Utils;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -13,14 +12,6 @@ namespace _Scripts._Gameplay._Player
     {
         #region Variables
 
-        private string _savePath;
-
-        private static readonly int
-            GroundedAnim = Animator.StringToHash("Grounded"),
-            SpeedAnim = Animator.StringToHash("Speed"),
-            JumpAnim = Animator.StringToHash("Jump"),
-            DodgeBackAnim = Animator.StringToHash("DodgeBack"),
-            DodgeRollAnim = Animator.StringToHash("DodgeRoll");
 
         private Rigidbody _rigidbody;
         private Animator _animator;
@@ -70,22 +61,22 @@ namespace _Scripts._Gameplay._Player
 
         private void Awake()
         {
-            _savePath = SaveManager.GetSaveFilePath();
-
             _rigidbody = GetComponent<Rigidbody>();
             _animator = GetComponent<Animator>();
             _playerHealth = GetComponent<PlayerHealth>();
             _playerStamina = GetComponent<PlayerStamina>();
-            _actions = new InputControls();
+            _actions = InputProvider.Controls;
             _mainCamera = Camera.main;
 
             _pauseMenu = FindFirstObjectByType<PauseMenu>();
             _moveKeys = _actions.Profiler.Movement;
 
             grounded = true;
-            _animator.SetBool(GroundedAnim, true);
+            _animator.SetBool(AnimHashes.Grounded, true);
 
-            LoadPlayerPosition();
+            var saveData = SaveManager.LoadFromDisk();
+            if (saveData != null)
+                transform.position = new Vector3(saveData.playerX, saveData.playerY, saveData.playerZ);
         }
 
         private void OnEnable()
@@ -115,10 +106,10 @@ namespace _Scripts._Gameplay._Player
 
         private void OnCollisionEnter(Collision collision)
         {
-            if (collision.gameObject.layer == LayerMask.NameToLayer("Ground"))
+            if (collision.gameObject.layer == LayerMask.NameToLayer(GameTags.Ground))
             {
                 grounded = true;
-                _animator.SetBool(GroundedAnim, true);
+                _animator.SetBool(AnimHashes.Grounded, true);
                 Invoke(nameof(EnableJump), .2f);
             }
         }
@@ -150,20 +141,6 @@ namespace _Scripts._Gameplay._Player
 
         #endregion
 
-        #region Position
-
-        private void LoadPlayerPosition()
-        {
-            if (File.Exists(_savePath))
-            {
-                var json = File.ReadAllText(_savePath);
-                var data = JsonUtility.FromJson<SaveData>(json);
-                transform.position = new Vector3(data.playerX, data.playerY, data.playerZ);
-            }
-        }
-
-        #endregion
-
         #region Movement
 
         private void MoveCharacter(Vector2 input)
@@ -188,7 +165,7 @@ namespace _Scripts._Gameplay._Player
 
             if (!grounded || !_groundedGravity) return;
 
-            _animator.SetFloat(SpeedAnim, (_rigidbody.linearVelocity.magnitude / MaxSpeed) * speedMultiplier);
+            _animator.SetFloat(AnimHashes.Speed, (_rigidbody.linearVelocity.magnitude / MaxSpeed) * speedMultiplier);
         }
 
         private void RotateCharacter(Vector2 input)
@@ -223,8 +200,8 @@ namespace _Scripts._Gameplay._Player
 
             _canJump = false;
             grounded = false;
-            _animator.SetBool(GroundedAnim, false);
-            _animator.SetTrigger(JumpAnim);
+            _animator.SetBool(AnimHashes.Grounded, false);
+            _animator.SetTrigger(AnimHashes.Jump);
             Invoke(nameof(DelayedJump), .2f);
         }
 
@@ -247,11 +224,11 @@ namespace _Scripts._Gameplay._Player
 
             if (isMoving)
             {
-                _animator.SetTrigger(DodgeRollAnim);
+                _animator.SetTrigger(AnimHashes.DodgeRoll);
             }
             else
             {
-                _animator.SetTrigger(DodgeBackAnim);
+                _animator.SetTrigger(AnimHashes.DodgeBack);
                 dodgeDirection = -transform.forward;
             }
 

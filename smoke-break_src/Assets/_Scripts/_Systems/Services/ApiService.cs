@@ -21,7 +21,7 @@ namespace _Scripts._Systems.Services
             var online = await IsApiOnline();
             Debug.Log(online
                 ? "[ApiService] API is online."
-                : "[ApiService] API unreachable — running offline.");
+                : "[ApiService] API unreachable - running offline.");
         }
 
         private static async Task<bool> IsApiOnline()

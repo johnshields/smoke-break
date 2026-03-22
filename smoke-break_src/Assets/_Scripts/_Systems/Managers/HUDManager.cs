@@ -1,5 +1,6 @@
 using System.Collections;
 using _Scripts._Gameplay._Player;
+using _Scripts._Systems.Utils;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -67,9 +68,9 @@ namespace _Scripts._Systems.Managers
 
         private void Start()
         {
-            _pistol = FindFirstObjectByType<PistolProfiler>();
-            _player = FindFirstObjectByType<PlayerProfiler>();
-            _playerHealth = FindFirstObjectByType<PlayerHealth>();
+            _pistol = PlayerRefs.Pistol;
+            _player = PlayerRefs.Profiler;
+            _playerHealth = PlayerRefs.Health;
             _boostPack = FindFirstObjectByType<BoostPack>();
             _boostCooldown = _boostPack.GetBoostCooldown();
 
@@ -98,7 +99,7 @@ namespace _Scripts._Systems.Managers
         private void UpdateAmmo()
         {
             if (bulletCounter is null) return;
-            bulletCounter.text = $"{_pistol.currentClip}/{_pistol.storedAmmo}";
+            bulletCounter.text = $"{_pistol.GetCurrentClip()}/{_pistol.GetStoredAmmo()}";
         }
 
         #endregion

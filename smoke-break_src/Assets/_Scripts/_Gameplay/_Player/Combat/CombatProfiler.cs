@@ -1,6 +1,7 @@
 using System.Collections;
 using _Scripts._Gameplay.AI;
 using _Scripts._Systems.Managers;
+using _Scripts._Systems.Utils;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -38,9 +39,6 @@ namespace _Scripts._Gameplay._Player
             StaggerMovementForce = 0.5f,
             StaggerKnockbackForce = 20f;
 
-        private static readonly int
-            InjuredAnim = Animator.StringToHash("Injured"),
-            StaggerAnim = Animator.StringToHash("Stagger");
 
         #endregion
 
@@ -77,7 +75,7 @@ namespace _Scripts._Gameplay._Player
         private void Awake()
         {
             _randomAnimation = GetComponent<RandomAnimation>();
-            _actions = new InputControls();
+            _actions = InputProvider.Controls;
             _playerMovement = GetComponent<PlayerMovement>();
             _playerHealth = GetComponent<PlayerHealth>();
             _animator = GetComponent<Animator>();
@@ -86,7 +84,7 @@ namespace _Scripts._Gameplay._Player
             axe.SetActive(false);
 
             var isLowHealth = _playerHealth.GetCurrentHealth() <= injuryThreshold;
-            _animator.SetBool(InjuredAnim, isLowHealth);
+            _animator.SetBool(AnimHashes.Injured, isLowHealth);
         }
 
         private void OnEnable()
@@ -159,7 +157,7 @@ namespace _Scripts._Gameplay._Player
 
         public IEnumerator StaggerEffect()
         {
-            _animator.SetTrigger(StaggerAnim);
+            _animator.SetTrigger(AnimHashes.Stagger);
 
             if (staggerSound is not null && audioSource is not null)
                 audioSource.PlayOneShot(staggerSound);
@@ -181,7 +179,7 @@ namespace _Scripts._Gameplay._Player
             var isStandingStill = _playerMovement.GetMoveInput().sqrMagnitude < 0.01f;
 
             var shouldBeInjured = isLowHealth && isStandingStill;
-            _animator.SetBool(InjuredAnim, shouldBeInjured);
+            _animator.SetBool(AnimHashes.Injured, shouldBeInjured);
 
             HandleHeartbeat(isLowHealth);
         }

@@ -1,7 +1,6 @@
 using System.Collections;
-using System.IO;
 using _Scripts._Systems.Managers;
-using _Scripts._Systems.Objects;
+using _Scripts._Systems.Utils;
 using UnityEngine;
 
 namespace _Scripts._Gameplay._Player
@@ -10,8 +9,6 @@ namespace _Scripts._Gameplay._Player
     {
         #region Fields
 
-        private string _savePath;
-        private static readonly int Fall = Animator.StringToHash("Fall");
         public bool isRespawning = false;
 
         #endregion
@@ -42,7 +39,6 @@ namespace _Scripts._Gameplay._Player
         private CombatProfiler _combatProfiler;
         private PistolProfiler _pistolProfiler;
         private Animator _animator;
-        private HUDManager _hudComponent;
 
         #endregion
 
@@ -50,9 +46,6 @@ namespace _Scripts._Gameplay._Player
 
         private void Awake()
         {
-            _savePath = SaveManager.GetSaveFilePath();
-
-            _hudComponent = hudManager.GetComponent<HUDManager>();
             _player = GetComponent<PlayerProfiler>();
             _playerHealth = GetComponent<PlayerHealth>();
             _combatProfiler = GetComponent<CombatProfiler>();
@@ -67,8 +60,8 @@ namespace _Scripts._Gameplay._Player
         public void InitRespawn()
         {
             PlayDeathSound();
-            _animator.SetTrigger(Fall);
-            _hudComponent.ShowDeathMessage();
+            _animator.SetTrigger(AnimHashes.Fall);
+            hudManager.ShowDeathMessage();
 
             DisablePlayerActions();
             StartCoroutine(Respawn());
@@ -88,10 +81,8 @@ namespace _Scripts._Gameplay._Player
 
         private void SetRespawnPoint()
         {
-            if (!File.Exists(_savePath)) return;
-
-            var json = File.ReadAllText(_savePath);
-            var data = JsonUtility.FromJson<SaveData>(json);
+            var data = SaveManager.LoadFromDisk();
+            if (data == null) return;
 
             var savedPosition = new Vector3(data.playerX, data.playerY, data.playerZ);
             respawnPoint.position = savedPosition;

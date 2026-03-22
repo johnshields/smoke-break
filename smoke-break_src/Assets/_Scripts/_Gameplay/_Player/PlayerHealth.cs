@@ -1,6 +1,4 @@
-using System.IO;
 using _Scripts._Systems.Managers;
-using _Scripts._Systems.Objects;
 using UnityEngine;
 
 namespace _Scripts._Gameplay._Player
@@ -9,7 +7,6 @@ namespace _Scripts._Gameplay._Player
     {
         #region Fields
 
-        private string _savePath;
         private bool _invulnerable;
         private PlayerRespawner _respawner;
         private PlayerProfiler _player;
@@ -29,11 +26,12 @@ namespace _Scripts._Gameplay._Player
 
         private void Awake()
         {
-            _savePath = SaveManager.GetSaveFilePath();
             _player = GetComponent<PlayerProfiler>();
             _respawner = GetComponent<PlayerRespawner>();
 
-            LoadHealth();
+            var saveData = SaveManager.LoadFromDisk();
+            if (saveData != null)
+                currentHealth = saveData.playerHealth;
         }
 
         private void Update()
@@ -51,7 +49,6 @@ namespace _Scripts._Gameplay._Player
         public void SetCurrentHealth(int health)
         {
             currentHealth = health;
-            SaveHealth();
         }
 
         public void RestoreHealth(int amount)
@@ -83,34 +80,6 @@ namespace _Scripts._Gameplay._Player
                 _respawner.isRespawning = true;
                 _respawner.InitRespawn();
             }
-        }
-
-        #endregion
-
-        #region Save System
-
-        private void LoadHealth()
-        {
-            if (File.Exists(_savePath))
-            {
-                var json = File.ReadAllText(_savePath);
-                var data = JsonUtility.FromJson<SaveData>(json);
-                currentHealth = data.playerHealth;
-            }
-            else
-            {
-                currentHealth = 30;
-            }
-        }
-
-        private void SaveHealth()
-        {
-            if (!File.Exists(_savePath)) return;
-
-            var json = File.ReadAllText(_savePath);
-            var data = JsonUtility.FromJson<SaveData>(json);
-            data.playerHealth = currentHealth;
-            File.WriteAllText(_savePath, JsonUtility.ToJson(data, true));
         }
 
         #endregion

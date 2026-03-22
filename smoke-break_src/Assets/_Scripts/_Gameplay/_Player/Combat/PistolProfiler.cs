@@ -1,7 +1,6 @@
 using System.Collections;
-using System.IO;
 using _Scripts._Systems.Managers;
-using _Scripts._Systems.Objects;
+using _Scripts._Systems.Utils;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -11,7 +10,6 @@ namespace _Scripts._Gameplay._Player
     {
         #region Variables
 
-        private static readonly int ShootHash = Animator.StringToHash("Shoot");
 
         [Header("Pistol Settings")] [SerializeField]
         private GameObject bulletPrefab;
@@ -23,9 +21,9 @@ namespace _Scripts._Gameplay._Player
         [Header("Ammo Settings")] [SerializeField]
         private int maxClipSize = 10;
 
-        [SerializeField] public int maxStoredAmmo = 99;
-        [SerializeField] public int currentClip;
-        [SerializeField] public int storedAmmo;
+        [SerializeField] private int maxStoredAmmo = 99;
+        [SerializeField] private int currentClip;
+        [SerializeField] private int storedAmmo;
         [SerializeField] private bool unlimitedAmmo;
 
         [Header("Effects")] [SerializeField] private GameObject muzzleFlashPrefab;
@@ -68,8 +66,6 @@ namespace _Scripts._Gameplay._Player
         private bool _isAiming;
         private Vector3 _aimTarget;
         private bool _reloadTriggered;
-        private string _playerId;
-        private string _savePath;
 
         #endregion
 
@@ -77,9 +73,7 @@ namespace _Scripts._Gameplay._Player
 
         private void Awake()
         {
-            _savePath = SaveManager.GetSaveFilePath();
-
-            _actions = new InputControls();
+            _actions = InputProvider.Controls;
             _player = GetComponent<PlayerProfiler>();
             _animator = GetComponent<Animator>();
             pistol.SetActive(false);
@@ -93,7 +87,12 @@ namespace _Scripts._Gameplay._Player
             _worldCrosshair.transform.localScale *= 1.5f;
             _moveKeys = _actions.Profiler.Movement;
 
-            LoadAmmo();
+            var saveData = SaveManager.LoadFromDisk();
+            if (saveData != null)
+            {
+                currentClip = saveData.clipAmmo;
+                storedAmmo = saveData.storedAmmo;
+            }
         }
 
         private void OnEnable()
@@ -140,43 +139,16 @@ namespace _Scripts._Gameplay._Player
 
         #region Ammo
 
-        private void LoadAmmo()
-        {
-            if (File.Exists(_savePath))
-            {
-                var json = File.ReadAllText(_savePath);
-                var data = JsonUtility.FromJson<SaveData>(json);
-                currentClip = data.clipAmmo;
-                storedAmmo = data.storedAmmo;
-            }
-            else
-            {
-                currentClip = 9;
-                storedAmmo = 27;
-            }
-        }
-
         public int GetCurrentClip() => currentClip;
 
         public int GetStoredAmmo() => storedAmmo;
+
+        public int GetMaxStoredAmmo() => maxStoredAmmo;
 
         public void SetAmmo(int clip, int stored)
         {
             currentClip = clip;
             storedAmmo = stored;
-            SaveAmmo();
-        }
-
-        private void SaveAmmo()
-        {
-            if (File.Exists(_savePath))
-            {
-                var json = File.ReadAllText(_savePath);
-                var data = JsonUtility.FromJson<SaveData>(json);
-                data.clipAmmo = currentClip;
-                data.storedAmmo = storedAmmo;
-                File.WriteAllText(_savePath, JsonUtility.ToJson(data, true));
-            }
         }
 
         public void RefillAmmo(int amount)
@@ -299,7 +271,7 @@ namespace _Scripts._Gameplay._Player
             pistol.SetActive(true);
 
             _canShoot = false;
-            _animator.SetTrigger(ShootHash);
+            _animator.SetTrigger(AnimHashes.Shoot);
             StartCoroutine(ShootWithDelay());
         }
 

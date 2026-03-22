@@ -1,5 +1,6 @@
 using System.Collections;
 using _Scripts._Gameplay._Player;
+using _Scripts._Systems.Utils;
 using _Scripts.enums;
 using UnityEngine;
 using UnityEngine.AI;
@@ -10,12 +11,6 @@ namespace _Scripts._Gameplay.AI
     [RequireComponent(typeof(NavMeshAgent), typeof(Animator))]
     public class EnemyAI : MonoBehaviour
     {
-        #region Animation Hashes
-
-        private static readonly int IsAttacking = Animator.StringToHash("IsAttacking"),
-            SpeedAnim = Animator.StringToHash("Speed");
-
-        #endregion
 
         #region Constants
 
@@ -29,8 +24,6 @@ namespace _Scripts._Gameplay.AI
         private const float NavMeshSampleRange = 10f;
         private const int NavMeshSampleAttempts = 5;
         private const float NavMeshInitDelay = 0.1f;
-        private const float DodgeCooldown = 0.2f;
-
         #endregion
 
         #region Serialised Fields
@@ -70,7 +63,7 @@ namespace _Scripts._Gameplay.AI
             _agent = GetComponent<NavMeshAgent>();
             _animator = GetComponent<Animator>();
 
-            var playerObject = GameObject.FindGameObjectWithTag("Player");
+            var playerObject = GameObject.FindGameObjectWithTag(GameTags.Player);
             if (playerObject == null)
             {
                 Debug.LogError($"{gameObject.name} could not find Player! Disabling AI.");
@@ -126,19 +119,19 @@ namespace _Scripts._Gameplay.AI
             switch (newState)
             {
                 case AIState.Patrolling:
-                    _animator.SetFloat(SpeedAnim, 0f);
-                    _animator.SetBool(IsAttacking, false);
+                    _animator.SetFloat(AnimHashes.Speed, 0f);
+                    _animator.SetBool(AnimHashes.IsAttacking, false);
                     _agent.isStopped = false;
                     CancelLosePlayerCoroutine();
                     break;
 
                 case AIState.Chasing:
-                    _animator.SetBool(IsAttacking, false);
+                    _animator.SetBool(AnimHashes.IsAttacking, false);
                     _agent.isStopped = false;
                     break;
 
                 case AIState.Attacking:
-                    _animator.SetFloat(SpeedAnim, 0f);
+                    _animator.SetFloat(AnimHashes.Speed, 0f);
                     _agent.isStopped = true;
                     _agent.velocity = Vector3.zero;
                     CancelLosePlayerCoroutine();
@@ -197,7 +190,7 @@ namespace _Scripts._Gameplay.AI
             if (_agent.isOnNavMesh)
             {
                 _agent.SetDestination(_player.position);
-                _animator.SetFloat(SpeedAnim, _agent.velocity.magnitude);
+                _animator.SetFloat(AnimHashes.Speed, _agent.velocity.magnitude);
                 RotateTowards(_player.position);
             }
 
@@ -214,7 +207,7 @@ namespace _Scripts._Gameplay.AI
             {
                 _agent.isStopped = true;
                 _agent.velocity = Vector3.zero;
-                _animator.SetFloat(SpeedAnim, 0f);
+                _animator.SetFloat(AnimHashes.Speed, 0f);
 
                 yield return new WaitForSeconds(IdlePauseBeforePatrol);
                 SetState(AIState.Patrolling);
@@ -234,7 +227,7 @@ namespace _Scripts._Gameplay.AI
         private IEnumerator AttackPlayer()
         {
             _canAttack = false;
-            _animator.SetBool(IsAttacking, true);
+            _animator.SetBool(AnimHashes.IsAttacking, true);
 
             if (attackSound is not null && audioSource is not null)
                 audioSource.PlayOneShot(attackSound);
