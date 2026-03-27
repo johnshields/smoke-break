@@ -3,7 +3,7 @@ Save Routes
 HTTP endpoints for player save data.
 """
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Request
 from pydantic import BaseModel
 from controllers import saves_controller
 
@@ -23,20 +23,23 @@ class SaveData(BaseModel):
 
 
 @router.post("")
-def upload_save(save_data: SaveData):
-    return saves_controller.upload_save(save_data.model_dump())
+async def upload_save(request: Request, save_data: SaveData):
+    db = request.app.state.db
+    return await saves_controller.upload_save(db, save_data.model_dump())
 
 
 @router.get("/{player_id}")
-def download_save(player_id: str):
-    result = saves_controller.download_save(player_id)
+async def download_save(request: Request, player_id: str):
+    db = request.app.state.db
+    result = await saves_controller.download_save(db, player_id)
     if result is None:
         raise HTTPException(status_code=404, detail="Save not found.")
     return result
 
 
 @router.delete("/{player_id}")
-def delete_save(player_id: str):
-    if not saves_controller.delete_save(player_id):
+async def delete_save(request: Request, player_id: str):
+    db = request.app.state.db
+    if not await saves_controller.delete_save(db, player_id):
         raise HTTPException(status_code=404, detail="Save not found.")
     return {"status": "success", "message": "Save deleted."}

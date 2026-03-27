@@ -1,48 +1,78 @@
 """
 Saves Controller
-Handles save/load/delete business logic for player save data.
+Save/load/delete business logic against D1 (SQLite).
 """
 
 import json
-import os
-from app.config import SAVES_DIR
-from app.logger import info, error
+import secrets
+from app.logger import info
 
 
-def _save_path(player_id: str) -> str:
-    return os.path.join(SAVES_DIR, f"{player_id}.json")
+def _gen_uid(prefix: str) -> str:
+    hex_part = secrets.token_hex(4).upper()[:6]
+    return f"{prefix}_{hex_part}"
 
 
-def upload_save(data: dict) -> dict:
-    os.makedirs(SAVES_DIR, exist_ok=True)
-    path = _save_path(data["player_id"])
+async def upload_save(db, data: dict) -> dict:
+    uid = _gen_uid("SAV")
+    position = json.dumps({"x": data["playerX"], "y": data["playerY"], "z": data["playerZ"]})
 
-    with open(path, "w") as f:
-        json.dump(data, f, indent=2)
+    await db.prepare("""
+        INSERT INTO saves (
+            uid, player_id,
+            player_position, player_health, clip_ammo, stored_ammo, saved_level,
+            saved_at
+        )
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+        ON CONFLICT(player_id) DO UPDATE SET
+            player_position = excluded.player_position,
+            player_health   = excluded.player_health,
+            clip_ammo       = excluded.clip_ammo,
+            stored_ammo     = excluded.stored_ammo,
+            saved_level     = excluded.saved_level,
+            saved_at        = excluded.saved_at,
+            deleted_at      = NULL
+    """).bind(
+        uid,
+        data["player_id"],
+        position, data["playerHealth"], data["clipAmmo"],
+        data["storedAmmo"], data["savedLevel"],
+        data["saved_at"]
+    ).run()
 
-    info(f"Save uploaded for player: {data['player_id']}")
-    return {"status": "success", "message": "Save uploaded."}
+    info(f"Save uploaded for player: {data['player_id']} [{uid}]")
+    return {"status": "success", "message": "Save uploaded.", "uid": uid}
 
 
-def download_save(player_id: str) -> dict | None:
-    path = _save_path(player_id)
+async def download_save(db, player_id: str) -> dict | None:
+    row = await db.prepare("""
+        SELECT * FROM saves
+        WHERE player_id = ?
+          AND deleted_at IS NULL
+    """).bind(player_id).first()
 
-    if not os.path.exists(path):
+    if not row:
         return None
 
-    with open(path) as f:
-        data = json.load(f)
-
     info(f"Save downloaded for player: {player_id}")
-    return {"status": "success", "data": data}
+    return {"status": "success", "data": dict(row)}
 
 
-def delete_save(player_id: str) -> bool:
-    path = _save_path(player_id)
+async def delete_save(db, player_id: str) -> bool:
+    row = await db.prepare("""
+        SELECT player_id FROM saves
+        WHERE player_id = ?
+          AND deleted_at IS NULL
+    """).bind(player_id).first()
 
-    if not os.path.exists(path):
+    if not row:
         return False
 
-    os.remove(path)
-    info(f"Save deleted for player: {player_id}")
+    await db.prepare("""
+        UPDATE saves
+        SET deleted_at = strftime('%Y-%m-%dT%H:%M:%fZ', 'now')
+        WHERE player_id = ?
+    """).bind(player_id).run()
+
+    info(f"Save soft-deleted for player: {player_id}")
     return True

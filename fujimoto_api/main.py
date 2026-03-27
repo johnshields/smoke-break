@@ -36,7 +36,6 @@ app = FastAPI(
 _started_at = time.time()
 
 
-# CORS
 app.add_middleware(
     CORSMiddleware,
     allow_origins=config.CORS_ORIGINS,
@@ -45,11 +44,9 @@ app.add_middleware(
     allow_headers=["Content-Type"],
 )
 
-# Request logging
 app.add_middleware(RequestLoggerMiddleware)
 
 
-# HTTPException handler — matches boilerplate error shape
 @app.exception_handler(HTTPException)
 async def http_exception_handler(request: Request, exc: HTTPException):
     return JSONResponse(
@@ -58,7 +55,6 @@ async def http_exception_handler(request: Request, exc: HTTPException):
     )
 
 
-# Global error handler
 @app.exception_handler(Exception)
 async def global_exception_handler(request: Request, exc: Exception):
     error(f"Unhandled exception on [{request.method}] {request.url.path}: {exc}")
@@ -68,7 +64,6 @@ async def global_exception_handler(request: Request, exc: Exception):
     )
 
 
-# Health check
 @app.get("/", tags=["Health"])
 def root():
     uptime = round(time.time() - _started_at, 1)
@@ -81,7 +76,6 @@ def root():
     }
 
 
-# Routes
 app.include_router(routes.router)
 app.include_router(saves.router)
 

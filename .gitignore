@@ -80,6 +80,7 @@ smoke-break_src.slnx
 
 # API data
 fujimoto_api/data/
+.wrangler/
 
 # Misc
 temp/

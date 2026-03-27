@@ -1,0 +1,9 @@
+name = "fujimoto-api"
+main = "src/entry.py"
+compatibility_date = "2026-03-27"
+compatibility_flags = ["python_workers"]
+
+[[d1_databases]]
+binding = "DB"
+database_name = "fujimoto"
+database_id = "c6276a92-2786-430c-99c0-34633a5a1f89"
