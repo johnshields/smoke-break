@@ -8,6 +8,7 @@ namespace _Scripts._Systems.Objects
     public class AppConfig
     {
         public string apiBaseUrl;
+        public string apiKey;
 
         private static AppConfig _instance;
 
@@ -20,7 +21,7 @@ namespace _Scripts._Systems.Objects
             if (!File.Exists(path))
             {
                 Debug.LogWarning("[AppConfig] config.json not found in StreamingAssets. Using defaults.");
-                _instance = new AppConfig { apiBaseUrl = "" };
+                _instance = new AppConfig { apiBaseUrl = "", apiKey = "" };
                 return _instance;
             }
 

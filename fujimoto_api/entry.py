@@ -8,6 +8,7 @@ import time
 from urllib.parse import urlparse
 from workers import WorkerEntrypoint, Response
 from app import config
+from middleware.auth import authenticate
 from routes import routes, saves
 _started_at = time.time()
 
@@ -24,7 +25,7 @@ def _cors_headers() -> dict:
     return {
         "Access-Control-Allow-Origin": config.CORS_ORIGINS,
         "Access-Control-Allow-Methods": "GET, POST, DELETE, OPTIONS",
-        "Access-Control-Allow-Headers": "Content-Type",
+        "Access-Control-Allow-Headers": "Content-Type, Authorization, X-API-Key",
         "Access-Control-Allow-Credentials": "true",
     }
 
@@ -36,12 +37,19 @@ def _parse_path(url: str) -> str:
 class Default(WorkerEntrypoint):
     async def fetch(self, request):
         db = self.env.DB
+        api_key = self.env.API_KEY
         method = request.method
         path = _parse_path(request.url)
         start = time.time()
 
         if method == "OPTIONS":
             return Response("", status=204, headers=_cors_headers())
+
+        auth_error = authenticate(request, path, api_key)
+        if auth_error:
+            for key, value in _cors_headers().items():
+                auth_error.headers[key] = value
+            return auth_error
 
         try:
             response = await self._route(db, method, path, request)

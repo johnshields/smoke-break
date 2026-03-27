@@ -39,6 +39,7 @@ jobs:
           python -m py_compile models/save.py
           python -m py_compile controllers/saves_controller.py
           python -m py_compile routes/routes.py
+          python -m py_compile middleware/auth.py
           python -m py_compile routes/saves.py
 
   smoke-test:

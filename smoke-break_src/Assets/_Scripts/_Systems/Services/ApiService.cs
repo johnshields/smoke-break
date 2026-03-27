@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 using _Scripts._Systems.Objects;
@@ -10,6 +11,7 @@ namespace _Scripts._Systems.Services
     public static class ApiService
     {
         private static string BaseUrl => AppConfig.Load().apiBaseUrl;
+        private static string ApiKey => AppConfig.Load().apiKey;
         private static readonly HttpClient Client = new();
         private static DateTime _lastOnlineCheck = DateTime.MinValue;
         private static bool _lastOnlineStatus = false;
@@ -62,8 +64,12 @@ namespace _Scripts._Systems.Services
             try
             {
                 var json = JsonUtility.ToJson(saveData, true);
-                var content = new StringContent(json, Encoding.UTF8, "application/json");
-                var response = await Client.PostAsync($"{BaseUrl}/api/saves", content);
+                var request = new HttpRequestMessage(HttpMethod.Post, $"{BaseUrl}/api/saves")
+                {
+                    Content = new StringContent(json, Encoding.UTF8, "application/json")
+                };
+                request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", ApiKey);
+                var response = await Client.SendAsync(request);
                 
                 return response.IsSuccessStatusCode;
             }
@@ -80,7 +86,9 @@ namespace _Scripts._Systems.Services
 
             try
             {
-                var response = await Client.GetAsync($"{BaseUrl}/api/saves/{playerId}");
+                var request = new HttpRequestMessage(HttpMethod.Get, $"{BaseUrl}/api/saves/{playerId}");
+                request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", ApiKey);
+                var response = await Client.SendAsync(request);
                 if (!response.IsSuccessStatusCode)
                 {
                     Debug.LogWarning($"[ApiService] Download failed: {response.StatusCode}");
@@ -104,7 +112,9 @@ namespace _Scripts._Systems.Services
 
             try
             {
-                var response = await Client.DeleteAsync($"{BaseUrl}/api/saves/{playerId}");
+                var request = new HttpRequestMessage(HttpMethod.Delete, $"{BaseUrl}/api/saves/{playerId}");
+                request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", ApiKey);
+                var response = await Client.SendAsync(request);
                 return response.IsSuccessStatusCode;
             }
             catch (Exception e)
