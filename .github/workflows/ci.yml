@@ -39,18 +39,27 @@ jobs:
 
   deploy:
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 10
     needs: [lint]
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    defaults:
+      run:
+        working-directory: fujimoto_api
 
     steps:
       - uses: actions/checkout@v4
 
-      - name: Deploy to Cloudflare Workers
-        uses: cloudflare/wrangler-action@v3
+      - uses: actions/setup-python@v5
         with:
-          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          workingDirectory: fujimoto_api
+          python-version: "3.12"
+
+      - name: Install uv
+        run: pip install uv
+
+      - name: Deploy to Cloudflare Workers
+        run: uvx --from workers-py pywrangler deploy
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
 
   smoke-test:
     runs-on: ubuntu-latest
