@@ -33,47 +33,22 @@ jobs:
           python-version: "3.12"
 
       - name: Check for syntax errors
-        run: python -m py_compile entry.py
-
-      - name: Check controller syntax
-        run: python -m py_compile controllers/saves_controller.py
-
-      - name: Check route syntax
         run: |
+          python -m py_compile entry.py
+          python -m py_compile app/config.py
+          python -m py_compile models/save.py
+          python -m py_compile controllers/saves_controller.py
           python -m py_compile routes/routes.py
           python -m py_compile routes/saves.py
-
-  deploy:
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    needs: [lint]
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-    defaults:
-      run:
-        working-directory: fujimoto_api
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
-
-      - name: Install uv
-        run: pip install uv
-
-      - name: Deploy to Cloudflare Workers
-        run: uvx --from workers-py pywrangler deploy
-        env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
 
   smoke-test:
     runs-on: ubuntu-latest
     timeout-minutes: 5
-    needs: [deploy]
+    needs: [lint]
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
 
     steps:
-      - name: Test health endpoint
+      - name: Test endpoints
         run: |
           set -e
           WORKER_URL="${{ secrets.FUJIMOTO_WORKER_URL }}"
