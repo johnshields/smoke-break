@@ -1,0 +1,9 @@
+.venv/
+.venv-workers/
+venv/
+python_modules/
+__pycache__/
+data/
+.wrangler/
+.env
+README.md
