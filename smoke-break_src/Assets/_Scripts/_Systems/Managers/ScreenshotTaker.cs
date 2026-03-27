@@ -1,7 +1,7 @@
 using System;
 using System.IO;
 using UnityEngine;
-using Input = UnityEngine.Input;
+using UnityEngine.InputSystem;
 
 namespace _Scripts._Systems.Managers
 {
@@ -12,7 +12,7 @@ namespace _Scripts._Systems.Managers
 
         private void Update()
         {
-            if (Input.GetKeyDown(KeyCode.P))
+            if (Keyboard.current.pKey.wasPressedThisFrame)
             {
                 SaveScreenshot();
             }
