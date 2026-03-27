@@ -18,8 +18,6 @@ _started_at = time.time()
 
 class Default(WorkerEntrypoint):
     async def fetch(self, request):
-        db = self.env.DB
-        api_key = self.env.FUJIMOTO_API_KEY
         method = request.method
         path = parse_path(request.url)
         start = time.time()
@@ -27,11 +25,14 @@ class Default(WorkerEntrypoint):
         if method == "OPTIONS":
             return preflight()
 
-        auth_error = authenticate(request, path, api_key)
-        if auth_error:
-            return apply(auth_error)
-
         try:
+            db = self.env.DB
+            api_key = getattr(self.env, "FUJIMOTO_API_KEY", None)
+
+            auth_error = authenticate(request, path, api_key)
+            if auth_error:
+                return apply(auth_error)
+
             response = await resolve(db, method, path, request, _started_at)
         except Exception as e:
             error(f"Unhandled exception on [{method}] {path}: {e}")
