@@ -29,6 +29,7 @@ async def upload_save(db, data: dict) -> dict:
             stored_ammo     = excluded.stored_ammo,
             saved_level     = excluded.saved_level,
             saved_at        = excluded.saved_at,
+            updated_at      = strftime('%Y-%m-%dT%H:%M:%fZ', 'now'),
             deleted_at      = NULL
     """).bind(*to_db_params(data, uid)).run()
 

@@ -5,6 +5,7 @@ Cloudflare Workers entrypoint — routing, CORS, error handling, and request log
 
 import json
 import time
+from urllib.parse import urlparse
 from workers import WorkerEntrypoint, Response
 from app import config
 from routes import routes, saves
@@ -29,10 +30,7 @@ def _cors_headers() -> dict:
 
 
 def _parse_path(url: str) -> str:
-    path = url.split("?")[0].rstrip("/")
-    if "://" in path:
-        path = "/" + path.split("/", 3)[-1] if path.count("/") > 2 else "/"
-    return path
+    return urlparse(url).path.rstrip("/") or "/"
 
 
 class Default(WorkerEntrypoint):
