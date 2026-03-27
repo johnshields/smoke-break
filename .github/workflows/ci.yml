@@ -35,10 +35,25 @@ jobs:
       - name: Check for syntax errors
         run: find . -name "*.py" -not -path "./.venv/*" -not -path "./__pycache__/*" | xargs python -m py_compile
 
-  smoke-test:
+  deploy:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     needs: [lint]
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Deploy to Cloudflare Workers
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          workingDirectory: fujimoto_api
+
+  smoke-test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    needs: [deploy]
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
 
     steps:
