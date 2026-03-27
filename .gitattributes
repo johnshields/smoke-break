@@ -3,3 +3,11 @@
 *.mp4 filter=lfs diff=lfs merge=lfs -text
 *.blend filter=lfs diff=lfs merge=lfs -text
 *.wav filter=lfs diff=lfs merge=lfs -text
+builds/**/*.framework.js.gz filter=lfs diff=lfs merge=lfs -text
+builds/**/*.resS filter=lfs diff=lfs merge=lfs -text
+builds/**/*.assets filter=lfs diff=lfs merge=lfs -text
+builds/**/*.dll filter=lfs diff=lfs merge=lfs -text
+builds/**/*.exe filter=lfs diff=lfs merge=lfs -text
+builds/**/*.resource filter=lfs diff=lfs merge=lfs -text
+builds/**/*.data.gz filter=lfs diff=lfs merge=lfs -text
+builds/**/*.wasm.gz filter=lfs diff=lfs merge=lfs -text

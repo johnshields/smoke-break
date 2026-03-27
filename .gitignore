@@ -84,6 +84,10 @@ fujimoto_api/data/
 .wrangler/
 python_modules/
 
+# Builds (track uncompressed builds, ignore zips and secrets)
+builds/**/*.zip
+builds/**/StreamingAssets/config.json
+
 # Misc
 temp/
 xbuilds/
