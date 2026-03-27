@@ -19002,8 +19002,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e0172414e20d48548b658755915d7a6e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  clipList: []
-  clipListArray: []
   audioSource: {fileID: 2098264201}
 --- !u!4 &695156576
 Transform:
@@ -44441,7 +44439,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e5c4ed213c9bb7d4485f206b2a7e96f3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  currentHealth: 0
+  currentHealth: 30
   maxHealth: 100
 --- !u!114 &9028799375046230543
 MonoBehaviour:

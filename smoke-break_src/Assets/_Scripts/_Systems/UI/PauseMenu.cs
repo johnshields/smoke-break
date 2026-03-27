@@ -181,6 +181,8 @@ namespace _Scripts._Systems.UI
 
         private void TogglePause(InputAction.CallbackContext context)
         {
+            if (!pausePanel) return;
+
             if (isPaused) ResumeGame();
             else PauseGame();
         }
@@ -257,7 +259,7 @@ namespace _Scripts._Systems.UI
 
         private void NavigateMenu(InputAction.CallbackContext context)
         {
-            if (!isPaused) return;
+            if (!isPaused || _currentButtons == null || _currentButtons.Length == 0 || !_currentButtons[0]) return;
 
             var direction = context.ReadValue<Vector2>().y;
 
@@ -270,7 +272,7 @@ namespace _Scripts._Systems.UI
 
         private void SelectButton(InputAction.CallbackContext context)
         {
-            if (!isPaused) return;
+            if (!isPaused || _currentButtons == null || _currentButtons.Length == 0 || !_currentButtons[_currentButtonIndex]) return;
 
             EventSystem.current.SetSelectedGameObject(_currentButtons[_currentButtonIndex].gameObject);
             var selectedButton = _currentButtons[_currentButtonIndex];
@@ -305,6 +307,7 @@ namespace _Scripts._Systems.UI
         private void UpdateButtonSelection()
         {
             if (SceneManager.GetActiveScene().buildIndex == 0) return;
+            if (_currentButtons == null || _currentButtons.Length == 0 || !_currentButtons[0]) return;
 
             for (var i = 0; i < _currentButtons.Length; i++)
             {
