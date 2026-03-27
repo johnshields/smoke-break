@@ -1,4 +1,4 @@
--- fujimoto API — D1 (SQLite) Schema
+-- fujimoto API - D1 (SQLite) Schema
 
 CREATE TABLE IF NOT EXISTS saves (
     id           INTEGER PRIMARY KEY AUTOINCREMENT,
