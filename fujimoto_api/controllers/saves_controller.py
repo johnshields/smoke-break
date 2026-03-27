@@ -18,15 +18,14 @@ async def upload_save(db, data: dict) -> dict:
     await db.prepare("""
         INSERT INTO saves (
             uid, player_id,
-            player_position, player_health, clip_ammo, stored_ammo, saved_level,
+            player_position, player_health, player_ammo, saved_level,
             saved_at
         )
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+        VALUES (?, ?, ?, ?, ?, ?, ?)
         ON CONFLICT(player_id) DO UPDATE SET
             player_position = excluded.player_position,
             player_health   = excluded.player_health,
-            clip_ammo       = excluded.clip_ammo,
-            stored_ammo     = excluded.stored_ammo,
+            player_ammo     = excluded.player_ammo,
             saved_level     = excluded.saved_level,
             saved_at        = excluded.saved_at,
             updated_at      = strftime('%Y-%m-%dT%H:%M:%fZ', 'now'),

@@ -5,10 +5,9 @@ CREATE TABLE IF NOT EXISTS saves (
     uid          TEXT    NOT NULL UNIQUE,
     player_id    TEXT    NOT NULL UNIQUE,
 
+    player_health   INTEGER NOT NULL DEFAULT 30,
     player_position TEXT    NOT NULL DEFAULT '{"x":0.0,"y":0.0,"z":0.0}',
-    player_health   INTEGER NOT NULL DEFAULT 0,
-    clip_ammo       INTEGER NOT NULL DEFAULT 0,
-    stored_ammo     INTEGER NOT NULL DEFAULT 0,
+    player_ammo     TEXT    NOT NULL DEFAULT '{"clip":0,"stored":0}',
     saved_level     TEXT,
 
     saved_at     TEXT,
