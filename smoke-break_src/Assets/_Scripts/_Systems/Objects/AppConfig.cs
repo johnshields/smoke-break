@@ -7,8 +7,8 @@ namespace _Scripts._Systems.Objects
     [Serializable]
     public class AppConfig
     {
-        public string apiBaseUrl;
-        public string apiKey;
+        public string FUJIMOTO_API_URL;
+        public string FUJIMOTO_API_KEY;
 
         private static AppConfig _instance;
 
@@ -21,13 +21,13 @@ namespace _Scripts._Systems.Objects
             if (!File.Exists(path))
             {
                 Debug.LogWarning("[AppConfig] config.json not found in StreamingAssets. Using defaults.");
-                _instance = new AppConfig { apiBaseUrl = "", apiKey = "" };
+                _instance = new AppConfig { FUJIMOTO_API_URL = "", FUJIMOTO_API_KEY = "" };
                 return _instance;
             }
 
             var json = File.ReadAllText(path);
             _instance = JsonUtility.FromJson<AppConfig>(json);
-            Debug.Log($"[AppConfig] Loaded API base URL: {_instance.apiBaseUrl}");
+            Debug.Log($"[AppConfig] Loaded API base URL: {_instance.FUJIMOTO_API_URL}");
 
             return _instance;
         }

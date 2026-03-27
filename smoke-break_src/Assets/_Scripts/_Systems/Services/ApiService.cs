@@ -10,8 +10,8 @@ namespace _Scripts._Systems.Services
 {
     public static class ApiService
     {
-        private static string BaseUrl => AppConfig.Load().apiBaseUrl;
-        private static string ApiKey => AppConfig.Load().apiKey;
+        private static string BaseUrl => AppConfig.Load().FUJIMOTO_API_URL;
+        private static string ApiKey => AppConfig.Load().FUJIMOTO_API_KEY;
         private static readonly HttpClient Client = new();
         private static DateTime _lastOnlineCheck = DateTime.MinValue;
         private static bool _lastOnlineStatus = false;

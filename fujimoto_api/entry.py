@@ -20,7 +20,7 @@ _started_at = time.time()
 class Default(WorkerEntrypoint):
     async def fetch(self, request):
         db = self.env.DB
-        api_key = self.env.API_KEY
+        api_key = self.env.FUJIMOTO_API_KEY
         method = request.method
         path = parse_path(request.url)
         start = time.time()

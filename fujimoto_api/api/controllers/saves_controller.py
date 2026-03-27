@@ -5,7 +5,7 @@ Save/load/delete business logic against D1 (SQLite).
 
 from app.logger import info
 from app.messages import SAVE_UPLOADED
-from db import saves as queries
+from db.queries import saves as queries
 from db.db import execute, fetch_one
 from models.save import to_db_params, from_db_row
 from utils.uid import gen_uid
