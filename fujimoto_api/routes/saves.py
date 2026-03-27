@@ -3,43 +3,33 @@ Save Routes
 HTTP endpoints for player save data.
 """
 
-from fastapi import APIRouter, HTTPException, Request
-from pydantic import BaseModel
+import json
+from workers import Response
 from controllers import saves_controller
 
-router = APIRouter(prefix="/api/saves", tags=["Saves"])
+
+def _json(data: dict, status: int = 200) -> Response:
+    return Response(
+        json.dumps(data),
+        status=status,
+        headers={"Content-Type": "application/json"},
+    )
 
 
-class SaveData(BaseModel):
-    player_id: str = ""
-    saved_at: str = ""
-    playerX: float = 0.0
-    playerY: float = 0.0
-    playerZ: float = 0.0
-    playerHealth: int = 0
-    clipAmmo: int = 0
-    storedAmmo: int = 0
-    savedLevel: str = ""
+async def upload_save(db, request) -> Response:
+    body = await request.json()
+    result = await saves_controller.upload_save(db, body)
+    return _json(result)
 
 
-@router.post("")
-async def upload_save(request: Request, save_data: SaveData):
-    db = request.app.state.db
-    return await saves_controller.upload_save(db, save_data.model_dump())
-
-
-@router.get("/{player_id}")
-async def download_save(request: Request, player_id: str):
-    db = request.app.state.db
+async def download_save(db, player_id: str) -> Response:
     result = await saves_controller.download_save(db, player_id)
     if result is None:
-        raise HTTPException(status_code=404, detail="Save not found.")
-    return result
+        return _json({"status": "error", "message": "Save not found."}, 404)
+    return _json(result)
 
 
-@router.delete("/{player_id}")
-async def delete_save(request: Request, player_id: str):
-    db = request.app.state.db
+async def delete_save(db, player_id: str) -> Response:
     if not await saves_controller.delete_save(db, player_id):
-        raise HTTPException(status_code=404, detail="Save not found.")
-    return {"status": "success", "message": "Save deleted."}
+        return _json({"status": "error", "message": "Save not found."}, 404)
+    return _json({"status": "success", "message": "Save deleted."})

@@ -5,7 +5,6 @@ Save/load/delete business logic against D1 (SQLite).
 
 import json
 import secrets
-from app.logger import info
 
 
 def _gen_uid(prefix: str) -> str:
@@ -15,7 +14,11 @@ def _gen_uid(prefix: str) -> str:
 
 async def upload_save(db, data: dict) -> dict:
     uid = _gen_uid("SAV")
-    position = json.dumps({"x": data["playerX"], "y": data["playerY"], "z": data["playerZ"]})
+    position = json.dumps({
+        "x": data.get("playerX", 0.0),
+        "y": data.get("playerY", 0.0),
+        "z": data.get("playerZ", 0.0),
+    })
 
     await db.prepare("""
         INSERT INTO saves (
@@ -34,13 +37,13 @@ async def upload_save(db, data: dict) -> dict:
             deleted_at      = NULL
     """).bind(
         uid,
-        data["player_id"],
-        position, data["playerHealth"], data["clipAmmo"],
-        data["storedAmmo"], data["savedLevel"],
-        data["saved_at"]
+        data.get("player_id", ""),
+        position, data.get("playerHealth", 0), data.get("clipAmmo", 0),
+        data.get("storedAmmo", 0), data.get("savedLevel", ""),
+        data.get("saved_at", "")
     ).run()
 
-    info(f"Save uploaded for player: {data['player_id']} [{uid}]")
+    print(f"[info]: Save uploaded for player: {data.get('player_id')} [{uid}]")
     return {"status": "success", "message": "Save uploaded.", "uid": uid}
 
 
@@ -54,7 +57,7 @@ async def download_save(db, player_id: str) -> dict | None:
     if not row:
         return None
 
-    info(f"Save downloaded for player: {player_id}")
+    print(f"[info]: Save downloaded for player: {player_id}")
     return {"status": "success", "data": dict(row)}
 
 
@@ -74,5 +77,5 @@ async def delete_save(db, player_id: str) -> bool:
         WHERE player_id = ?
     """).bind(player_id).run()
 
-    info(f"Save soft-deleted for player: {player_id}")
+    print(f"[info]: Save soft-deleted for player: {player_id}")
     return True

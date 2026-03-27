@@ -3,27 +3,34 @@ System Routes
 API information and system status endpoints.
 """
 
+import json
+import time
 from datetime import datetime, timezone
-from fastapi import APIRouter
-from app import config
-
-router = APIRouter()
-
-_started_at = datetime.now(timezone.utc)
+from workers import Response
 
 
-def _uptime_seconds() -> float:
-    return round((datetime.now(timezone.utc) - _started_at).total_seconds(), 1)
+def _json(data: dict) -> Response:
+    return Response(json.dumps(data), headers={"Content-Type": "application/json"})
 
 
-@router.get("/api", tags=["System"])
-def api_info():
-    return {
+def health(started_at: float, api_name: str) -> Response:
+    uptime = round(time.time() - started_at, 1)
+    return _json({
+        "status": "healthy",
+        "service": api_name,
+        "message": f"{api_name} is live...",
+        "uptime_seconds": uptime,
+        "timestamp": datetime.now(timezone.utc).isoformat(),
+    })
+
+
+def api_info(started_at: float, api_name: str, version: str) -> Response:
+    uptime = round(time.time() - started_at, 1)
+    return _json({
         "status": "OK",
-        "service": config.API_NAME,
-        "description": config.DESCRIPTION,
-        "version": config.VERSION,
-        "uptime_seconds": _uptime_seconds(),
-        "message": f"{config.API_NAME} is live...",
-        "timestamp": datetime.now(timezone.utc).isoformat()
-    }
+        "service": api_name,
+        "version": version,
+        "uptime_seconds": uptime,
+        "message": f"{api_name} is live...",
+        "timestamp": datetime.now(timezone.utc).isoformat(),
+    })
