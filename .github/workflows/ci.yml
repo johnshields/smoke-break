@@ -36,10 +36,17 @@ jobs:
         run: |
           python -m py_compile entry.py
           python -m py_compile app/config.py
+          python -m py_compile app/logger.py
+          python -m py_compile utils/response.py
+          python -m py_compile utils/uid.py
+          python -m py_compile utils/system.py
           python -m py_compile models/save.py
+          python -m py_compile db/db.py
+          python -m py_compile db/saves.py
           python -m py_compile controllers/saves_controller.py
-          python -m py_compile routes/routes.py
           python -m py_compile middleware/auth.py
+          python -m py_compile middleware/cors.py
+          python -m py_compile routes/routes.py
           python -m py_compile routes/saves.py
 
   smoke-test:
@@ -54,10 +61,13 @@ jobs:
           set -e
           WORKER_URL="${{ secrets.FUJIMOTO_WORKER_URL }}"
 
-          echo "Testing GET / (Health check)..."
-          curl -fsS "$WORKER_URL/" | python3 -c "import sys,json; d=json.load(sys.stdin); assert d['status']=='healthy', f'Unexpected: {d}'; print('Health check passed')"
+          echo "Testing GET /api/healthz..."
+          curl -fsS "$WORKER_URL/api/healthz" | python3 -c "import sys,json; d=json.load(sys.stdin); assert d['status']=='healthy', f'Unexpected: {d}'; print('Health check passed')"
 
           echo "Testing GET /api (API info)..."
           curl -fsS "$WORKER_URL/api" | python3 -c "import sys,json; d=json.load(sys.stdin); assert d['status']=='OK', f'Unexpected: {d}'; print('API info passed')"
+
+          echo "Testing GET /api/readyz..."
+          curl -fsS -H "Authorization: Bearer ${{ secrets.FUJIMOTO_API_KEY }}" "$WORKER_URL/api/readyz" | python3 -c "import sys,json; d=json.load(sys.stdin); assert d['status'] in ('ready','degraded'), f'Unexpected: {d}'; print('Readiness check passed')"
 
           echo "All smoke tests passed"

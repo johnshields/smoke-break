@@ -1,36 +1,37 @@
 """
 Save Model
-Maps between the client payload, DB row, and API response for the saves table.
+Field mapping between client payload and DB row for the saves table.
 """
 
 import json
 
+POSITION_KEYS = {"x": "playerX", "y": "playerY", "z": "playerZ"}
+AMMO_KEYS = {"clip": "clipAmmo", "stored": "storedAmmo"}
+
+
+def _pack_json(data: dict, keys: dict) -> str:
+    return json.dumps({k: data.get(v, 0) for k, v in keys.items()})
+
+
+def _unpack_json(row, column: str) -> dict:
+    return json.loads(row[column]) if row[column] else {}
+
 
 def to_db_params(data: dict, uid: str) -> tuple:
-    position = json.dumps({
-        "x": data.get("playerX", 0.0),
-        "y": data.get("playerY", 0.0),
-        "z": data.get("playerZ", 0.0),
-    })
-    ammo = json.dumps({
-        "clip": data.get("clipAmmo", 0),
-        "stored": data.get("storedAmmo", 0),
-    })
-
     return (
         uid,
         data.get("player_id", ""),
-        position,
+        _pack_json(data, POSITION_KEYS),
         data.get("playerHealth", 0),
-        ammo,
+        _pack_json(data, AMMO_KEYS),
         data.get("savedLevel", ""),
         data.get("saved_at", ""),
     )
 
 
 def from_db_row(row) -> dict:
-    position = json.loads(row["player_position"]) if row["player_position"] else {}
-    ammo = json.loads(row["player_ammo"]) if row["player_ammo"] else {}
+    position = _unpack_json(row, "player_position")
+    ammo = _unpack_json(row, "player_ammo")
 
     return {
         "player_id": row["player_id"],

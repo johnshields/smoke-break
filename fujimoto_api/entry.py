@@ -1,37 +1,18 @@
 """
 fujimoto API
-Cloudflare Workers entrypoint — routing, CORS, error handling, and request logging.
+Cloudflare Workers entrypoint.
 """
 
-import json
 import time
-from urllib.parse import urlparse
-from workers import WorkerEntrypoint, Response
+from workers import WorkerEntrypoint
 from app import config
+from app.logger import info, error
 from middleware.auth import authenticate
+from middleware.cors import preflight, apply
 from routes import routes, saves
+from utils.response import json_error, parse_path
+
 _started_at = time.time()
-
-
-def _json(data: dict, status: int = 200) -> Response:
-    return Response(
-        json.dumps(data),
-        status=status,
-        headers={"Content-Type": "application/json"},
-    )
-
-
-def _cors_headers() -> dict:
-    return {
-        "Access-Control-Allow-Origin": config.CORS_ORIGINS,
-        "Access-Control-Allow-Methods": "GET, POST, DELETE, OPTIONS",
-        "Access-Control-Allow-Headers": "Content-Type, Authorization, X-API-Key",
-        "Access-Control-Allow-Credentials": "true",
-    }
-
-
-def _parse_path(url: str) -> str:
-    return urlparse(url).path.rstrip("/") or "/"
 
 
 class Default(WorkerEntrypoint):
@@ -39,38 +20,36 @@ class Default(WorkerEntrypoint):
         db = self.env.DB
         api_key = self.env.API_KEY
         method = request.method
-        path = _parse_path(request.url)
+        path = parse_path(request.url)
         start = time.time()
 
         if method == "OPTIONS":
-            return Response("", status=204, headers=_cors_headers())
+            return preflight()
 
         auth_error = authenticate(request, path, api_key)
         if auth_error:
-            for key, value in _cors_headers().items():
-                auth_error.headers[key] = value
-            return auth_error
+            return apply(auth_error)
 
         try:
             response = await self._route(db, method, path, request)
         except Exception as e:
-            print(f"[error]: Unhandled exception on [{method}] {path}: {e}")
-            response = _json({"status": "error", "message": "Internal server error."}, 500)
-
-        for key, value in _cors_headers().items():
-            response.headers[key] = value
+            error(f"Unhandled exception on [{method}] {path}: {e}")
+            response = json_error("Internal server error.", 500)
 
         duration_ms = round((time.time() - start) * 1000)
-        print(f"[info]: [{method}] {path} - {response.status} - Took {duration_ms}ms")
+        info(f"[{method}] {path} - {response.status} - Took {duration_ms}ms")
 
-        return response
+        return apply(response)
 
-    async def _route(self, db, method: str, path: str, request) -> Response:
-        if path == "/" and method == "GET":
+    async def _route(self, db, method: str, path: str, request):
+        if path in ("/", "/api") and method == "GET":
+            return routes.api_info(_started_at, config.API_NAME, config.VERSION)
+
+        if path == "/api/healthz" and method == "GET":
             return routes.health(_started_at, config.API_NAME)
 
-        if path == "/api" and method == "GET":
-            return routes.api_info(_started_at, config.API_NAME, config.VERSION)
+        if path == "/api/readyz" and method == "GET":
+            return await routes.readiness(db, _started_at)
 
         if path == "/api/saves" and method == "POST":
             return await saves.upload_save(db, request)
@@ -83,4 +62,4 @@ class Default(WorkerEntrypoint):
             player_id = path.split("/api/saves/")[1]
             return await saves.delete_save(db, player_id)
 
-        return _json({"status": "error", "message": "Not found."}, 404)
+        return json_error("Not found.", 404)
