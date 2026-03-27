@@ -5,6 +5,7 @@ API key validation for protected endpoints.
 
 import hmac
 from workers import Response
+from app.messages import AUTH_REQUIRED, AUTH_INVALID
 from utils.response import json_error
 
 PUBLIC_PATHS = {"/", "/api", "/api/healthz"}
@@ -20,9 +21,9 @@ def authenticate(request, path: str, api_key: str) -> Response | None:
         token = request.headers.get("X-API-Key", "").strip()
 
     if not token:
-        return json_error("Authentication required.", 401)
+        return json_error(AUTH_REQUIRED, 401)
 
     if not hmac.compare_digest(token, api_key):
-        return json_error("Invalid credentials.", 401)
+        return json_error(AUTH_INVALID, 401)
 
     return None

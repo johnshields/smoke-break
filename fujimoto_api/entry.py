@@ -6,9 +6,11 @@ Cloudflare Workers entrypoint.
 import time
 from workers import WorkerEntrypoint
 from app import config
-from app.logger import info, error
+from app.logger import error
+from app.messages import INTERNAL_ERROR, NOT_FOUND
 from middleware.auth import authenticate
 from middleware.cors import preflight, apply
+from middleware.request_logger import log_request
 from routes import routes, saves
 from utils.response import json_error, parse_path
 
@@ -34,10 +36,9 @@ class Default(WorkerEntrypoint):
             response = await self._route(db, method, path, request)
         except Exception as e:
             error(f"Unhandled exception on [{method}] {path}: {e}")
-            response = json_error("Internal server error.", 500)
+            response = json_error(INTERNAL_ERROR, 500)
 
-        duration_ms = round((time.time() - start) * 1000)
-        info(f"[{method}] {path} - {response.status} - Took {duration_ms}ms")
+        log_request(method, path, start, response.status)
 
         return apply(response)
 
@@ -62,4 +63,4 @@ class Default(WorkerEntrypoint):
             player_id = path.split("/api/saves/")[1]
             return await saves.delete_save(db, player_id)
 
-        return json_error("Not found.", 404)
+        return json_error(NOT_FOUND, 404)
