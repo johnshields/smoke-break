@@ -33,23 +33,7 @@ jobs:
           python-version: "3.12"
 
       - name: Check for syntax errors
-        run: |
-          python -m py_compile entry.py
-          python -m py_compile app/config.py
-          python -m py_compile app/logger.py
-          python -m py_compile utils/response.py
-          python -m py_compile utils/uid.py
-          python -m py_compile utils/system.py
-          python -m py_compile models/save.py
-          python -m py_compile db/db.py
-          python -m py_compile db/queries/saves.py
-          python -m py_compile utils/json_columns.py
-          python -m py_compile api/controllers/saves_controller.py
-          python -m py_compile api/routes/routes.py
-          python -m py_compile api/routes/saves.py
-          python -m py_compile api/middleware/auth.py
-          python -m py_compile api/middleware/cors.py
-          python -m py_compile api/middleware/request_logger.py
+        run: find . -name "*.py" -not -path "./.venv/*" -not -path "./__pycache__/*" | xargs python -m py_compile
 
   smoke-test:
     runs-on: ubuntu-latest

@@ -1,5 +1,5 @@
 """
-JSON Column Helpers
+JSON Helpers
 Pack and unpack JSON columns for D1 storage.
 """
 

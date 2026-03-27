@@ -5,13 +5,12 @@ Cloudflare Workers entrypoint.
 
 import time
 from workers import WorkerEntrypoint
-from app import config
 from app.logger import error
-from app.messages import INTERNAL_ERROR, NOT_FOUND
+from app.messages import INTERNAL_ERROR
 from api.middleware.auth import authenticate
 from api.middleware.cors import preflight, apply
 from api.middleware.request_logger import log_request
-from api.routes import routes, saves
+from api.router import resolve
 from utils.response import json_error, parse_path
 
 _started_at = time.time()
@@ -33,7 +32,7 @@ class Default(WorkerEntrypoint):
             return apply(auth_error)
 
         try:
-            response = await self._route(db, method, path, request)
+            response = await resolve(db, method, path, request, _started_at)
         except Exception as e:
             error(f"Unhandled exception on [{method}] {path}: {e}")
             response = json_error(INTERNAL_ERROR, 500)
@@ -41,26 +40,3 @@ class Default(WorkerEntrypoint):
         log_request(method, path, start, response.status)
 
         return apply(response)
-
-    async def _route(self, db, method: str, path: str, request):
-        if path in ("/", "/api") and method == "GET":
-            return routes.api_info(_started_at, config.API_NAME, config.VERSION)
-
-        if path == "/api/healthz" and method == "GET":
-            return routes.health(_started_at, config.API_NAME)
-
-        if path == "/api/readyz" and method == "GET":
-            return await routes.readiness(db, _started_at)
-
-        if path == "/api/saves" and method == "POST":
-            return await saves.upload_save(db, request)
-
-        if path.startswith("/api/saves/") and method == "GET":
-            player_id = path.split("/api/saves/")[1]
-            return await saves.download_save(db, player_id)
-
-        if path.startswith("/api/saves/") and method == "DELETE":
-            player_id = path.split("/api/saves/")[1]
-            return await saves.delete_save(db, player_id)
-
-        return json_error(NOT_FOUND, 404)

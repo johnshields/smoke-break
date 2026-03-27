@@ -3,7 +3,7 @@ Save Model
 Field mapping between client payload and DB row for the saves table.
 """
 
-from utils.json_columns import pack, unpack
+from utils.json import pack, unpack
 
 POSITION_KEYS = {"x": "playerX", "y": "playerY", "z": "playerZ"}
 AMMO_KEYS = {"clip": "clipAmmo", "stored": "storedAmmo"}
