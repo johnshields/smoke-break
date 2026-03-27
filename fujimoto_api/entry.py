@@ -8,10 +8,10 @@ from workers import WorkerEntrypoint
 from app import config
 from app.logger import error
 from app.messages import INTERNAL_ERROR, NOT_FOUND
-from middleware.auth import authenticate
-from middleware.cors import preflight, apply
-from middleware.request_logger import log_request
-from routes import routes, saves
+from api.middleware.auth import authenticate
+from api.middleware.cors import preflight, apply
+from api.middleware.request_logger import log_request
+from api.routes import routes, saves
 from utils.response import json_error, parse_path
 
 _started_at = time.time()

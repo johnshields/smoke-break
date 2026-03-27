@@ -4,7 +4,7 @@ HTTP endpoints for player save data.
 """
 
 from app.messages import SAVE_NOT_FOUND, SAVE_DELETED
-from controllers import saves_controller
+from api.controllers import saves_controller
 from utils.response import json_response, json_error
 
 
